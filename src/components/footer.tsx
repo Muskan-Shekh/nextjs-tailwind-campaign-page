@@ -1,85 +1,104 @@
-import { Typography, Button, Input } from "@material-tailwind/react";
+"use client";
 
-const LINKS = ["About Us", "Careers", "Press", "Blog", "Pricing"];
-const SUB_LINKS = ["Claim", "Privacy", "Terms"];
-const CURRENT_YEAR = new Date().getFullYear();
+import { Typography } from "@material-tailwind/react";
+import logo from "../../public/logos/logo.png";
+import facebook from "../../public/logos/facebook-1-svgrepo-com.svg";
+import instagram from "../../public/logos/instagram-1-svgrepo-com.svg";
+import youtube from "../../public/logos/youtube-color-svgrepo-com.svg";
+import Image from "next/image";
+
+const LINKS = [
+  {
+    title: "Product",
+    items: [
+      { label: "About Us", url: "/about-us" },
+      { label: "Contact Us", url: "/contact-us" },
+      { label: "Privacy Policy", url: "/privacy-policy" },
+      { label: "Returns", url: "/returns" },
+      { label: "Terms & Conditions", url: "/terms" },
+      { label: "Blogs", url: "/blogs" },
+    ],
+  },
+  {
+    title: "Company",
+    items: [
+      { label: "Vendor Registration", url: "/vendor-registration" },
+      { label: "Tuitor", url: "/tuitor" },
+      { label: "Join WhatsApp", url: "/join-whatsapp" },
+      { label: "Promo Code", url: "/promo-code" },
+      { label: "Request Product", url: "/request-product" },
+    ],
+  },
+  {
+    title: "Resource",
+    items: [
+      { label: "Partners", url: "/partners" },
+      { label: "Special Thanks", url: "/special-thanks" },
+      { label: "Subscription", url: "/subscription" },
+      { label: "Enquiry", url: "/enquiry" },
+    ],
+  },
+];
+
+const currentYear = new Date().getFullYear();
 
 export function Footer() {
   return (
-    <footer className="mt-10 px-8 pt-20">
-      <div className="container mx-auto">
-        <div className="flex flex-wrap items-end justify-center gap-8 md:justify-between">
-          <div className="text-center md:text-left">
-            <Typography
-              as="a"
-              href="https://www.material-tailwind.com"
-              target="_blank"
-              variant="h4"
-              className="mb-6"
-            >
-              Material Tailwind
-            </Typography>
-            <ul className="flex flex-wrap items-center justify-center md:justify-start">
-              {LINKS.map((link, idx) => (
-                <li key={link}>
+    <footer className="relative w-full">
+      <div className="mx-auto w-full max-w-7xl px-8">
+        <div className="grid grid-cols-4 justify-between gap-4">
+          <div>
+            <a href="/">
+              <Image
+                src={logo}
+                alt={"book window logo"}
+                className="h-[55px] w-[215px]"
+              />
+            </a>
+            <div className="flex px-2 py-2">
+              <a href="https://m.facebook.com/100064054598576/" target="_blank">
+                <div className="bg-white p-2 border rounded-full shadow-lg hover:bg-orange-100">
+                  <Image src={facebook} alt="facebook" className="w-10 h-10" />
+                </div>
+              </a>
+              <a
+                href="https://www.instagram.com/bookwindow_2.0?igsh=MXV5ZTVmcTIxcGRyNA=="
+                target="_blank"
+              >
+                <div className="bg-white p-2 border rounded-full ml-2 shadow-lg hover:bg-orange-100">
+                  <Image
+                    src={instagram}
+                    alt="instagram"
+                    className="w-10 h-10"
+                  />
+                </div>
+              </a>
+              <a href="" target="_blank">
+                <div className="bg-white p-2 border rounded-full ml-2 shadow-lg hover:bg-orange-100">
+                  <Image src={youtube} alt="youtube" className="w-10 h-10" />
+                </div>
+              </a>
+            </div>
+          </div>
+          {LINKS.map(({ title, items }) => (
+            <ul key={title}>
+              {items.map(({ label, url }) => (
+                <li key={label}>
                   <Typography
                     as="a"
-                    href="#"
-                    className={`py-1 font-medium !text-gray-700 transition-colors hover:!text-gray-900 ${
-                      idx === 0 ? "pr-3" : "px-3"
-                    }`}
+                    href={url}
+                    color="gray"
+                    className="py-1.5 font-normal transition-colors hover:text-blue-gray-900"
                   >
-                    {link}
+                    {label}
                   </Typography>
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="w-full sm:w-[24rem] sm:min-w-[24rem]">
-            <Typography variant="h6" color="blue-gray" className="mb-3">
-              Our Newsletter
-            </Typography>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              {/* @ts-ignore */}
-              <Input color="gray" label="Enter your email" />
-              <Button color="gray" className="flex-shrink-0">
-                subscribe
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="mt-16 flex flex-wrap items-center justify-center gap-y-4 gap-x-8 border-t border-blue-gray-50 py-6 md:justify-between">
-          <Typography className="text-center font-normal !text-gray-700">
-            &copy; {CURRENT_YEAR} Made with{" "}
-            <a href="https://www.material-tailwind.com" target="_blank">
-              Material Tailwind
-            </a>{" "}
-            by{" "}
-            <a href="https://www.creative-tim.com" target="_blank">
-              Creative Tim
-            </a>
-            .
-          </Typography>
-
-          <ul className="flex items-center">
-            {SUB_LINKS.map((link, idx) => (
-              <li key={link}>
-                <Typography
-                  as="a"
-                  href="#"
-                  className={`py-1 font-normal !text-gray-700 transition-colors hover:!text-gray-900 ${
-                    idx === SUB_LINKS.length - 1 ? "pl-2" : "px-2"
-                  }`}
-                >
-                  {link}
-                </Typography>
-              </li>
-            ))}
-          </ul>
+          ))}
         </div>
       </div>
     </footer>
   );
 }
-
 export default Footer;

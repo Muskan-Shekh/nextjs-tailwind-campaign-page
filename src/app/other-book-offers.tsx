@@ -6,40 +6,69 @@ import BookCard from "@/components/book-card";
 const OTHER_BOOKS = [
   {
     img: `/image/books/RectangleBig1.svg`,
-    category: "Frank Herbert",
-    title: "Dune",
-    desc: "A classic epic that explores political intrigue and power struggles on a desert planet.",
-    price: "$99",
-    offPrice: "$79",
+    category: "33% off",
+    title: "Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication",
+    desc: "Dr. L.R Bhalla",
+    price: "₹465 ",
+    offPrice: "₹696",
   },
   {
     img: `/image/books/RectangleBig7.svg`,
-    category: "William Gibson",
-    title: "Neuromancer",
-    desc: "A pioneering cyberpunk novel filled with futuristic technology and hackers.",
-    price: "$99",
-    offPrice: "$79",
+    category: "33% off",
+    title: "Utkarsh - Current Affairs Monthly January 2024 By Kumar Gaurav Sir",
+    desc: "GAURAV KUMAR",
+    price: "₹465 ",
+    offPrice: "₹696",
   },
   {
     img: `/image/books/RectangleBig1.svg`,
-    category: "J.R.R. Tolkien",
-    title: "The Hobbit",
-    desc: "A timeless adventure through Middle-earth, featuring Bilbo Baggins and his quest.",
-    price: "$99",
-    offPrice: "$79",
+    category: "33% off",
+    title: "SSC Mathematics 7300+ Typewise Question All TCS Pettern Questions",
+    desc: "Rakesh Yadav",
+    price: "₹465 ",
+    offPrice: "₹696",
   },
 ];
 
 export function OtherBookOffers() {
   return (
-    <section className="px-8 pt-28">
+    <section className="px-8 pt-28 pb-28">
       <div className="container mx-auto mb-10">
         <Typography variant="h2" color="blue-gray" className="mb-2">
-          Other Book Offers - 20% OFF
+          About this product
         </Typography>
-        <Typography variant="lead" className="w-full max-w-lg !text-gray-500">
-          Escape into captivating stories, vibrant characters, and enchanting
-          worlds with our extensive fiction collection.
+        <Typography variant="lead" className="w-full text-gray-600">
+          Escape into{" "}
+          <strong className="text-gray-700">captivating stories</strong>,
+          vibrant characters, and enchanting worlds with our extensive fiction
+          collection. A classic reference book on grammar and writing skills,
+          essential for high school and college students. A valuable resource
+          for high school seniors and college freshmen, offering effective study
+          strategies.A classic reference book on grammar and writing skills,
+          essential for high school and college students. A{" "}
+          <strong className="text-gray-700">valuable resources</strong> for high
+          school seniors and college freshmen, offering effective study
+          strategies.A classic reference book on grammar and writing skills,
+          essential for high school and college students.
+        </Typography>
+        <Typography variant="lead" className="w-full text-gray-600 mt-2">
+          Escape into captivating stories, vibrant characters, and{" "}
+          <strong className="text-gray-700">enchanting worlds</strong> with our
+          extensive fiction collection. A classic reference book on grammar and
+          writing skills, essential for high school and college students.
+        </Typography>
+        <Typography variant="lead" className="w-full text-gray-600 mt-2">
+          Escape into captivating stories, vibrant characters, and{" "}
+          <strong className="text-gray-700">enchanting worlds</strong> with our
+          extensive fiction collection. A classic reference book on grammar and
+          writing skills, essential for high school and college students. A{" "}
+          <strong className="text-gray-700">valuable resources</strong> for high
+          school seniors and college freshmen, offering effective study
+          strategies.A classic reference book on grammar and writing skills,
+          essential for high school and college students.
+        </Typography>
+        <Typography variant="h2" color="blue-gray" className="mt-8">
+          Similar Products of This Category
         </Typography>
       </div>
       <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-3">

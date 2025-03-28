@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Typography, Carousel } from "@material-tailwind/react";
-
+import { Typography, Carousel, Button } from "@material-tailwind/react";
 
 export function CarouselFeatures() {
   return (
     <div className="px-8 py-56">
-      <section className="container mx-auto !rounded-lg bg-[url('/image/Background.png')] bg-center py-10 lg:px-16">
+      <section className="container mx-auto !rounded-lg bg-[url('https://bookwindow.in/assets/images/_slides/U4ZTD6.webp')] bg-center py-10 lg:px-16 relative">
+        <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
         <Carousel
           transition={{ duration: 1 }}
           nextArrow={() => <></>}
@@ -37,27 +37,20 @@ export function CarouselFeatures() {
                   color="white"
                   className="mb-5 text-xl font-normal "
                 >
-                  Easy Shopping, Quick Delivery <br />
-                  No need to stress about shopping for books. Order online and
-                  have your textbooks and supplies delivered straight to your
-                  doorstep for free.
+                  Ace your exam with our expertly curated selection of
+                  competitve exam books.To get all RAS class and books -
                 </Typography>
                 <div className="flex items-center gap-2">
-                  🚚
-                  <Typography
-                    variant="small"
-                    color="white"
-                    className="font-medium uppercase"
-                  >
-                    Free Delivery
-                  </Typography>
+                  <Button size="lg" color="gray">
+                    🛍️ Buy Now
+                  </Button>
                 </div>
               </div>
               <div className="col-span-2 flex w-full shrink-0 md:!justify-end">
                 <Image
                   width={768}
                   height={768}
-                  src="/image/logos/logo-amazon 3.svg"
+                  src="/logos/logo.png"
                   alt="testimonial image"
                   className="h-full w-2/4 object-contain md:!w-2/3"
                 />

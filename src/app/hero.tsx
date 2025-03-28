@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { Button, Typography } from "@material-tailwind/react";
+import logo from "../../public/logos/logo.png";
 
 function Hero() {
   return (
-    <header className="mt-12 bg-white px-8">
+    <header className="bg-yellow-50 px-8">
       <div className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2">
-        <div className="row-start-2 lg:row-auto lg:-mt-40">
+        <div className="row-start-2 lg:row-auto lg:-mt-6">
           <Typography
             variant="h1"
             color="red"
@@ -15,26 +16,23 @@ function Hero() {
           >
             40% OFF
           </Typography>
-          <Typography
-            variant="h1"
-            color="blue-gray"
-            className="mb-2 max-w-sm text-3xl !leading-snug lg:mb-3 lg:text-5xl"
-          >
-            Back-to-School Campaign
-          </Typography>
+          <a href="/">
+            <Image src={logo} alt={"book window logo"} className="w-[55%]" />
+          </a>
           <Typography
             variant="lead"
             className="mb-6 font-normal !text-gray-500 md:pr-16 xl:pr-28"
           >
-            We&apos;ve got everything you need to make this school year a
-            smashing success! Whether you&apos;re a student, parent, or
-            educator, we&apos;ve got everything you need.
+            Ace your exam with our expertly curated selection of competitve exam
+            books.
+            <br />
+            To get all RAS class and books -
           </Typography>
           <Button size="lg" color="gray">
-            see offers
+            Buy Now
           </Button>
         </div>
-        <div className="mt-40 grid gap-6 lg:mt-0">
+        <div className="mt-40 grid gap-6">
           <div className="grid grid-cols-4 gap-6">
             <Image
               width={768}

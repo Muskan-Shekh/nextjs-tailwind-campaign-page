@@ -1,5 +1,5 @@
 // components
-import { Navbar, Footer } from "@/components";
+import { Navbar, Footer} from "@/components";
 
 // sections
 import Hero from "./hero";
@@ -9,18 +9,22 @@ import OtherBookOffers from "./other-book-offers";
 import CarouselFeatures from "./carousel-features";
 import GetYourBookFromUs from "./get-your-book-from-us";
 import Faq from "./faq";
+import MainNavbar from "@/components/main-navbar";
+import Feature from "@/components/features";
 
 export default function Campaign() {
   return (
     <>
       <Navbar />
+      <MainNavbar />
       <Hero />
       <TopBookCategories />
       <BackToSchoolBooks />
       <OtherBookOffers />
       <CarouselFeatures />
       <GetYourBookFromUs />
-      <Faq />
+      {/* <Faq /> */}
+      <Feature />
       <Footer />
     </>
   );

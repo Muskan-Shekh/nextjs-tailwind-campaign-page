@@ -52,7 +52,7 @@ export default function PrivacyPolicy() {
           BOOKWINDOW does not rent, sell, or share personal information about
           you with third parties, except when specifically informed to you at
           the time of collection of the information and / or to provide products
-          or services you've requested, when we have your permission, or under
+          or services you&apos;ve requested, when we have your permission, or under
           the following circumstances: We provide the information to trusted
           partners who work on behalf of or with BOOKWINDOW under
           confidentiality agreements for the purpose of creating / modifying /

@@ -201,7 +201,7 @@ export default function RegistrationForm() {
                 color="gray"
                 className="items-center font-normal"
               >
-                By clicking SIGN UP, I agree to Bookwindow's
+                By clicking SIGN UP, I agree to Bookwindow&apos;s
                 <a
                   href="terms"
                   className="font-medium transition-colors hover:text-gray-900"

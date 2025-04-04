@@ -39,7 +39,7 @@ export function NotificationDialog() {
             You should read this!
           </Typography>
           <Typography className="text-center font-normal text-red-400">
-            your shipping payment failed, it's likely due to issues with your
+            your shipping payment failed, it&apos;s likely due to issues with your
             payment method, such as insufficient funds, an expired card, or a
             problem with the payment gateway
           </Typography>

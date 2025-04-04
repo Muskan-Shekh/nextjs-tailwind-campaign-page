@@ -47,7 +47,7 @@ export default function SignIn() {
             Login
           </Button>
           <Typography color="gray" className="mt-4 text-center font-normal">
-            Don't have any account?
+            Don&apos;t have any account?
             <a href="/registration" className="font-medium text-gray-900">
               Sign Up
             </a>

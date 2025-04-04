@@ -71,7 +71,7 @@ export default function Terms() {
           www.bookwindow.in or to products you purchase through
           www.bookwindow.in only be in the jurisdiction of the Courts of Jaipur.
           Arbitration under this agreement shall be conducted under the rules
-          and prevailing Laws. The arbitrator's award shall be binding and may
+          and prevailing Laws. The arbitrator&apos;s award shall be binding and may
           be entered as a judgment in any court of competent jurisdiction. To
           the fullest extent permitted by applicable law, no arbitration under
           this Agreement shall be joined to an arbitration involving any other

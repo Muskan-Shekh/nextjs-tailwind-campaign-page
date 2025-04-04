@@ -5,7 +5,7 @@ import { Button, Input, Textarea, Typography } from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 
-export function ContactSection14() {
+export default function ContactSection() {
   return (
     <>
       <Navbar />
@@ -178,5 +178,3 @@ export function ContactSection14() {
     </>
   );
 }
-
-export default ContactSection14;

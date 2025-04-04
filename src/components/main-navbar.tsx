@@ -23,16 +23,20 @@ import {
 
 const nestedMenuItems = [
   {
-    title: "Hero",
+    title: "Agriculture Officer",
+    url: "/category",
   },
   {
-    title: "Features",
+    title: "CTET Exam",
+    url: "/category",
   },
   {
-    title: "Testimonials",
+    title: "EMRC Exam",
+    url: "/category",
   },
   {
-    title: "Ecommerce",
+    title: "NRA CET",
+    url: "/category",
   },
 ];
 
@@ -40,8 +44,8 @@ function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [openNestedMenu, setopenNestedMenu] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const renderItems = nestedMenuItems.map(({ title }, key) => (
-    <a href="#" key={key}>
+  const renderItems = nestedMenuItems.map(({ title, url }, key) => (
+    <a href={url} key={key}>
       <MenuItem>{title}</MenuItem>
     </a>
   ));
@@ -87,7 +91,7 @@ function NavListMenu() {
           >
             <MenuHandler className="flex items-center justify-between">
               <MenuItem>
-                Figma
+                CENTRAL LEVEL COMPETITION EXAMS
                 <ChevronUpIcon
                   strokeWidth={2.5}
                   className={`h-3.5 w-3.5 transition-transform ${
@@ -98,8 +102,8 @@ function NavListMenu() {
             </MenuHandler>
             <MenuList className="rounded-xl">{renderItems}</MenuList>
           </Menu>
-          <MenuItem>React</MenuItem>
-          <MenuItem>TailwindCSS</MenuItem>
+          <MenuItem>COMMON ENTRANCE EXAMS</MenuItem>
+          <MenuItem>MEDICAL & NURSING</MenuItem>
         </MenuList>
       </Menu>
       <div className="block lg:hidden">
@@ -222,7 +226,7 @@ export function MainNavbar() {
           </Typography>
           <Typography
             as="a"
-            href="#"
+            href="/current-affairs"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
           >

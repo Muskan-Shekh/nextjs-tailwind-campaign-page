@@ -14,28 +14,28 @@ const LINKS = [
       { label: "About Us", url: "/about-us" },
       { label: "Contact Us", url: "/contact-us" },
       { label: "Privacy Policy", url: "/privacy-policy" },
-      { label: "Returns", url: "/returns" },
+      { label: "Returns", url: "/return-policy" },
       { label: "Terms & Conditions", url: "/terms" },
-      { label: "Blogs", url: "/blogs" },
+      { label: "Blogs", url: "#" },
     ],
   },
   {
     title: "Company",
     items: [
-      { label: "Vendor Registration", url: "/vendor-registration" },
+      { label: "Vendor Registration", url: "/registration" },
       { label: "Tuitor", url: "/tuitor" },
-      { label: "Join WhatsApp", url: "/join-whatsapp" },
-      { label: "Promo Code", url: "/promo-code" },
+      { label: "Join WhatsApp", url: "https://wa.me/+919602368227" },
+      { label: "Promo Code", url: "#" },
       { label: "Request Product", url: "/request-product" },
     ],
   },
   {
     title: "Resource",
     items: [
-      { label: "Partners", url: "/partners" },
-      { label: "Special Thanks", url: "/special-thanks" },
-      { label: "Subscription", url: "/subscription" },
-      { label: "Enquiry", url: "/enquiry" },
+      { label: "Partners", url: "#" },
+      { label: "Special Thanks", url: "#" },
+      { label: "Subscription", url: "#" },
+      { label: "Enquiry", url: "#" },
     ],
   },
 ];
@@ -44,9 +44,9 @@ const currentYear = new Date().getFullYear();
 
 export function Footer() {
   return (
-    <footer className="relative w-full">
-      <div className="mx-auto w-full max-w-7xl px-8">
-        <div className="grid grid-cols-4 justify-between gap-4">
+    <footer className="relative w-full bg-gray-200">
+      <div className="mx-auto w-full max-w-7xl px-8 pt-8">
+        <div className="grid justify-between gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0 xl:grid-cols-4">
           <div>
             <a href="/">
               <Image

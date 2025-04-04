@@ -9,7 +9,7 @@ export function FixedPlugin() {
       <Button
         color="white"
         size="sm"
-        className="!fixed bottom-4 right-4 items-center border border-blue-gray-50 rounded-full"
+        className="!fixed bottom-4 right-4 items-center border border-blue-gray-50 rounded-full z-50"
       >
         <Image src={whatsapp} className="w-[50px] h-[50px]" alt="whatsapp icon"/>
       </Button>

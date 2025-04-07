@@ -49,6 +49,7 @@ function NavItem({ children, href }: NavItemProps) {
         variant="paragraph"
         color="gray"
         className="flex items-center gap-2 font-medium text-gray-900"
+        {...({} as React.ComponentProps<typeof Typography>)}
       >
         {children}
       </Typography>
@@ -109,7 +110,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <MTNavbar shadow={false} fullWidth className="border-0 sticky top-0 z-50">
+    <MTNavbar shadow={false} fullWidth className="border-0 sticky top-0 z-50" {...({} as React.ComponentProps<typeof MTNavbar>)}>
       <div className="container mx-auto flex items-center justify-between">
         <a href="/">
           <Image
@@ -210,10 +211,10 @@ export function Navbar() {
               3
             </div>
           </Link>
-          <Button variant="text" onClick={() => router.push("/sign-in")}>
+          <Button variant="text" onClick={() => router.push("/sign-in")} {...({} as React.ComponentProps<typeof Button>)}>
             Log in
           </Button>
-          <Button variant="text" onClick={() => router.push("/registration")}>
+          <Button variant="text" onClick={() => router.push("/registration")} {...({} as React.ComponentProps<typeof Button>)}>
             Register
           </Button>
         </div>
@@ -222,6 +223,7 @@ export function Navbar() {
           color="gray"
           onClick={handleOpen}
           className="ml-auto inline-block lg:hidden"
+          {...({} as React.ComponentProps<typeof IconButton>)}
         >
           {open ? (
             <XMarkIcon strokeWidth={2} className="h-6 w-6" />
@@ -241,9 +243,9 @@ export function Navbar() {
             ))}
           </ul>
           <div className="mt-6 mb-4 flex items-center gap-2">
-            <Button variant="text">Log in</Button>
+            <Button variant="text" {...({} as React.ComponentProps<typeof Button>)}>Log in</Button>
             <a href="https://www.material-tailwind.com/blocks" target="_blank">
-              <Button color="gray">blocks</Button>
+              <Button color="gray" {...({} as React.ComponentProps<typeof Button>)}>blocks</Button>
             </a>
           </div>
         </div>

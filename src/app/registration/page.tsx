@@ -91,7 +91,7 @@ export default function RegistrationForm() {
     refreshCaptcha();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (captchaInput === captcha) {
       alert("CAPTCHA Verified Successfully!");
@@ -108,11 +108,20 @@ export default function RegistrationForm() {
         color="transparent"
         shadow={false}
         className="items-center shadow-lg mt-4"
+        {...({} as React.ComponentProps<typeof Card>)}
       >
-        <Typography variant="h4" color="blue-gray">
+        <Typography
+          variant="h4"
+          color="blue-gray"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           Create Account
         </Typography>
-        <Typography color="gray" className="mt-1 font-normal">
+        <Typography
+          color="gray"
+          className="mt-1 font-normal"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           Nice to meet you! Enter your details to register.
         </Typography>
         <form
@@ -120,7 +129,12 @@ export default function RegistrationForm() {
           onSubmit={handleSubmit}
         >
           <div className="mb-1 flex flex-col gap-6">
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               Full Name
             </Typography>
             <Input
@@ -131,8 +145,14 @@ export default function RegistrationForm() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               Email
             </Typography>
             <Input
@@ -143,8 +163,14 @@ export default function RegistrationForm() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               Phone
             </Typography>
             <Input
@@ -155,8 +181,14 @@ export default function RegistrationForm() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               Password
             </Typography>
             <Input
@@ -167,9 +199,15 @@ export default function RegistrationForm() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
             {/* CAPTCHA Section */}
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               CAPTCHA
             </Typography>
             <canvas ref={canvasRef} className="mb-2 border border-gray-300" />
@@ -181,6 +219,7 @@ export default function RegistrationForm() {
                 value={captchaInput}
                 onChange={(e) => setCaptchaInput(e.target.value)}
                 className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+                {...({} as React.ComponentProps<typeof Input>)}
               />
               <button
                 type="button"
@@ -195,11 +234,13 @@ export default function RegistrationForm() {
             </div> */}
           </div>
           <Checkbox
+          {...({} as React.ComponentProps<typeof Checkbox>)}
             label={
               <Typography
                 variant="small"
                 color="gray"
                 className="items-center font-normal"
+                {...({} as React.ComponentProps<typeof Typography>)}
               >
                 By clicking SIGN UP, I agree to Bookwindow&apos;s
                 <a
@@ -219,10 +260,14 @@ export default function RegistrationForm() {
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-6" fullWidth type="submit">
+          <Button className="mt-6" fullWidth type="submit" {...({} as React.ComponentProps<typeof Button>)}>
             sign up
           </Button>
-          <Typography color="gray" className="mt-4 text-center font-normal">
+          <Typography
+            color="gray"
+            className="mt-4 text-center font-normal"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
             Already have an account?{" "}
             <a href="sign-in" className="font-medium text-gray-900">
               Sign In

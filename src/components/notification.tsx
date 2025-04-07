@@ -15,14 +15,39 @@ export function NotificationDialog() {
 
   return (
     <>
-      <Button onClick={handleOpen} className="w-full">Place Order</Button>
-      <Dialog open={open} handler={handleOpen}>
-        <DialogHeader>
-          <Typography variant="h5" color="blue-gray">
+      <Button
+        onClick={handleOpen}
+        className="w-full"
+        {...({} as React.ComponentProps<typeof Button>)}
+      >
+        Place Order
+      </Button>
+      <Dialog
+        {...({
+          size: "xl",
+          open: open,
+          handler: handleOpen,
+          title: "Dialog Title",
+          color: "blue",
+          translate: "yes",
+          slot: undefined,
+          style: {},
+        } as any)}
+      >
+        <DialogHeader {...({} as React.ComponentProps<typeof DialogHeader>)}>
+          <Typography
+            variant="h5"
+            color="blue-gray"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
             Your Attention is Required!
           </Typography>
         </DialogHeader>
-        <DialogBody divider className="grid place-items-center gap-4">
+        <DialogBody
+          divider
+          className="grid place-items-center gap-4"
+          {...({} as React.ComponentProps<typeof DialogBody>)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -35,20 +60,39 @@ export function NotificationDialog() {
               clipRule="evenodd"
             />
           </svg>
-          <Typography color="red" variant="h4">
+          <Typography
+            color="red"
+            variant="h4"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
             You should read this!
           </Typography>
-          <Typography className="text-center font-normal text-red-400">
-            your shipping payment failed, it&apos;s likely due to issues with your
-            payment method, such as insufficient funds, an expired card, or a
-            problem with the payment gateway
+          <Typography
+            className="text-center font-normal text-red-400"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
+            your shipping payment failed, it&apos;s likely due to issues with
+            your payment method, such as insufficient funds, an expired card, or
+            a problem with the payment gateway
           </Typography>
         </DialogBody>
-        <DialogFooter className="space-x-2">
-          <Button variant="text" color="blue-gray" onClick={handleOpen}>
+        <DialogFooter
+          className="space-x-2"
+          {...({} as React.ComponentProps<typeof DialogFooter>)}
+        >
+          <Button
+            variant="text"
+            color="blue-gray"
+            onClick={handleOpen}
+            {...({} as React.ComponentProps<typeof Button>)}
+          >
             close
           </Button>
-          <Button variant="gradient" onClick={handleOpen}>
+          <Button
+            variant="gradient"
+            onClick={handleOpen}
+            {...({} as React.ComponentProps<typeof Button>)}
+          >
             Ok, Got it
           </Button>
         </DialogFooter>

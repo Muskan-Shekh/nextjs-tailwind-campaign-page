@@ -39,26 +39,27 @@ const OTHER_BOOKS = [
   },
 ];
 
-export default function AboutUs() {
+export default function Category() {
   return (
     <>
       <Navbar />
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex">
         <div className="col-4 p-4">
-          <Card>
+          <Card {...({} as React.ComponentProps<typeof Card>)}>
             <Typography
               variant="h6"
               color="white"
               className="text-center bg-black"
+              {...({} as React.ComponentProps<typeof Typography>)}
             >
               Categories
             </Typography>
-            <List>
-              <ListItem>Show All</ListItem>
-              <ListItem>
+            <List {...({} as React.ComponentProps<typeof List>)}>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>Show All</ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 A.C.C
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="0"
                     variant="ghost"
@@ -67,9 +68,9 @@ export default function AboutUs() {
                   />
                 </ListItemSuffix>
               </ListItem>
-              <ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 AGNIVEER
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="0"
                     variant="ghost"
@@ -78,9 +79,9 @@ export default function AboutUs() {
                   />
                 </ListItemSuffix>
               </ListItem>
-              <ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 AGRICULTURE OFFICER
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="3"
                     variant="ghost"
@@ -89,9 +90,9 @@ export default function AboutUs() {
                   />
                 </ListItemSuffix>
               </ListItem>
-              <ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 Andra Pradesh Competitive Exam
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="0"
                     variant="ghost"
@@ -103,19 +104,20 @@ export default function AboutUs() {
             </List>
           </Card>
 
-          <Card className="mt-4">
+          <Card className="mt-4" {...({} as React.ComponentProps<typeof Card>)}>
             <Typography
               variant="h6"
               color="white"
               className="text-center bg-black"
+              {...({} as React.ComponentProps<typeof Typography>)}
             >
               Publications
             </Typography>
-            <List>
-              <ListItem>Show All</ListItem>
-              <ListItem>
+            <List {...({} as React.ComponentProps<typeof List>)}>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>Show All</ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 A J Publication
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="2"
                     variant="ghost"
@@ -124,9 +126,9 @@ export default function AboutUs() {
                   />
                 </ListItemSuffix>
               </ListItem>
-              <ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 Aachman Prakashan (Samyak Institute)
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="3"
                     variant="ghost"
@@ -135,9 +137,9 @@ export default function AboutUs() {
                   />
                 </ListItemSuffix>
               </ListItem>
-              <ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 Aadhya Prakshan
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="0"
                     variant="ghost"
@@ -146,9 +148,9 @@ export default function AboutUs() {
                   />
                 </ListItemSuffix>
               </ListItem>
-              <ListItem>
+              <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
                 Aapno Prakshan
-                <ListItemSuffix>
+                <ListItemSuffix {...({} as React.ComponentProps<typeof ListItemSuffix>)}>
                   <Chip
                     value="0"
                     variant="ghost"

@@ -42,10 +42,10 @@ export function TopBookCategories() {
   return (
     <section className="container mx-auto px-8 pb-20 pt-20 lg:pt-0">
       <div className="mb-20 grid place-items-center text-center">
-        <Typography variant="h2" color="blue-gray" className="my-3">
+        <Typography variant="h2" color="blue-gray" className="my-3" {...({} as React.ComponentProps<typeof Typography>)}>
           Top Book Categories
         </Typography>
-        <Typography variant="lead" className="!text-gray-500 lg:w-6/12">
+        <Typography variant="lead" className="!text-gray-500 lg:w-6/12" {...({} as React.ComponentProps<typeof Typography>)}>
           Explore our diverse range of categories and embark on a reading
           journey that suits your mood, passion, or curiosity.
         </Typography>
@@ -54,24 +54,26 @@ export function TopBookCategories() {
         <Card
           color="gray"
           className="relative grid h-full w-full place-items-center overflow-hidden text-center"
+          {...({} as React.ComponentProps<typeof Card>)}
         >
           <div className="absolute inset-0 h-full w-full bg-gray-900/75" />
-          <CardBody className="relative w-full">
-            <Typography color="white" className="text-xs font-bold opacity-50">
+          <CardBody className="relative w-full" {...({} as React.ComponentProps<typeof CardBody>)}>
+            <Typography color="white" className="text-xs font-bold opacity-50" {...({} as React.ComponentProps<typeof Typography>)}>
               up to 40% OFF
             </Typography>
-            <Typography variant="h4" className="mt-9" color="white">
+            <Typography variant="h4" className="mt-9" color="white" {...({} as React.ComponentProps<typeof Typography>)}>
               Bestselling Books
             </Typography>
             <Typography
               color="white"
               className="mt-4 mb-14 font-normal opacity-50"
+              {...({} as React.ComponentProps<typeof Typography>)}
             >
               Explore our extensive collection of textbooks, workbooks, novels,
               and more. From preschool to post-grad, we have books for every age
               and academic level.
             </Typography>
-            <Button size="sm" color="white">
+            <Button size="sm" color="white" {...({} as React.ComponentProps<typeof Button>)}>
               Read More
             </Button>
           </CardBody>

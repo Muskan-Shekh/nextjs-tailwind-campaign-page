@@ -9,10 +9,10 @@ export default function Terms() {
       <Navbar />
       <MainNavbar />
       <section className="container mx-auto px-4 mb-4 mt-10">
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Terms and Conditions
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography>)}>
           We are honored by your visit and assure you of our sincere efforts to
           provide best services. We render our services to your acceptance of
           the conditions mentioned below. We request you to please read them
@@ -46,10 +46,10 @@ export default function Terms() {
             that occur under your account or password.
           </li>
         </ul>
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Cancellation and Refund Policy
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography>)}>
           An order placed on www.bookwindow.in may be cancelled only before the
           product has been dispatched/shipped. Pending order may be cancelled by
           registered user in his login. Buyers using guest checkout facility
@@ -63,10 +63,10 @@ export default function Terms() {
           store. No claims for early refund shall be entertained.
           <br /> <br />
         </Typography>
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Disputes
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography>)}>
           Any dispute or claim relating in any way to your visit to
           www.bookwindow.in or to products you purchase through
           www.bookwindow.in only be in the jurisdiction of the Courts of Jaipur.
@@ -79,20 +79,20 @@ export default function Terms() {
           proceedings or otherwise.
           <br /> <br />
         </Typography>
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Applicable Law
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography>)}>
           By visiting www.bookwindow.in, you agree that the laws of INDIA,
           without regard to principles of conflict of laws, will govern these
           Conditions of Use and any dispute of any sort that might arise between
           you and www.bookwindow.in.
           <br /> <br />
         </Typography>
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Site Policies
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography>)}>
           We reserve the right to make changes to our site policies, and these
           Terms and Conditions of Use at any time. If any of these conditions
           shall be deemed invalid, void, or for any reason unenforceable, that

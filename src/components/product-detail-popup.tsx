@@ -12,11 +12,26 @@ export default function ProductDialog({ open, handleOpen }: any) {
 
   return (
     <>
-      <Dialog size="xl" open={open} handler={handleOpen}>
-        <DialogHeader onClick={handleOpen} className="cursor-pointer">
+      <Dialog
+        {...({
+          size: "xl",
+          open: open,
+          handler: handleOpen,
+          title: "Dialog Title",
+          color: "blue",
+          translate: "yes",
+          slot: undefined,
+          style: {},
+        } as any)}
+      >
+        <DialogHeader
+          onClick={handleOpen}
+          className="cursor-pointer"
+          {...({} as React.ComponentProps<typeof DialogHeader>)}
+        >
           X
         </DialogHeader>
-        <DialogBody>
+        <DialogBody {...({} as React.ComponentProps<typeof DialogBody>)}>
           <div className="container px-4 pb-4 md:flex md:col-12 w-full h-[500px] overflow-auto overflow-y">
             <div className="flex flex-wrap">
               {/* Product Images */}

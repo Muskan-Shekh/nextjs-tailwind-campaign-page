@@ -89,6 +89,7 @@ export function Footer() {
                     href={url}
                     color="gray"
                     className="py-1.5 font-normal transition-colors hover:text-blue-gray-900"
+                    {...({} as React.ComponentProps<typeof Typography>)}
                   >
                     {label}
                   </Typography>

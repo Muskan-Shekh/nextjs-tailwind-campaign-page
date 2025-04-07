@@ -1,7 +1,12 @@
 "use client";
 import React from "react";
 
-import { Typography, Accordion, AccordionHeader, AccordionBody } from "@material-tailwind/react";
+import {
+  Typography,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
+} from "@material-tailwind/react";
 const FAQS = [
   {
     title: "When does the Back-to-School Campaign start and end?",
@@ -34,12 +39,18 @@ export function Faq() {
     <section className="px-8 py-40">
       <div className="container mx-auto">
         <div className="text-center">
-          <Typography variant="h1" color="blue-gray" className="mb-4">
+          <Typography
+            variant="h1"
+            color="blue-gray"
+            className="mb-4"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
             Frequently Asked Questions
           </Typography>
           <Typography
             variant="lead"
             className="mx-auto mb-24 w-full max-w-2xl !text-gray-500"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             The Back-to-School Campaign is a special promotion designed to make
             your return to school as smooth as possible.
@@ -51,14 +62,19 @@ export function Faq() {
               key={key}
               open={open === key + 1}
               onClick={() => handleOpen(key + 1)}
+              {...({} as any)}
             >
-              <AccordionHeader className="text-left text-gray-900">
+              <AccordionHeader
+                className="text-left text-gray-900"
+                {...({} as React.ComponentProps<typeof AccordionHeader>)}
+              >
                 {title}
               </AccordionHeader>
               <AccordionBody>
                 <Typography
                   color="blue-gray"
                   className="font-normal text-gray-500"
+                  {...({} as React.ComponentProps<typeof Typography>)}
                 >
                   {desc}
                 </Typography>
@@ -70,6 +86,5 @@ export function Faq() {
     </section>
   );
 }
-
 
 export default Faq;

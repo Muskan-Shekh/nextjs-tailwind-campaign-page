@@ -80,15 +80,17 @@ export function BackToSchoolBooks() {
           variant="paragraph"
           color="blue-gray"
           className="mb-3 font-bold uppercase"
+          {...({} as React.ComponentProps<typeof Typography>)}
         >
           up to 40% OFF
         </Typography>
-        <Typography variant="h1" color="blue-gray" className="mb-2">
+        <Typography variant="h1" color="blue-gray" className="mb-2" {...({} as React.ComponentProps<typeof Typography>)}>
           Back-to-School Books
         </Typography>
         <Typography
           variant="lead"
           className="mx-auto w-full px-4 !text-gray-500 lg:w-9/12"
+          {...({} as React.ComponentProps<typeof Typography>)}
         >
           We offer a wide range of study guides, test prep materials, and
           reference books. Whether you&apos;re tackling calculus or diving into
@@ -101,6 +103,7 @@ export function BackToSchoolBooks() {
               indicatorProps={{
                 className: "!bg-gray-900 rounded-lg",
               }}
+              {...({} as React.ComponentProps<typeof TabsHeader>)}
             >
               {BOOKS_TABS.map((book) => (
                 <Tab
@@ -110,6 +113,7 @@ export function BackToSchoolBooks() {
                     ${activeTab === book ? "text-white" : "capitalize"}
                   `}
                   onClick={() => setActiveTab(book)}
+                  {...({} as any)}
                 >
                   {book}
                 </Tab>
@@ -124,7 +128,7 @@ export function BackToSchoolBooks() {
         ))}
       </div>
       <div className="grid place-items-center">
-        <Button className="mt-32" variant="outlined">
+        <Button className="mt-32" variant="outlined" {...({} as React.ComponentProps<typeof Button>)}>
           Show more
         </Button>
       </div>

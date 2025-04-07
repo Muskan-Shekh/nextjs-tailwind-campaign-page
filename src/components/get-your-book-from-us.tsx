@@ -34,12 +34,13 @@ export function GetYourBookFromUs() {
   return (
     <section className="px-8">
       <div className="container mx-auto mb-16 text-center">
-        <Typography variant="h2" color="blue-gray" className="mb-4">
+        <Typography variant="h2" color="blue-gray" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Get your book from us!
         </Typography>
         <Typography
           variant="lead"
           className="mx-auto w-full px-4 !text-gray-500 lg:w-5/12"
+          {...({} as React.ComponentProps<typeof Typography>)}
         >
           Start your literary adventure today by exploring these captivating
           worlds of words.

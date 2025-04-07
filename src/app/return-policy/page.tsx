@@ -9,10 +9,10 @@ export default function ReturnPolicy() {
       <Navbar />
       <MainNavbar />
       <section className="container mx-auto px-4 mb-4 mt-10">
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Return Policy
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography>)}>
           We are honored by your visit and assure you of our sincere efforts to
           provide best services. We render our services to your acceptance of
           the conditions mentioned below. We request you to please read them
@@ -30,10 +30,10 @@ export default function ReturnPolicy() {
           packet service of India Post.
           <br /> <br />
         </Typography>
-        <Typography color="black" variant="h2" className="mb-4">
+        <Typography color="black" variant="h2" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Cancellation and Refund Policy
         </Typography>
-        <Typography className="w-full text-gray-600" variant="lead">
+        <Typography className="w-full text-gray-600" variant="lead" {...({} as React.ComponentProps<typeof Typography >)}>
           An order placed on www.bookwindow.in may be cancelled only before the
           product has been dispatched/shipped. Pending order may be cancelled by
           registered user in his login. Buyers using guest checkout facility

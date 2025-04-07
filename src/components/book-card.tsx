@@ -33,8 +33,8 @@ export function BookCard({
   const handleOpen = () => setOpen(!open);
 
   return (
-    <Card color="transparent" shadow={false} className="mb-4">
-      <CardHeader color="gray" floated={false} className="mx-0 mt-0 mb-6">
+    <Card color="transparent" shadow={false} className="mb-4" {...({} as React.ComponentProps<typeof Card>)}>
+      <CardHeader color="gray" floated={false} className="mx-0 mt-0 mb-6" {...({} as React.ComponentProps<typeof CardHeader>)}>
         <Image
           width={768}
           height={768}
@@ -43,8 +43,8 @@ export function BookCard({
           className="h-full w-full scale-[1.1] object-cover object-center"
         />
       </CardHeader>
-      <CardBody className="p-0">
-        <Typography color="blue" className="mb-2 text-xs !font-semibold">
+      <CardBody className="p-0" {...({} as React.ComponentProps<typeof CardBody>)}>
+        <Typography color="blue" className="mb-2 text-xs !font-semibold" {...({} as React.ComponentProps<typeof Typography>)}>
           {category}
         </Typography>
         <a href="/product-detail">
@@ -52,11 +52,12 @@ export function BookCard({
             variant="h5"
             color="blue-gray"
             className="mb-3 font-bold normal-case"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             {title}
           </Typography>
         </a>
-        <Typography className="mb-4 font-normal !text-gray-500">
+        <Typography className="mb-4 font-normal !text-gray-500" {...({} as React.ComponentProps<typeof Typography>)}>
           {desc}
         </Typography>
         <div className="flex justify-between">
@@ -66,10 +67,11 @@ export function BookCard({
               variant="h5"
               color="blue-gray"
               className={offPrice ? "line-through" : ""}
+              {...({} as React.ComponentProps<typeof Typography>)}
             >
               {price}
             </Typography>
-            <Typography variant="h5" color="red">
+            <Typography variant="h5" color="red" {...({} as React.ComponentProps<typeof Typography>)}>
               {offPrice}
             </Typography>
           </div>

@@ -33,13 +33,14 @@ export default function RequestProduct() {
         color="transparent"
         shadow={false}
         className="items-center mb-4 mt-4"
+        {...({} as React.ComponentProps<typeof Card>)}
       >
-        <Typography variant="h4" color="blue-gray">
+        <Typography variant="h4" color="blue-gray" {...({} as React.ComponentProps<typeof Typography>)}>
           Request Product
         </Typography>
         <form className="mt-8 mb-2 w-full max-w-screen-lg shadow-lg p-4">
           <div className="mb-1 flex flex-col gap-6">
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography variant="h6" color="blue-gray" className="-mb-3" {...({} as React.ComponentProps<typeof Typography>)}>
               Your Name
             </Typography>
             <Input
@@ -50,8 +51,9 @@ export default function RequestProduct() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography variant="h6" color="blue-gray" className="-mb-3" {...({} as React.ComponentProps<typeof Typography>)}>
               Your Email
             </Typography>
             <Input
@@ -62,8 +64,9 @@ export default function RequestProduct() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography variant="h6" color="blue-gray" className="-mb-3" {...({} as React.ComponentProps<typeof Typography>)}>
               Your Phone No.
             </Typography>
             <Input
@@ -74,9 +77,10 @@ export default function RequestProduct() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Input>)}
             />
 
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography variant="h6" color="blue-gray" className="-mb-3" {...({} as React.ComponentProps<typeof Typography>)}>
               Request
             </Typography>
             <Textarea
@@ -86,8 +90,9 @@ export default function RequestProduct() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Textarea>)}
             />
-            <Typography variant="h6" color="blue-gray" className="-mb-3">
+            <Typography variant="h6" color="blue-gray" className="-mb-3" {...({} as React.ComponentProps<typeof Typography>)}>
               Remark
             </Typography>
             <Textarea
@@ -97,6 +102,7 @@ export default function RequestProduct() {
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
+              {...({} as React.ComponentProps<typeof Textarea>)}
             />
             <div className="flex flex-col items-center justify-center p-4">
               <label className="cursor-pointer bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition duration-300">
@@ -129,7 +135,7 @@ export default function RequestProduct() {
             </div>
           </div>
 
-          <Button className="mt-6" fullWidth>
+          <Button className="mt-6" fullWidth {...({} as React.ComponentProps<typeof Button>)}>
             Request
           </Button>
         </form>

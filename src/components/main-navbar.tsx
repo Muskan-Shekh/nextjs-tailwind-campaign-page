@@ -46,7 +46,7 @@ function NavListMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const renderItems = nestedMenuItems.map(({ title, url }, key) => (
     <a href={url} key={key}>
-      <MenuItem>{title}</MenuItem>
+      <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>{title}</MenuItem>
     </a>
   ));
 
@@ -59,11 +59,12 @@ function NavListMenu() {
         allowHover={true}
       >
         <MenuHandler>
-          <Typography as="div" variant="small" className="font-medium">
+          <Typography as="div" variant="small" className="font-medium" {...({} as React.ComponentProps<typeof Typography>)}>
             <ListItem
               className="flex items-center gap-2 py-2 pr-4 font-medium text-gray-900"
               selected={isMenuOpen || isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((cur) => !cur)}
+              {...({} as React.ComponentProps<typeof ListItem>)}
             >
               All Category
               <ChevronDownIcon
@@ -81,7 +82,7 @@ function NavListMenu() {
             </ListItem>
           </Typography>
         </MenuHandler>
-        <MenuList className="hidden rounded-xl lg:block">
+        <MenuList className="hidden rounded-xl lg:block" {...({} as React.ComponentProps<typeof MenuList>)}>
           <Menu
             placement="right-start"
             allowHover
@@ -90,7 +91,7 @@ function NavListMenu() {
             handler={setopenNestedMenu}
           >
             <MenuHandler className="flex items-center justify-between">
-              <MenuItem>
+              <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
                 CENTRAL LEVEL COMPETITION EXAMS
                 <ChevronUpIcon
                   strokeWidth={2.5}
@@ -100,10 +101,10 @@ function NavListMenu() {
                 />
               </MenuItem>
             </MenuHandler>
-            <MenuList className="rounded-xl">{renderItems}</MenuList>
+            <MenuList className="rounded-xl" {...({} as React.ComponentProps<typeof MenuList>)}>{renderItems}</MenuList>
           </Menu>
-          <MenuItem>COMMON ENTRANCE EXAMS</MenuItem>
-          <MenuItem>MEDICAL & NURSING</MenuItem>
+          <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>COMMON ENTRANCE EXAMS</MenuItem>
+          <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>MEDICAL & NURSING</MenuItem>
         </MenuList>
       </Menu>
       <div className="block lg:hidden">
@@ -116,7 +117,7 @@ function NavListMenu() {
             handler={setopenNestedMenu}
           >
             <MenuHandler className="flex items-center justify-between">
-              <MenuItem>
+              <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
                 Figma
                 <ChevronUpIcon
                   strokeWidth={2.5}
@@ -126,12 +127,12 @@ function NavListMenu() {
                 />
               </MenuItem>
             </MenuHandler>
-            <MenuList className="block rounded-xl lg:hidden">
+            <MenuList className="block rounded-xl lg:hidden" {...({} as React.ComponentProps<typeof MenuList>)}>
               {renderItems}
             </MenuList>
           </Menu>
-          <MenuItem>React</MenuItem>
-          <MenuItem>TailwindCSS</MenuItem>
+          <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>React</MenuItem>
+          <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>TailwindCSS</MenuItem>
         </Collapse>
       </div>
     </React.Fragment>
@@ -140,15 +141,16 @@ function NavListMenu() {
 
 function NavList() {
   return (
-    <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1">
+    <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1" {...({} as React.ComponentProps<typeof List>)}>
       <Typography
         as="a"
         href="#"
         variant="small"
         color="blue-gray"
         className="font-medium"
+        {...({} as React.ComponentProps<typeof Typography>)}
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">
+        <ListItem className="flex items-center gap-2 py-2 pr-4" {...({} as React.ComponentProps<typeof ListItem>)}>
           College
           <ChevronDownIcon
             strokeWidth={2.5}
@@ -162,8 +164,9 @@ function NavList() {
         variant="small"
         color="blue-gray"
         className="font-medium"
+        {...({} as React.ComponentProps<typeof Typography>)}
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">
+        <ListItem className="flex items-center gap-2 py-2 pr-4" {...({} as React.ComponentProps<typeof ListItem>)}>
           Rajasthan Level Competition Exam
           <ChevronDownIcon
             strokeWidth={2.5}
@@ -178,8 +181,9 @@ function NavList() {
         variant="small"
         color="blue-gray"
         className="font-medium"
+        {...({} as React.ComponentProps<typeof Typography>)}
       >
-        <ListItem className="flex items-center gap-2 py-2 pr-4">
+        <ListItem className="flex items-center gap-2 py-2 pr-4" {...({} as React.ComponentProps<typeof ListItem>)}>
           SARA Inspiration
         </ListItem>
       </Typography>
@@ -198,13 +202,14 @@ export function MainNavbar() {
   }, []);
 
   return (
-    <Navbar className="mx-auto w-full max-w-full backdrop-blur-2xl sticky top-20 z-10 border-0 px-4 py-2">
+    <Navbar className="mx-auto w-full max-w-full backdrop-blur-2xl sticky top-20 z-10 border-0 px-4 py-2" {...({} as React.ComponentProps<typeof Navbar>)}>
       <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
         <Typography
           as="a"
           href="#"
           variant="h6"
           className="mr-4 cursor-pointer py-1.5 lg:ml-2 flex"
+          {...({} as React.ComponentProps<typeof Typography>)}
         >
           School
           <ChevronDownIcon
@@ -221,6 +226,7 @@ export function MainNavbar() {
             href="#"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Book@1
           </Typography>
@@ -229,6 +235,7 @@ export function MainNavbar() {
             href="/current-affairs"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Current Affairs
           </Typography>
@@ -237,6 +244,7 @@ export function MainNavbar() {
           variant="text"
           className="lg:hidden"
           onClick={() => setOpenNav(!openNav)}
+          {...({} as React.ComponentProps<typeof IconButton>)}
         >
           {openNav ? (
             <XMarkIcon className="h-6 w-6" strokeWidth={2} />
@@ -253,6 +261,7 @@ export function MainNavbar() {
             href="#"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Book@1
           </Typography>
@@ -261,6 +270,7 @@ export function MainNavbar() {
             href="#"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Current Affairs
           </Typography>

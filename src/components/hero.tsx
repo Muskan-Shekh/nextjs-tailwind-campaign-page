@@ -13,6 +13,7 @@ function Hero() {
             variant="h1"
             color="red"
             className="text-3xl !leading-snug"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             40% OFF
           </Typography>
@@ -22,13 +23,14 @@ function Hero() {
           <Typography
             variant="lead"
             className="mb-6 font-normal !text-gray-500 md:pr-16 xl:pr-28"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Ace your exam with our expertly curated selection of competitve exam
             books.
             <br />
             To get all RAS class and books -
           </Typography>
-          <Button size="lg" color="gray">
+          <Button size="lg" color="gray" {...({} as React.ComponentProps<typeof Button>)}>
             Buy Now
           </Button>
         </div>

@@ -25,6 +25,7 @@ export function CarouselFeatures() {
               ))}
             </div>
           )}
+          {...({} as React.ComponentProps<typeof Carousel>)}
         >
           {new Array(2).fill("").map((_, i) => (
             <div
@@ -36,12 +37,13 @@ export function CarouselFeatures() {
                   variant="lead"
                   color="white"
                   className="mb-5 text-xl font-normal "
+                  {...({} as React.ComponentProps<typeof Typography>)}
                 >
                   Ace your exam with our expertly curated selection of
                   competitve exam books.To get all RAS class and books -
                 </Typography>
                 <div className="flex items-center gap-2">
-                  <Button size="lg" color="gray">
+                  <Button size="lg" color="gray" {...({} as React.ComponentProps<typeof Button>)}>
                     🛍️ Buy Now
                   </Button>
                 </div>

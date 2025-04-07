@@ -16,6 +16,7 @@ export default function ContactSection() {
             variant="h5"
             color="blue-gray"
             className="mb-4 !text-base lg:!text-2xl"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Contact Us
           </Typography>
@@ -23,6 +24,7 @@ export default function ContactSection() {
             variant="h1"
             color="blue-gray"
             className="mb-4 !text-3xl lg:!text-5xl"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
             Our Location
           </Typography>
@@ -48,14 +50,14 @@ export default function ContactSection() {
               width="100%"
               height="450"
               style={{ border: "0" }}
-              allowFullScreen=""
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
             <form action="#" className="flex flex-col gap-4 lg:max-w-sm">
               <Typography
                 variant="small"
                 className="text-left !font-semibold !text-gray-600"
+                {...({} as React.ComponentProps<typeof Typography>)}
               >
                 Contact Form
               </Typography>
@@ -65,6 +67,7 @@ export default function ContactSection() {
                   <Typography
                     variant="small"
                     className="mb-2 text-left font-medium !text-gray-900"
+                    {...({} as React.ComponentProps<typeof Typography>)}
                   >
                     First Name
                   </Typography>
@@ -80,12 +83,14 @@ export default function ContactSection() {
                     labelProps={{
                       className: "hidden",
                     }}
+                    {...({} as React.ComponentProps<typeof Input>)}
                   />
                 </div>
                 <div>
                   <Typography
                     variant="small"
                     className="mb-2 text-left font-medium !text-gray-900"
+                    {...({} as React.ComponentProps<typeof Typography>)}
                   >
                     Last Name
                   </Typography>
@@ -101,6 +106,7 @@ export default function ContactSection() {
                     labelProps={{
                       className: "hidden",
                     }}
+                    {...({} as React.ComponentProps<typeof Input>)}
                   />
                 </div>
               </div>
@@ -108,6 +114,7 @@ export default function ContactSection() {
                 <Typography
                   variant="small"
                   className="mb-2 text-left font-medium !text-gray-900"
+                  {...({} as React.ComponentProps<typeof Typography>)}
                 >
                   Your Email
                 </Typography>
@@ -123,12 +130,14 @@ export default function ContactSection() {
                   labelProps={{
                     className: "hidden",
                   }}
+                  {...({} as React.ComponentProps<typeof Input>)}
                 />
               </div>
               <div>
                 <Typography
                   variant="small"
                   className="mb-2 text-left font-medium !text-gray-900"
+                  {...({} as React.ComponentProps<typeof Typography>)}
                 >
                   Subject
                 </Typography>
@@ -144,12 +153,14 @@ export default function ContactSection() {
                   labelProps={{
                     className: "hidden",
                   }}
+                  {...({} as React.ComponentProps<typeof Input>)}
                 />
               </div>
               <div>
                 <Typography
                   variant="small"
                   className="mb-2 text-left font-medium !text-gray-900"
+                  {...({} as React.ComponentProps<typeof Typography>)}
                 >
                   Your Message
                 </Typography>
@@ -165,9 +176,10 @@ export default function ContactSection() {
                   labelProps={{
                     className: "hidden",
                   }}
+                  {...({} as React.ComponentProps<typeof Textarea>)}
                 />
               </div>
-              <Button className="w-full" color="gray">
+              <Button className="w-full" color="gray" {...({} as React.ComponentProps<typeof Button>)}>
                 Send message
               </Button>
             </form>

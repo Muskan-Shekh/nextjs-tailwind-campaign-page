@@ -34,10 +34,10 @@ export function OtherBookOffers() {
   return (
     <section className="px-8 pt-28 pb-28">
       <div className="container mx-auto mb-10">
-        <Typography variant="h2" color="blue-gray" className="mb-2">
+        <Typography variant="h2" color="blue-gray" className="mb-2" {...({} as React.ComponentProps<typeof Typography>)}>
           About this product
         </Typography>
-        <Typography variant="lead" className="w-full text-gray-600">
+        <Typography variant="lead" className="w-full text-gray-600" {...({} as React.ComponentProps<typeof Typography>)}>
           Escape into{" "}
           <strong className="text-gray-700">captivating stories</strong>,
           vibrant characters, and enchanting worlds with our extensive fiction
@@ -51,13 +51,13 @@ export function OtherBookOffers() {
           strategies.A classic reference book on grammar and writing skills,
           essential for high school and college students.
         </Typography>
-        <Typography variant="lead" className="w-full text-gray-600 mt-2">
+        <Typography variant="lead" className="w-full text-gray-600 mt-2" {...({} as React.ComponentProps<typeof Typography>)}>
           Escape into captivating stories, vibrant characters, and{" "}
           <strong className="text-gray-700">enchanting worlds</strong> with our
           extensive fiction collection. A classic reference book on grammar and
           writing skills, essential for high school and college students.
         </Typography>
-        <Typography variant="lead" className="w-full text-gray-600 mt-2">
+        <Typography variant="lead" className="w-full text-gray-600 mt-2" {...({} as React.ComponentProps<typeof Typography>)}>
           Escape into captivating stories, vibrant characters, and{" "}
           <strong className="text-gray-700">enchanting worlds</strong> with our
           extensive fiction collection. A classic reference book on grammar and
@@ -67,7 +67,7 @@ export function OtherBookOffers() {
           strategies.A classic reference book on grammar and writing skills,
           essential for high school and college students.
         </Typography>
-        <Typography variant="h2" color="blue-gray" className="mt-8">
+        <Typography variant="h2" color="blue-gray" className="mt-8" {...({} as React.ComponentProps<typeof Typography>)}>
           Similar Products of This Category
         </Typography>
       </div>

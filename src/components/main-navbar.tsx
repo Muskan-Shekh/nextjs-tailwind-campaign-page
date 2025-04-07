@@ -24,19 +24,19 @@ import {
 const nestedMenuItems = [
   {
     title: "Agriculture Officer",
-    url: "/category",
+    url: "/category/agriculture-Officer-books",
   },
   {
     title: "CTET Exam",
-    url: "/category",
+    url: "/category/ctet-exam-books",
   },
   {
     title: "EMRC Exam",
-    url: "/category",
+    url: "/category/emrc-exam-books",
   },
   {
     title: "NRA CET",
-    url: "/category",
+    url: "/category/nra-cet-exam-books",
   },
 ];
 
@@ -44,6 +44,7 @@ function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [openNestedMenu, setopenNestedMenu] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  
   const renderItems = nestedMenuItems.map(({ title, url }, key) => (
     <a href={url} key={key}>
       <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>{title}</MenuItem>
@@ -144,7 +145,7 @@ function NavList() {
     <List className="mb-6 mt-4 p-0 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1" {...({} as React.ComponentProps<typeof List>)}>
       <Typography
         as="a"
-        href="#"
+        href="/category/college-books"
         variant="small"
         color="blue-gray"
         className="font-medium"
@@ -160,7 +161,7 @@ function NavList() {
       </Typography>
       <Typography
         as="a"
-        href="#"
+        href="/category/rajasthan-level-competition-exam-books"
         variant="small"
         color="blue-gray"
         className="font-medium"
@@ -177,7 +178,7 @@ function NavList() {
       <NavListMenu />
       <Typography
         as="a"
-        href="#"
+        href="/category/sara-insiparation-novels"
         variant="small"
         color="blue-gray"
         className="font-medium"
@@ -206,7 +207,7 @@ export function MainNavbar() {
       <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
         <Typography
           as="a"
-          href="#"
+          href="/category/school-books"
           variant="h6"
           className="mr-4 cursor-pointer py-1.5 lg:ml-2 flex"
           {...({} as React.ComponentProps<typeof Typography>)}
@@ -223,7 +224,7 @@ export function MainNavbar() {
         <div className="hidden gap-2 lg:flex">
           <Typography
             as="a"
-            href="#"
+            href="/category/book@1"
             variant="h6"
             className="mr-4 cursor-pointer py-1.5 lg:ml-2"
             {...({} as React.ComponentProps<typeof Typography>)}
@@ -253,6 +254,7 @@ export function MainNavbar() {
           )}
         </IconButton>
       </div>
+      
       <Collapse open={openNav}>
         <NavList />
         <div className="flex w-full flex-nowrap items-center gap-2 lg:hidden">

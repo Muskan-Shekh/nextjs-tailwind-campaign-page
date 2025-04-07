@@ -20,7 +20,7 @@ interface CategoryCardProps {
           alt={title}
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
-        <div className="absolute inset-0 h-full w-full bg-black/70" />
+        <div className="absolute inset-0 h-full w-full bg-black/30" />
         <CardBody className="relative flex flex-col justify-between" {...({} as React.ComponentProps<typeof CardBody>)}>
           <Icon className="h-8 w-8 text-white" />
           <div>

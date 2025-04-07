@@ -17,6 +17,7 @@ import Image from "next/image";
 import logo from "../../public/logos/logo.png";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const NAV_MENU = [
   {
@@ -78,6 +79,9 @@ export function Navbar() {
 
   const dropdownButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownMenuRef = useRef<HTMLDivElement>(null);
+  const [publications, setPublications] = useState([] as any);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Handle dropdown button click
   const handleDropdownButtonClick = () => {
@@ -109,8 +113,37 @@ export function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchPublications = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: "https://phpstack-1333182-5399639.cloudwaysapps.com/api/publications",
+          responseType: "json", // Assuming it's a JSON response, since you're calling .json() later
+        });
+        console.log("response.data", response.data);
+        setPublications(response.data);
+      } catch (error) {
+        // setError(error.message);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchPublications();
+  }, []);
+  useEffect(() => {}, [publications]);
+
+  // if (loading) return <div>Loading...</div>;
+  // if (error) return <div>Error: {error}</div>;
+
   return (
-    <MTNavbar shadow={false} fullWidth className="border-0 sticky top-0 z-50" {...({} as React.ComponentProps<typeof MTNavbar>)}>
+    <MTNavbar
+      shadow={false}
+      fullWidth
+      className="border-0 sticky top-0 z-50"
+      {...({} as React.ComponentProps<typeof MTNavbar>)}
+    >
       <div className="container mx-auto flex items-center justify-between">
         <a href="/">
           <Image
@@ -149,10 +182,10 @@ export function Navbar() {
               {isOpen && (
                 <div
                   ref={dropdownMenuRef}
-                  className="min-w-[150px] overflow-hidden absolute z-60 left-0 w-full mt-60 bg-white border border-gray-200 rounded-md shadow-lg"
+                  className="min-w-[150px] overflow-hidden absolute z-60 left-0 w-full mt-[32rem] bg-white border border-gray-200 rounded-md shadow-lg"
                 >
                   <ul>
-                    {[
+                    {/* {[
                       "All Publications",
                       "A J Publications",
                       "Aadhya Publications",
@@ -165,6 +198,15 @@ export function Navbar() {
                       >
                         {value}
                       </li>
+                    ))} */}
+                    {publications.map((publication: any, index: number) => (
+                      <li
+                        className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
+                        key={index}
+                        onClick={() => handleOptionClick(publication.name)}
+                      >
+                        {publication.name}
+                      </li> // Adjust the field based on the structure of your data
                     ))}
                   </ul>
                 </div>
@@ -211,10 +253,18 @@ export function Navbar() {
               3
             </div>
           </Link>
-          <Button variant="text" onClick={() => router.push("/sign-in")} {...({} as React.ComponentProps<typeof Button>)}>
+          <Button
+            variant="text"
+            onClick={() => router.push("/sign-in")}
+            {...({} as React.ComponentProps<typeof Button>)}
+          >
             Log in
           </Button>
-          <Button variant="text" onClick={() => router.push("/registration")} {...({} as React.ComponentProps<typeof Button>)}>
+          <Button
+            variant="text"
+            onClick={() => router.push("/registration")}
+            {...({} as React.ComponentProps<typeof Button>)}
+          >
             Register
           </Button>
         </div>
@@ -243,9 +293,19 @@ export function Navbar() {
             ))}
           </ul>
           <div className="mt-6 mb-4 flex items-center gap-2">
-            <Button variant="text" {...({} as React.ComponentProps<typeof Button>)}>Log in</Button>
+            <Button
+              variant="text"
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              Log in
+            </Button>
             <a href="https://www.material-tailwind.com/blocks" target="_blank">
-              <Button color="gray" {...({} as React.ComponentProps<typeof Button>)}>blocks</Button>
+              <Button
+                color="gray"
+                {...({} as React.ComponentProps<typeof Button>)}
+              >
+                blocks
+              </Button>
             </a>
           </div>
         </div>

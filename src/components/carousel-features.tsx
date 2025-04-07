@@ -5,7 +5,7 @@ import { Typography, Carousel, Button } from "@material-tailwind/react";
 
 export function CarouselFeatures() {
   return (
-    <div className="px-8 py-56">
+    <div className="px-8 py-32">
       <section className="container mx-auto !rounded-lg bg-[url('https://bookwindow.in/assets/images/_slides/U4ZTD6.webp')] bg-center py-10 lg:px-16 relative">
         <div className="absolute inset-0 bg-black opacity-50 rounded-lg"></div>
         <Carousel

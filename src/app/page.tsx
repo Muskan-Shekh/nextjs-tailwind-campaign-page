@@ -24,7 +24,7 @@ export default function Campaign() {
       <CarouselFeatures />
       <GetYourBookFromUs />
       {/* <Faq /> */}
-      <Feature />
+      {/* <Feature /> */}
       <Footer />
     </>
   );

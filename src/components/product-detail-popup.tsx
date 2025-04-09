@@ -4,12 +4,37 @@ import React from "react";
 import { Dialog, DialogHeader, DialogBody } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import { CartPopup } from "@/components/cart-popup";
+import axios from "axios";
+import config from "@/app/config";
 
-export default function ProductDialog({ open, handleOpen }: any) {
+export default function ProductDialog({ open, handleOpen, slug }: any) {
   const router = useRouter();
   const [showPopup, setShowPopup] = React.useState(false);
   const popupRef = React.useRef(null);
+  const [productData, setProductData] = React.useState([] as any);
 
+  React.useEffect(() => {
+    const fetchProductBySlug = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/products/${slug}`,
+          responseType: "json",
+        });
+        setProductData(response.data?.product);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchProductBySlug();
+  }, [slug]);
+
+  React.useEffect(() => {
+    console.log("productData", productData);
+  }, [productData]);
   return (
     <>
       <Dialog
@@ -46,15 +71,15 @@ export default function ProductDialog({ open, handleOpen }: any) {
               {/* Product Details */}
               <div className="w-full md:w-1/2 px-4">
                 <h2 className="text-3xl font-bold mb-2">
-                  Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication
+                  {productData?.name}
                 </h2>
-                <p className="text-gray-600">Model: KDP0010</p>
-                <p className="text-gray-600">Author: Dr. L.R Bhalla</p>
+                <p className="text-gray-600">Model: {productData?.model}</p>
+                <p className="text-gray-600">Author: {productData?.author}</p>
                 <p className="text-gray-600 mb-4">
-                  Publication: Kuldeep Publications
+                  Publication: {productData?.production?.name}
                 </p>
                 <div className="mb-4">
-                  <span className="text-2xl font-bold mr-2">₹465 </span>
+                  <span className="text-2xl font-bold mr-2"> ₹{productData.price}</span>
                 </div>
 
                 <div className="flex items-center mb-4">
@@ -107,7 +132,7 @@ export default function ProductDialog({ open, handleOpen }: any) {
                     ></CartPopup>
                   )}
                   <button
-                    onClick={() => router.push("/product-detail")}
+                    onClick={() => router.push(`/product-detail/${slug}`)}
                     className="bg-red-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                   >
                     <svg
@@ -131,12 +156,18 @@ export default function ProductDialog({ open, handleOpen }: any) {
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Key Features:</h3>
                   <ul className="list-disc list-inside text-gray-700">
-                    <li>Stock Quantity: 5</li>
-                    <li>Discount: 33%</li>
-                    <li>Book Language: Hindi</li>
-                    <li>Number of Pages: 0</li>
-                    <li>Publication Year: 0</li>
-                    <li>ISBN: 0</li>
+                    <li>Stock Quantity: {productData?.quantity}</li>
+                    <li>Discount: {(productData?.mrp && productData?.price
+                    ? ((productData?.mrp - productData?.price) /
+                        productData?.mrp) *
+                      100
+                    : 0
+                  ).toFixed(2)}{" "}
+                  %</li>
+                    <li>Book Language: {productData?.book_language}</li>
+                    <li>Number of Pages: {productData?.number_of_pages}</li>
+                    <li>Publication Year: {productData?.published_at}</li>
+                    <li>ISBN: {productData?.isbn || "N/A"}</li>
                   </ul>
                 </div>
               </div>

@@ -17,6 +17,7 @@ interface BookCardProps {
   category: string;
   price: string;
   offPrice?: string;
+  slug?: string;
 }
 
 export function BookCard({
@@ -26,6 +27,7 @@ export function BookCard({
   desc,
   price,
   offPrice,
+  slug,
 }: BookCardProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [open, setOpen] = React.useState(false);
@@ -33,8 +35,18 @@ export function BookCard({
   const handleOpen = () => setOpen(!open);
 
   return (
-    <Card color="transparent" shadow={false} className="mb-4" {...({} as React.ComponentProps<typeof Card>)}>
-      <CardHeader color="gray" floated={false} className="mx-0 mt-0 mb-6" {...({} as React.ComponentProps<typeof CardHeader>)}>
+    <Card
+      color="transparent"
+      shadow={false}
+      className="mb-4"
+      {...({} as React.ComponentProps<typeof Card>)}
+    >
+      <CardHeader
+        color="gray"
+        floated={false}
+        className="mx-0 mt-0 mb-6"
+        {...({} as React.ComponentProps<typeof CardHeader>)}
+      >
         <Image
           width={768}
           height={768}
@@ -43,11 +55,18 @@ export function BookCard({
           className="h-full w-full scale-[1.1] object-cover object-center"
         />
       </CardHeader>
-      <CardBody className="p-0" {...({} as React.ComponentProps<typeof CardBody>)}>
-        <Typography color="blue" className="mb-2 text-xs !font-semibold" {...({} as React.ComponentProps<typeof Typography>)}>
-          {category}
+      <CardBody
+        className="p-0"
+        {...({} as React.ComponentProps<typeof CardBody>)}
+      >
+        <Typography
+          color="blue"
+          className="mb-2 text-xs !font-semibold"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
+          {category} % off
         </Typography>
-        <a href="/product-detail">
+        <a href={`/product-detail/${slug}`}>
           <Typography
             variant="h5"
             color="blue-gray"
@@ -57,7 +76,10 @@ export function BookCard({
             {title}
           </Typography>
         </a>
-        <Typography className="mb-4 font-normal !text-gray-500" {...({} as React.ComponentProps<typeof Typography>)}>
+        <Typography
+          className="mb-4 font-normal !text-gray-500"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           {desc}
         </Typography>
         <div className="flex justify-between">
@@ -69,10 +91,14 @@ export function BookCard({
               className={offPrice ? "line-through" : ""}
               {...({} as React.ComponentProps<typeof Typography>)}
             >
-              {price}
+              ₹{price}
             </Typography>
-            <Typography variant="h5" color="red" {...({} as React.ComponentProps<typeof Typography>)}>
-              {offPrice}
+            <Typography
+              variant="h5"
+              color="red"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
+              ₹{offPrice}
             </Typography>
           </div>
           <div className="flex gap-2 relative">
@@ -119,11 +145,12 @@ export function BookCard({
                 d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
               />
             </svg>
-             {/* Product popup */}
+            {/* Product popup */}
             {open && (
               <ProductDialog
                 open={open}
                 handleOpen={handleOpen}
+                slug={slug}
               ></ProductDialog>
             )}
           </div>

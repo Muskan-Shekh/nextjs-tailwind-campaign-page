@@ -9,18 +9,8 @@ import {
 } from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
-import { useState, useRef, useEffect } from "react";
-
-// Simple CAPTCHA generator
-// const generateCaptcha = () => {
-//   const characters =
-//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-//   let captcha = "";
-//   for (let i = 0; i < 6; i++) {
-//     captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-//   }
-//   return captcha;
-// };
+import { useState, useRef, useEffect, FormEvent } from "react";
+import config from "../config";
 
 const generateCaptchaText = () => {
   const characters =
@@ -36,12 +26,6 @@ export default function RegistrationForm() {
   const canvasRef = useRef(null);
   const [captcha, setCaptcha] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
-  //   const [captcha, setCaptcha] = useState(generateCaptcha());
-  //   const [captchaInput, setCaptchaInput] = useState("");
-
-  //   const refreshCaptcha = () => {
-  //     setCaptcha(generateCaptcha());
-  //   };
 
   // Draw CAPTCHA on Canvas
   const drawCaptcha = (text: string) => {
@@ -91,15 +75,29 @@ export default function RegistrationForm() {
     refreshCaptcha();
   }, []);
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get("email");
+    const phone = formData.get("password");
+    const email = formData.get("email");
+    const password = formData.get("password");
     if (captchaInput === captcha) {
-      alert("CAPTCHA Verified Successfully!");
+      const response = await fetch(`${config.apiUrl}api/v1/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, email, password }),
+      });
+      if (response.ok) {
+        alert("CAPTCHA Verified Successfully!");
+      }
     } else {
       alert("Invalid CAPTCHA. Please try again.");
       refreshCaptcha();
     }
-  };
+  }
+  
   return (
     <>
       <Navbar />
@@ -140,6 +138,7 @@ export default function RegistrationForm() {
             <Input
               size="lg"
               type="text"
+              name="name"
               placeholder="Full Name"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
@@ -158,6 +157,7 @@ export default function RegistrationForm() {
             <Input
               size="lg"
               type="email"
+              name="email"
               placeholder="name@mail.com"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
@@ -176,6 +176,7 @@ export default function RegistrationForm() {
             <Input
               size="lg"
               type="number"
+              name="phone"
               placeholder="9836348346"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
@@ -194,6 +195,7 @@ export default function RegistrationForm() {
             <Input
               type="password"
               size="lg"
+              name="password"
               placeholder="********"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
@@ -234,7 +236,7 @@ export default function RegistrationForm() {
             </div> */}
           </div>
           <Checkbox
-          {...({} as React.ComponentProps<typeof Checkbox>)}
+            {...({} as React.ComponentProps<typeof Checkbox>)}
             label={
               <Typography
                 variant="small"
@@ -260,7 +262,12 @@ export default function RegistrationForm() {
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-6" fullWidth type="submit" {...({} as React.ComponentProps<typeof Button>)}>
+          <Button
+            className="mt-6"
+            fullWidth
+            type="submit"
+            {...({} as React.ComponentProps<typeof Button>)}
+          >
             sign up
           </Button>
           <Typography

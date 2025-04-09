@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 // components
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
-import OtherBookOffers from "../../components/other-book-offers";
+import OtherBookOffers from "@/components/other-book-offers";
 import { CartPopup } from "@/components/cart-popup";
+import axios from "axios";
+import config from "@/app/config";
 
-export default function ProductDetail() {
+export default function ProductDetail({ params }: any) {
+  const { slug } = params;
   const [mainImage, setMainImage] = useState(
     // "https://m.media-amazon.com/images/I/51pJh3VkldL._SY445_SX342_.jpg"
     "https://i.ytimg.com/vi/SBeaVx1hJwM/maxresdefault.jpg"
@@ -19,6 +22,34 @@ export default function ProductDetail() {
   const handleImageChange = (src: string) => {
     setMainImage(src);
   };
+
+  const [productData, setProductData] = useState([] as any);
+  const [similarProducts, setSimilarProducts] = useState([] as any);
+
+  useEffect(() => {
+    const fetchProductBySlug = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/products/${slug}`,
+          responseType: "json",
+        });
+        setProductData(response.data?.product);
+        setSimilarProducts(response.data?.related_products)
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchProductBySlug();
+  }, [slug]);
+
+  useEffect(() => {
+    // console.log("productData", productData);
+  }, [productData, similarProducts]);
+
   const [quantity, setQuantity] = useState(1);
 
   const handleIncrease = () => {
@@ -94,18 +125,28 @@ export default function ProductDetail() {
 
           {/* Product Details */}
           <div className="w-full md:w-1/2 px-4">
-            <h2 className="text-3xl font-bold mb-2">
-              Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication
-            </h2>
-            <p className="text-gray-600">Model: KDP0010</p>
-            <p className="text-gray-600">Author: Dr. L.R Bhalla</p>
+            <h2 className="text-3xl font-bold mb-2">{productData?.name}</h2>
+            <p className="text-gray-600">Model: {productData?.model}</p>
+            <p className="text-gray-600">Author: {productData?.author}</p>
             <p className="text-gray-600 mb-4">
-              Publication: Kuldeep Publications
+              Publication: {productData?.production?.name}
             </p>
             <div className="mb-4">
-              <span className="text-2xl font-bold mr-2">₹465 </span>
-              <span className="text-sm font-small mr-2">33% off</span>
-              <span className="text-gray-500 line-through">₹696</span>
+              <span className="text-2xl font-bold mr-2">
+              ₹{productData.price}
+              </span>
+              <span className="text-sm font-small mr-2">
+                {(productData?.mrp && productData?.price
+                  ? ((productData?.mrp - productData?.price) /
+                      productData?.mrp) *
+                    100
+                  : 0
+                ).toFixed(2)}{" "}
+                % off
+              </span>
+              <span className="text-gray-500 line-through">
+              ₹{productData.mrp}
+              </span>
             </div>
 
             <div className="flex items-center mb-4">
@@ -133,7 +174,7 @@ export default function ProductDetail() {
                 htmlFor="quantity"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Quantity:
+                Quantity: {quantity}
               </label>
               <div className="flex items-center space-x-2">
                 <button
@@ -206,19 +247,31 @@ export default function ProductDetail() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Key Features:</h3>
               <ul className="list-disc list-inside text-gray-700">
-                <li>Stock Quantity: 5</li>
-                <li>Discount: 33%</li>
-                <li>Book Language: Hindi</li>
-                <li>Number of Pages: 0</li>
-                <li>Publication Year: 0</li>
-                <li>ISBN: 0</li>
+                <li>Stock Quantity: {productData?.quantity}</li>
+                <li>
+                  Discount:{" "}
+                  {(productData?.mrp && productData?.price
+                    ? ((productData?.mrp - productData?.price) /
+                        productData?.mrp) *
+                      100
+                    : 0
+                  ).toFixed(2)}{" "}
+                  %
+                </li>
+                <li>Book Language: {productData?.book_language}</li>
+                <li>Number of Pages: {productData?.number_of_pages}</li>
+                <li>Publication Year: {productData?.published_at}</li>
+                <li>ISBN: {productData?.isbn || "N/A"}</li>
               </ul>
             </div>
           </div>
         </div>
       </div>
       {/* </div> */}
-      <OtherBookOffers />
+      <OtherBookOffers
+      description={productData?.description}
+      similarProducts={similarProducts}
+       />
       <Footer />
     </>
   );

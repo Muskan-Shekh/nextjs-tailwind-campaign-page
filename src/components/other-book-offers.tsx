@@ -2,6 +2,7 @@
 
 import { Typography } from "@material-tailwind/react";
 import BookCard from "@/components/book-card";
+import config from "@/app/config";
 
 const OTHER_BOOKS = [
   {
@@ -30,51 +31,102 @@ const OTHER_BOOKS = [
   },
 ];
 
-export function OtherBookOffers() {
+export function OtherBookOffers({ description, similarProducts }: any) {
   return (
     <section className="px-8 pt-28 pb-28">
       <div className="container mx-auto mb-10">
-        <Typography variant="h2" color="blue-gray" className="mb-2" {...({} as React.ComponentProps<typeof Typography>)}>
+        <Typography
+          variant="h2"
+          color="blue-gray"
+          className="mb-2"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           About this product
         </Typography>
-        <Typography variant="lead" className="w-full text-gray-600" {...({} as React.ComponentProps<typeof Typography>)}>
-          Escape into{" "}
-          <strong className="text-gray-700">captivating stories</strong>,
-          vibrant characters, and enchanting worlds with our extensive fiction
-          collection. A classic reference book on grammar and writing skills,
-          essential for high school and college students. A valuable resource
-          for high school seniors and college freshmen, offering effective study
-          strategies.A classic reference book on grammar and writing skills,
-          essential for high school and college students. A{" "}
-          <strong className="text-gray-700">valuable resources</strong> for high
-          school seniors and college freshmen, offering effective study
-          strategies.A classic reference book on grammar and writing skills,
-          essential for high school and college students.
-        </Typography>
-        <Typography variant="lead" className="w-full text-gray-600 mt-2" {...({} as React.ComponentProps<typeof Typography>)}>
-          Escape into captivating stories, vibrant characters, and{" "}
-          <strong className="text-gray-700">enchanting worlds</strong> with our
-          extensive fiction collection. A classic reference book on grammar and
-          writing skills, essential for high school and college students.
-        </Typography>
-        <Typography variant="lead" className="w-full text-gray-600 mt-2" {...({} as React.ComponentProps<typeof Typography>)}>
-          Escape into captivating stories, vibrant characters, and{" "}
-          <strong className="text-gray-700">enchanting worlds</strong> with our
-          extensive fiction collection. A classic reference book on grammar and
-          writing skills, essential for high school and college students. A{" "}
-          <strong className="text-gray-700">valuable resources</strong> for high
-          school seniors and college freshmen, offering effective study
-          strategies.A classic reference book on grammar and writing skills,
-          essential for high school and college students.
-        </Typography>
-        <Typography variant="h2" color="blue-gray" className="mt-8" {...({} as React.ComponentProps<typeof Typography>)}>
+        {description ? (
+          <Typography
+            variant="lead"
+            className="w-full text-gray-600"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
+            {description}
+          </Typography>
+        ) : (
+          <>
+            <Typography
+              variant="lead"
+              className="w-full text-gray-600"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
+              Escape into{" "}
+              <strong className="text-gray-700">captivating stories</strong>,
+              vibrant characters, and enchanting worlds with our extensive
+              fiction collection. A classic reference book on grammar and
+              writing skills, essential for high school and college students. A
+              valuable resource for high school seniors and college freshmen,
+              offering effective study strategies.A classic reference book on
+              grammar and writing skills, essential for high school and college
+              students. A{" "}
+              <strong className="text-gray-700">valuable resources</strong> for
+              high school seniors and college freshmen, offering effective study
+              strategies.A classic reference book on grammar and writing skills,
+              essential for high school and college students.
+            </Typography>
+            <Typography
+              variant="lead"
+              className="w-full text-gray-600 mt-2"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
+              Escape into captivating stories, vibrant characters, and{" "}
+              <strong className="text-gray-700">enchanting worlds</strong> with
+              our extensive fiction collection. A classic reference book on
+              grammar and writing skills, essential for high school and college
+              students.
+            </Typography>
+            <Typography
+              variant="lead"
+              className="w-full text-gray-600 mt-2"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
+              Escape into captivating stories, vibrant characters, and{" "}
+              <strong className="text-gray-700">enchanting worlds</strong> with
+              our extensive fiction collection. A classic reference book on
+              grammar and writing skills, essential for high school and college
+              students. A{" "}
+              <strong className="text-gray-700">valuable resources</strong> for
+              high school seniors and college freshmen, offering effective study
+              strategies.A classic reference book on grammar and writing skills,
+              essential for high school and college students.
+            </Typography>
+          </>
+        )}
+        <Typography
+          variant="h2"
+          color="blue-gray"
+          className="mt-8"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           Similar Products of This Category
         </Typography>
       </div>
       <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-3">
-        {OTHER_BOOKS.map((props, key) => (
-          <BookCard key={key} {...props} />
-        ))}
+        {similarProducts && similarProducts.length > 0
+          ? similarProducts.map((product: any) => (
+              <BookCard
+                key={product.id}
+                img={`${config.apiUrl}storage/${product.image}`}
+                category={(product?.mrp && product?.price
+                  ? ((product?.mrp - product?.price) / product?.mrp) * 100
+                  : 0
+                ).toFixed(2)}
+                title={product.name}
+                desc={product.description}
+                price={product.mrp}
+                offPrice={product.price}
+                slug={product.slug}
+              />
+            ))
+          : OTHER_BOOKS.map((props, key) => <BookCard key={key} {...props} />)}
       </div>
     </section>
   );

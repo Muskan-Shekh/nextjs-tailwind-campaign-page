@@ -6,7 +6,7 @@ import logo from "../../public/logos/logo.png";
 
 function Hero() {
   return (
-    <header className="bg-yellow-50 px-8">
+    <header className="bg-yellow-50 px-8 pb-8">
       <div className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2">
         <div className="row-start-2 lg:row-auto lg:-mt-6">
           <Typography

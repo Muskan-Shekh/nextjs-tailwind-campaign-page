@@ -9,6 +9,9 @@ import {
   Tab,
 } from "@material-tailwind/react";
 import BookCard from "@/components/book-card";
+import axios from "axios";
+import config from "@/app/config";
+import { useRouter } from "next/navigation";
 
 const BOOKS = [
   {
@@ -18,7 +21,7 @@ const BOOKS = [
     desc: "A heartwarming and humorous picture book...",
     price: "$99",
     offPrice: "$79",
-    tab: "history",
+    tab: "NCERT",
   },
   {
     img: `/image/books/RectangleBig6.svg`,
@@ -27,7 +30,7 @@ const BOOKS = [
     desc: "A funny and relatable novel...",
     price: "$99",
     offPrice: "$79",
-    tab: "math",
+    tab: "CBSE",
   },
   {
     img: `/image/books/RectangleBig2.svg`,
@@ -36,7 +39,7 @@ const BOOKS = [
     desc: "A practical guidebook...",
     price: "$99",
     offPrice: "$79",
-    tab: "economy",
+    tab: "Kids",
   },
   {
     img: `/image/books/RectangleBig3.svg`,
@@ -45,7 +48,7 @@ const BOOKS = [
     desc: "A valuable resource...",
     price: "$99",
     offPrice: "$79",
-    tab: "law",
+    tab: "RBSE",
   },
   {
     img: `/image/books/RectangleBig4.svg`,
@@ -54,7 +57,7 @@ const BOOKS = [
     desc: "A classic reference book...",
     price: "$99",
     offPrice: "$79",
-    tab: "communication",
+    tab: "NCERT",
   },
   {
     img: `/image/books/RectangleBig5.svg`,
@@ -63,7 +66,7 @@ const BOOKS = [
     desc: "A classic reference book...",
     price: "$99",
     offPrice: "$79",
-    tab: "business",
+    tab: "Kids",
   },
   {
     img: `/image/books/RectangleBig1.svg`,
@@ -72,7 +75,7 @@ const BOOKS = [
     desc: "A heartwarming and humorous picture book...",
     price: "$99",
     offPrice: "$79",
-    tab: "history",
+    tab: "NCERT",
   },
   {
     img: `/image/books/RectangleBig6.svg`,
@@ -81,7 +84,7 @@ const BOOKS = [
     desc: "A funny and relatable novel...",
     price: "$99",
     offPrice: "$79",
-    tab: "math",
+    tab: "Kids",
   },
   {
     img: `/image/books/RectangleBig2.svg`,
@@ -90,7 +93,7 @@ const BOOKS = [
     desc: "A practical guidebook...",
     price: "$99",
     offPrice: "$79",
-    tab: "economy",
+    tab: "CBSE",
   },
   {
     img: `/image/books/RectangleBig3.svg`,
@@ -99,7 +102,7 @@ const BOOKS = [
     desc: "A valuable resource...",
     price: "$99",
     offPrice: "$79",
-    tab: "law",
+    tab: "CBSE",
   },
   {
     img: `/image/books/RectangleBig4.svg`,
@@ -108,7 +111,7 @@ const BOOKS = [
     desc: "A classic reference book...",
     price: "$99",
     offPrice: "$79",
-    tab: "communication",
+    tab: "RBSE",
   },
   {
     img: `/image/books/RectangleBig5.svg`,
@@ -117,61 +120,7 @@ const BOOKS = [
     desc: "A classic reference book...",
     price: "$99",
     offPrice: "$79",
-    tab: "business",
-  },
-  {
-    img: `/image/books/RectangleBig1.svg`,
-    category: "Natasha Wing",
-    title: "The Night Before Kindergarten",
-    desc: "A heartwarming and humorous picture book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "history",
-  },
-  {
-    img: `/image/books/RectangleBig6.svg`,
-    category: "James Patterson",
-    title: "Middle School: The Worst Years of My Life",
-    desc: "A funny and relatable novel...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "math",
-  },
-  {
-    img: `/image/books/RectangleBig2.svg`,
-    category: "Helen W. Colby",
-    title: "College Student: A Comprehensive Checklist",
-    desc: "A practical guidebook...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "economy",
-  },
-  {
-    img: `/image/books/RectangleBig3.svg`,
-    category: "Walter Pauk",
-    title: "How to Study in College",
-    desc: "A valuable resource...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "law",
-  },
-  {
-    img: `/image/books/RectangleBig4.svg`,
-    category: "William Strunk Jr.",
-    title: "The Elements of Style",
-    desc: "A classic reference book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "communication",
-  },
-  {
-    img: `/image/books/RectangleBig5.svg`,
-    category: "William Strunk Jr.",
-    title: "The Elements of Style",
-    desc: "A classic reference book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "business",
+    tab: "RBSE",
   },
 ];
 
@@ -185,8 +134,65 @@ const BOOKS_TABS = [
 ];
 
 export function BackToSchoolBooks() {
-  const [activeTab, setActiveTab] = React.useState("history");
-  const filteredBooks = BOOKS.filter((book) => book.tab === activeTab);
+  const router = useRouter();
+  const [category, setCategory] = React.useState([] as any);
+  const [products, setProducts] = React.useState([] as any);
+
+  React.useEffect(() => {
+    const fetchProductsByCategory = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/category/${"school-books"}`,
+          responseType: "json",
+        });
+        setProducts(response.data);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchProductsByCategory();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/category`,
+          responseType: "json",
+        });
+        setCategory(response.data[0]);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  React.useEffect(() => {
+    // console.log("products", products);
+    // console.log("category", category);
+  }, [category, products]);
+
+  const [activeTab, setActiveTab] = React.useState("NCERT");
+  // const filteredBooks = BOOKS.filter((book) => book.tab === activeTab);
+  const filteredBooks = products?.filter((book: any) => {
+    // Find the subcategory with the matching name
+    const matchingSubcategory = category?.child?.find(
+      (subcategory: any) => subcategory.name === activeTab
+    );
+
+    // Compare sub_category_id of the book to the matching subcategory's id
+    return book.sub_category_id === matchingSubcategory?.id;
+  });
+
   const shuffledBooks = [...filteredBooks].sort(() => Math.random() - 0.5);
 
   return (
@@ -226,17 +232,21 @@ export function BackToSchoolBooks() {
               }}
               {...({} as React.ComponentProps<typeof TabsHeader>)}
             >
-              {BOOKS_TABS.map((book) => (
+              {category?.child?.map((tab: any) => (
                 <Tab
-                  key={book}
-                  value={book}
-                  className={`!font-medium capitalize transition-all duration-300
-                    ${activeTab === book ? "text-white" : "capitalize"}
+                  key={tab.id}
+                  value={tab}
+                  className={`!font-medium capitalize transition-all duration-300 rounded-xl
+                    ${
+                      activeTab === tab?.name
+                        ? "text-white bg-black"
+                        : "capitalize"
+                    }
                   `}
-                  onClick={() => setActiveTab(book)}
+                  onClick={() => setActiveTab(tab?.name)}
                   {...({} as any)}
                 >
-                  {book}
+                  {tab?.name}
                 </Tab>
               ))}
             </TabsHeader>
@@ -250,14 +260,30 @@ export function BackToSchoolBooks() {
         {/* {filteredBooks.map((props, key) => (
           <BookCard key={key} {...props} />
         ))} */}
-        {shuffledBooks.map((props, key) => (
+        {/* {shuffledBooks.map((props, key) => (
           <BookCard key={key} {...props} />
+        ))} */}
+        {shuffledBooks.map((product: any) => (
+          <BookCard
+            key={product.id}
+            img={`${config.apiUrl}storage/${product.image}`}
+            category={(product?.mrp && product?.price
+              ? ((product?.mrp - product?.price) / product?.mrp) * 100
+              : 0
+            ).toFixed(2)}
+            title={product.name}
+            desc={product.description}
+            price={product.mrp}
+            offPrice={product.price}
+            slug={product.slug}
+          />
         ))}
       </div>
       <div className="grid place-items-center">
         <Button
           className="mt-8"
           variant="outlined"
+          onClick={() => router.push("/category/school-books")}
           {...({} as React.ComponentProps<typeof Button>)}
         >
           Show more

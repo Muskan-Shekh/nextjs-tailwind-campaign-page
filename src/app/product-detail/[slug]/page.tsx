@@ -8,14 +8,11 @@ import OtherBookOffers from "@/components/other-book-offers";
 import { CartPopup } from "@/components/cart-popup";
 import axios from "axios";
 import config from "@/app/config";
+import Image from "next/image";
 
 export default function ProductDetail({ params }: any) {
   const { slug } = params;
-  const [mainImage, setMainImage] = useState(
-    // "https://m.media-amazon.com/images/I/51pJh3VkldL._SY445_SX342_.jpg"
-    "https://i.ytimg.com/vi/SBeaVx1hJwM/maxresdefault.jpg"
-    // "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxfHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-  );
+  const [mainImage, setMainImage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null as any);
 
@@ -35,7 +32,7 @@ export default function ProductDetail({ params }: any) {
           responseType: "json",
         });
         setProductData(response.data?.product);
-        setSimilarProducts(response.data?.related_products)
+        setSimilarProducts(response.data?.related_products);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -47,7 +44,7 @@ export default function ProductDetail({ params }: any) {
   }, [slug]);
 
   useEffect(() => {
-    // console.log("productData", productData);
+    setMainImage(`${config.apiUrl}storage/${productData?.image}`);
   }, [productData, similarProducts]);
 
   const [quantity, setQuantity] = useState(1);
@@ -66,7 +63,7 @@ export default function ProductDetail({ params }: any) {
       <Navbar />
       <MainNavbar />
       {/* <div className="bg-gray-100"> */}
-      <div className="container px-4 py-8 md:flex md:col-12">
+      <div className="container mx-auto px-4 py-8 md:flex md:col-12">
         <div className="flex flex-wrap">
           {/* Product Images */}
           <div className="w-full md:w-1/2 px-10 mb-8">
@@ -75,51 +72,20 @@ export default function ProductDetail({ params }: any) {
               alt="Product"
               className="w-full h-auto rounded-lg shadow-md mb-4"
             />
+            {/* gallary image */}
             <div className="flex gap-4 py-4 justify-center overflow-x-auto">
-              <img
-                src="https://i.ytimg.com/vi/vnMqJgonYWA/maxresdefault.jpg"
-                // src="https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxMnx8aGVhZHBob25lfGVufDB8MHx8fDE3MjEzMDM2OTB8MA&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 1"
-                className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onClick={() =>
-                  handleImageChange(
-                    "https://i.ytimg.com/vi/vnMqJgonYWA/maxresdefault.jpg"
-                  )
-                }
-              />
-              <img
-                src="https://m.media-amazon.com/images/I/61uw7X5cBUL._BO30,255,255,255_UF900,850_SR1910,1000,0,C_ZA59,500,900,420,420,AmazonEmber,50,4,0,0_PIRIOFOUR-medium,BottomLeft,30,-20_QL100_.jpg"
-                // src="https://images.unsplash.com/photo-1484704849700-f032a568e944?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw0fHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 2"
-                className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onClick={() =>
-                  handleImageChange(
-                    "https://m.media-amazon.com/images/I/61uw7X5cBUL._BO30,255,255,255_UF900,850_SR1910,1000,0,C_ZA59,500,900,420,420,AmazonEmber,50,4,0,0_PIRIOFOUR-medium,BottomLeft,30,-20_QL100_.jpg"
-                  )
-                }
-              />
-              <img
-                src="https://i.ytimg.com/vi/yAn9dHJ3joc/sddefault.jpg"
-                // src="https://images.unsplash.com/photo-1496957961599-e35b69ef5d7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw4fHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 3"
-                className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onClick={() =>
-                  handleImageChange(
-                    "https://i.ytimg.com/vi/yAn9dHJ3joc/sddefault.jpg"
-                  )
-                }
-              />
-              <img
-                src="https://m.media-amazon.com/images/I/51pJh3VkldL._BO30,255,255,255_UF900,850_SR1910,1000,0,C_ZA43,500,900,420,420,AmazonEmber,50,4,0,0_PIRIOTHREEANDHALF-medium,BottomLeft,30,-20_QL100_.jpg"
-                // src="https://images.unsplash.com/photo-1528148343865-51218c4a13e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwzfHxoZWFkcGhvbmV8ZW58MHwwfHx8MTcyMTMwMzY5MHww&ixlib=rb-4.0.3&q=80&w=1080"
-                alt="Thumbnail 4"
-                className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
-                onClick={() =>
-                  handleImageChange(
-                    "https://m.media-amazon.com/images/I/51pJh3VkldL._BO30,255,255,255_UF900,850_SR1910,1000,0,C_ZA43,500,900,420,420,AmazonEmber,50,4,0,0_PIRIOTHREEANDHALF-medium,BottomLeft,30,-20_QL100_.jpg"
-                  )
-                }
-              />
+              {productData.gallery?.map((img: string, index: number) => {
+                const imgSrc = `${config.apiUrl}storage/${img}`;
+                return (
+                  <img
+                    key={index}
+                    src={imgSrc}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
+                    onClick={() => handleImageChange(imgSrc)}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -133,7 +99,7 @@ export default function ProductDetail({ params }: any) {
             </p>
             <div className="mb-4">
               <span className="text-2xl font-bold mr-2">
-              ₹{productData.price}
+                ₹{productData.price}
               </span>
               <span className="text-sm font-small mr-2">
                 {(productData?.mrp && productData?.price
@@ -145,7 +111,7 @@ export default function ProductDetail({ params }: any) {
                 % off
               </span>
               <span className="text-gray-500 line-through">
-              ₹{productData.mrp}
+                ₹{productData.mrp}
               </span>
             </div>
 
@@ -269,9 +235,9 @@ export default function ProductDetail({ params }: any) {
       </div>
       {/* </div> */}
       <OtherBookOffers
-      description={productData?.description}
-      similarProducts={similarProducts}
-       />
+        description={productData?.description}
+        similarProducts={similarProducts}
+      />
       <Footer />
     </>
   );

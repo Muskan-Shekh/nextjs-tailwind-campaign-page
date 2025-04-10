@@ -42,6 +42,7 @@ export default function Category({ params }: any) {
   const [products, setProducts] = useState([] as any);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const productionId = searchParams.get("production_id");
+  
   useEffect(() => {
     const fetchProductsByCategory = async () => {
       try {

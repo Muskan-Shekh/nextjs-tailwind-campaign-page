@@ -23,7 +23,7 @@ const LINKS = [
     title: "Company",
     items: [
       { label: "Vendor Registration", url: "/registration" },
-      { label: "Tuitor", url: "/tuitor" },
+      { label: "Tutor", url: "/tutor" },
       { label: "Join WhatsApp", url: "https://wa.me/+919602368227" },
       { label: "Promo Code", url: "#" },
       { label: "Request Product", url: "/request-product" },

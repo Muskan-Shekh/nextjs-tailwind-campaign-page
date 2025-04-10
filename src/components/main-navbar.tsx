@@ -17,6 +17,7 @@ import {
   ChevronDownIcon,
   Bars3Icon,
   XMarkIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/outline";
 import config from "@/app/config";
 
@@ -67,7 +68,7 @@ const MainNavbar: React.FC = () => {
                 className="p-1"
                 {...({} as React.ComponentProps<typeof ListItem>)}
               >
-                {item.child ? (
+                {item.child && item.child?.length ? (
                   <Menu allowHover>
                     <MenuHandler>
                       <Typography
@@ -91,28 +92,65 @@ const MainNavbar: React.FC = () => {
                         )}
                       </Typography>
                     </MenuHandler>
-                    <MenuList
-                      {...({} as React.ComponentProps<typeof MenuList>)}
-                    >
-                      {item.child.map((child: any, childIndex: number) => (
-                        <MenuItem
-                          key={childIndex}
-                          {...({} as React.ComponentProps<typeof MenuItem>)}
-                        >
-                          <Typography
-                            as="a"
-                            href={`/category/${child.slug}`}
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                            onClick={closeNav}
-                            {...({} as React.ComponentProps<typeof Typography>)}
-                          >
-                            {child.name}
-                          </Typography>
-                        </MenuItem>
-                      ))}
-                    </MenuList>
+                    {[0, 1, 2, 3].includes(index) && (
+                      <MenuList
+                        {...({} as React.ComponentProps<typeof MenuList>)}
+                      >
+                        {item.child.map((child: any) => (
+                          <div className="relative group" key={child?.key}>
+                            <MenuItem
+                              key={child?.key}
+                              {...({} as React.ComponentProps<typeof MenuItem>)}
+                            >
+                              <Typography
+                                as="a"
+                                href={`/category/${child.slug}`}
+                                variant="small"
+                                color="blue-gray"
+                                className="font-medium flex items-center gap-1"
+                                onClick={closeNav}
+                                {...({} as React.ComponentProps<
+                                  typeof Typography
+                                >)}
+                              >
+                                {child.name}
+                                {index === 3 && (
+                                  <ChevronUpIcon
+                                    strokeWidth={2.5}
+                                    className="h-3 w-3 transition-transform"
+                                    // className={`h-3.5 w-3.5 transition-transform ${
+                                    //   isMenuOpen ? "rotate-90" : ""
+                                    // }`}
+                                  />
+                                )}
+                              </Typography>
+                            </MenuItem>
+                            {/* Third-level submenu on hover */}
+                            {index === 3 && (
+                              <div className="top-0 left-0 hidden group-hover:block bg-white shadow-lg rounded-xl min-w-[180px] z-[9999]">
+                                {/* Example dynamic sub-child rendering */}
+                                {child?.child?.map(
+                                  (sub: any, subIndex: number) => (
+                                    <Typography
+                                    {...({} as React.ComponentProps<
+                                      typeof Typography
+                                    >)}
+                                      key={subIndex}
+                                      as="a"
+                                      href={`/category/${sub.slug}`}
+                                      variant="small"
+                                      className="block px-4 py-2 text-blue-gray-700 hover:bg-blue-gray-50 rounded transition-colors"
+                                    >
+                                      {sub.name}
+                                    </Typography>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </MenuList>
+                    )}
                   </Menu>
                 ) : (
                   <Typography
@@ -180,26 +218,30 @@ const MainNavbar: React.FC = () => {
                       )}
                     </Typography>
                   </MenuHandler>
-                  <MenuList {...({} as React.ComponentProps<typeof MenuList>)}>
-                    {item.child.map((child: any, childIndex: number) => (
-                      <MenuItem
-                        key={childIndex}
-                        {...({} as React.ComponentProps<typeof MenuItem>)}
-                      >
-                        <Typography
-                          as="a"
-                          href={`/category/${child.slug}`}
-                          variant="small"
-                          color="blue-gray"
-                          className="font-medium"
-                          onClick={closeNav} // Close menu on item click
-                          {...({} as React.ComponentProps<typeof Typography>)}
+                  {[0, 1, 2, 3].includes(index) && (
+                    <MenuList
+                      {...({} as React.ComponentProps<typeof MenuList>)}
+                    >
+                      {item.child.map((child: any, childIndex: number) => (
+                        <MenuItem
+                          key={childIndex}
+                          {...({} as React.ComponentProps<typeof MenuItem>)}
                         >
-                          {child.name}
-                        </Typography>
-                      </MenuItem>
-                    ))}
-                  </MenuList>
+                          <Typography
+                            as="a"
+                            href={`/category/${child.slug}`}
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                            onClick={closeNav} // Close menu on item click
+                            {...({} as React.ComponentProps<typeof Typography>)}
+                          >
+                            {child.name}
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  )}
                 </Menu>
               ) : (
                 <Typography

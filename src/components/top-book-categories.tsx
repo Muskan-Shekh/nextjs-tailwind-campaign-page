@@ -41,7 +41,7 @@ const CATEGORIES = [
 export function TopBookCategories() {
   return (
     <section className="container mx-auto px-8 pb-20 pt-20 lg:pt-0">
-      <div className="mb-20 grid place-items-center text-center">
+      <div className="mb-20 grid place-items-center text-center pt-20">
         <Typography variant="h2" color="blue-gray" className="my-3" {...({} as React.ComponentProps<typeof Typography>)}>
           Top Book Categories
         </Typography>

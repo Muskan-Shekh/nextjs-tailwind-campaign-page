@@ -4,9 +4,13 @@ import { Card, Input, Button, Typography } from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 import config from "../config";
-import { FormEvent } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const router = useRouter();
+  // const [customerData, setCustomerData] = useState({});
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -18,10 +22,19 @@ export default function SignIn() {
       body: JSON.stringify({ email, password }),
     });
     if (response.ok) {
-      console.log(response)
+      const data = await response.json();
+      const access_token = data?.access_token;
+      const customer = data?.customer;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("customer", JSON.stringify(customer));
+      router.push('/');
+      // setCustomerData(data?.customer);
     } else {
+      console.error("Login failed", response.status);
     }
   }
+
+  // useEffect(()=>{console.log(customerData)}, [customerData])
 
   return (
     <>
@@ -88,7 +101,7 @@ export default function SignIn() {
             className="mt-4 text-center text-red-600 font-normal cursor-pointer"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            Forget Password?
+            Forgot Password?
           </Typography>
           <Button
             className="mt-6"

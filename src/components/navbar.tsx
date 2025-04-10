@@ -5,59 +5,19 @@ import {
   Button,
   IconButton,
   Typography,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
 } from "@material-tailwind/react";
-import {
-  RectangleStackIcon,
-  UserCircleIcon,
-  CommandLineIcon,
-  XMarkIcon,
-  Bars3Icon,
-} from "@heroicons/react/24/solid";
+import { XMarkIcon, Bars3Icon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import logo from "../../public/logos/logo.png";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import config from "@/app/config";
-
-const NAV_MENU = [
-  {
-    name: "Page",
-    icon: RectangleStackIcon,
-  },
-  {
-    name: "Account",
-    icon: UserCircleIcon,
-  },
-  {
-    name: "Docs",
-    icon: CommandLineIcon,
-    href: "https://www.material-tailwind.com/docs/react/installation",
-  },
-];
-
-interface NavItemProps {
-  children: React.ReactNode;
-  href?: string;
-}
-
-function NavItem({ children, href }: NavItemProps) {
-  return (
-    <li>
-      <Typography
-        as="a"
-        href={href || "#"}
-        target={href ? "_blank" : "_self"}
-        variant="paragraph"
-        color="gray"
-        className="flex items-center gap-2 font-medium text-gray-900"
-        {...({} as React.ComponentProps<typeof Typography>)}
-      >
-        {children}
-      </Typography>
-    </li>
-  );
-}
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export function Navbar() {
   const router = useRouter();
@@ -81,9 +41,8 @@ export function Navbar() {
   const dropdownButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownMenuRef = useRef<HTMLDivElement>(null);
   const [publications, setPublications] = useState([] as any);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const access_token: any = localStorage.getItem("access_token");
+  const customer: any = localStorage.getItem("customer");
   // Handle dropdown button click
   const handleDropdownButtonClick = () => {
     setIsOpen((prev) => !prev);
@@ -132,10 +91,15 @@ export function Navbar() {
 
     fetchPublications();
   }, []);
+
   useEffect(() => {}, [publications]);
 
-  // if (loading) return <div>Loading...</div>;
-  // if (error) return <div>Error: {error}</div>;
+  const logout = () => {
+    localStorage.removeItem(access_token);
+    localStorage.removeItem(customer);
+    localStorage.clear();
+    router.push("/");
+  };
 
   return (
     <MTNavbar
@@ -152,7 +116,7 @@ export function Navbar() {
             className="h-[55px] w-[215px]"
           />
         </a>
-        <div className="invisible w-full max-w-xl min-w-[200px] lg:visible">
+        <div className="hidden w-full max-w-xl min-w-[200px] lg:block">
           <div className="relative mt-2">
             <div className="absolute top-1 left-1 flex items-center">
               <button
@@ -199,13 +163,13 @@ export function Navbar() {
                         {value}
                       </li>
                     ))} */}
-                    {publications.map((publication: any, index: number) => (
+                    {publications?.map((publication: any) => (
                       <li
                         className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
-                        key={index}
-                        onClick={() => handleOptionClick(publication.name)}
+                        key={publication?.id}
+                        onClick={() => handleOptionClick(publication?.name)}
                       >
-                        {publication.name}
+                        {publication?.name}
                       </li> // Adjust the field based on the structure of your data
                     ))}
                   </ul>
@@ -253,21 +217,59 @@ export function Navbar() {
               3
             </div>
           </Link>
-          <Button
-            variant="text"
-            onClick={() => router.push("/sign-in")}
-            {...({} as React.ComponentProps<typeof Button>)}
-          >
-            Log in
-          </Button>
-          <Button
-            variant="text"
-            onClick={() => router.push("/registration")}
-            {...({} as React.ComponentProps<typeof Button>)}
-          >
-            Register
-          </Button>
+          {access_token && customer ? (
+            <Menu allowHover>
+              <MenuHandler>
+                <Typography
+                  // as="a"
+                  // href="/my-account"
+                  variant="small"
+                  color="blue-gray"
+                  className="font-medium flex items-center gap-1 whitespace-nowrap ml-2"
+                  {...({} as React.ComponentProps<typeof Typography>)}
+                >
+                  {JSON.parse(customer).name}
+                  <ChevronDownIcon
+                    strokeWidth={2}
+                    className="h-3 w-3 transition-transform"
+                  />
+                </Typography>
+              </MenuHandler>
+              <MenuList {...({} as React.ComponentProps<typeof MenuList>)}>
+                <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                    onClick={logout}
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    Logout
+                  </Typography>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <>
+              {" "}
+              <Button
+                variant="text"
+                onClick={() => router.push("/sign-in")}
+                {...({} as React.ComponentProps<typeof Button>)}
+              >
+                Log in
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => router.push("/registration")}
+                {...({} as React.ComponentProps<typeof Button>)}
+              >
+                Register
+              </Button>
+            </>
+          )}
         </div>
+
         <IconButton
           variant="text"
           color="gray"
@@ -394,6 +396,37 @@ export function Navbar() {
             >
               Register
             </Button>
+            {/* <Menu allowHover>
+              <MenuHandler>
+                <Typography
+                  as="a"
+                  href="/my-account"
+                  variant="small"
+                  color="blue-gray"
+                  className="font-medium flex items-center gap-1 whitespace-nowrap"
+                  {...({} as React.ComponentProps<typeof Typography>)}
+                >
+                  Muskan
+                  <ChevronDownIcon
+                    strokeWidth={2}
+                    className="h-3 w-3 transition-transform"
+                  />
+                </Typography>
+              </MenuHandler>
+              <MenuList {...({} as React.ComponentProps<typeof MenuList>)}>
+                <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                    // onClick={closeNav}
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    Logout
+                  </Typography>
+                </MenuItem>
+              </MenuList>
+            </Menu> */}
           </div>
         </div>
       </Collapse>

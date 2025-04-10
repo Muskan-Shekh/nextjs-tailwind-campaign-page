@@ -6,6 +6,7 @@ import {
   Checkbox,
   Button,
   Typography,
+  Alert,
 } from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
@@ -26,6 +27,8 @@ export default function RegistrationForm() {
   const canvasRef = useRef(null);
   const [captcha, setCaptcha] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"error" | "success" | "">("");
 
   // Draw CAPTCHA on Canvas
   const drawCaptcha = (text: string) => {
@@ -75,29 +78,105 @@ export default function RegistrationForm() {
     refreshCaptcha();
   }, []);
 
+  // async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  //   event.preventDefault();
+
+  //   const formData = new FormData(event.currentTarget);
+  //   const name = formData.get("email");
+  //   const phone = formData.get("password");
+  //   const email = formData.get("email");
+  //   const password = formData.get("password");
+  //   if (captchaInput === captcha) {
+  //     const response = await fetch(`${config.apiUrl}api/v1/register`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ name, phone, email, password }),
+  //     });
+  //     if (response.ok) {
+  //       alert("CAPTCHA Verified Successfully!");
+  //     }
+  //   } else {
+  //     alert("Invalid CAPTCHA. Please try again.");
+  //     refreshCaptcha();
+  //   }
+  // }
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
+    const form = event.currentTarget;
     const formData = new FormData(event.currentTarget);
-    const name = formData.get("email");
-    const phone = formData.get("password");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    if (captchaInput === captcha) {
+    const name = formData.get("name")?.toString().trim() || "";
+    const email = formData.get("email")?.toString().trim() || "";
+    const phone = formData.get("phone")?.toString().trim() || "";
+    const password = formData.get("password")?.toString() || "";
+
+    // --- Validation ---
+    if (name.length > 255) {
+      setAlertType("error");
+      setAlertMessage("Name cannot be more than 255 characters.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setAlertType("error");
+      setAlertMessage("Password must be at least 8 characters long.");
+      return;
+    }
+
+    if (!email) {
+      setAlertType("error");
+      setAlertMessage("Email is required.");
+      return;
+    }
+
+    if (captchaInput !== captcha) {
+      setAlertType("error");
+      setAlertMessage("Invalid CAPTCHA. Please try again.");
+      refreshCaptcha();
+      return;
+    }
+
+    try {
       const response = await fetch(`${config.apiUrl}api/v1/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, phone, email, password }),
       });
+
+      const data = await response.json();
+
       if (response.ok) {
-        alert("CAPTCHA Verified Successfully!");
+        setAlertType("success");
+        setAlertMessage("Registration successful!");
+        form.reset();
+        setCaptchaInput("");
+      } else {
+        if (data?.error?.includes("email has already been taken")) {
+          setAlertType("error");
+          setAlertMessage(
+            "Email is already registered. Please use another one."
+          );
+        } else {
+          setAlertType("error");
+          setAlertMessage(data?.error || "Registration failed.");
+        }
       }
-    } else {
-      alert("Invalid CAPTCHA. Please try again.");
-      refreshCaptcha();
+    } catch (error) {
+      console.error("Error during registration:", error);
+      console.log("Error during registration:", error);
+      // alert("Something went wrong. Please try again later.");
     }
   }
-  
+
+  useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
+
   return (
     <>
       <Navbar />
@@ -122,6 +201,15 @@ export default function RegistrationForm() {
         >
           Nice to meet you! Enter your details to register.
         </Typography>
+        {alertMessage && (
+          <Alert
+            color={alertType === "error" ? "red" : "green"}
+            className="mb-4"
+            onClose={() => setAlertMessage("")}
+          >
+            {alertMessage}
+          </Alert>
+        )}
         <form
           className="mt-8 mb-8 w-80 max-w-screen-lg sm:w-96 shadow-lg p-4"
           onSubmit={handleSubmit}

@@ -25,8 +25,10 @@ export default function SignIn() {
       const data = await response.json();
       const access_token = data?.access_token;
       const customer = data?.customer;
+      if (typeof window !== "undefined") {
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("customer", JSON.stringify(customer));
+      }
       router.push('/');
       // setCustomerData(data?.customer);
     } else {

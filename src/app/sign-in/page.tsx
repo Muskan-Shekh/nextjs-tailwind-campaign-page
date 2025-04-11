@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const router = useRouter();
-  const [customerData, setCustomerData] = useState({});
+  const [customerData, setCustomerData] = useState({} as any);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -31,13 +31,12 @@ export default function SignIn() {
   }
 
   useEffect(() => {
-    const access_token = customerData?.access_token;
-    const customer = customerData?.customer;
-    if (typeof window !== "undefined") {
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("customer", JSON.stringify(customer));
+    if (typeof window !== "undefined" && customerData?.access_token && customerData?.customer) {
+      localStorage.setItem("access_token", customerData.access_token);
+      localStorage.setItem("customer", JSON.stringify(customerData.customer));
     }
   }, [customerData]);
+  
 
   return (
     <>

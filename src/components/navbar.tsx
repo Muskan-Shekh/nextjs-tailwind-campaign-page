@@ -34,15 +34,15 @@ export function Navbar() {
     );
   }, []);
 
-  const [selectedValue, setSelectedValue] =
-    useState<string>("All Publications");
+  const [selectedValue, setSelectedValue] = useState<string>(
+    "All Publications"
+  );
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const dropdownButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownMenuRef = useRef<HTMLDivElement>(null);
   const [publications, setPublications] = useState([] as any);
-  const access_token: any = localStorage.getItem("access_token");
-  const customer: any = localStorage.getItem("customer");
+
   // Handle dropdown button click
   const handleDropdownButtonClick = () => {
     setIsOpen((prev) => !prev);
@@ -95,9 +95,11 @@ export function Navbar() {
   useEffect(() => {}, [publications]);
 
   const logout = () => {
-    localStorage.removeItem(access_token);
-    localStorage.removeItem(customer);
-    localStorage.clear();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customer");
+      localStorage.clear(); // Optional, clears all keys if that's your intent
+    }
     router.push("/");
   };
 

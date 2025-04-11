@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const router = useRouter();
-  // const [customerData, setCustomerData] = useState({});
+  const [customerData, setCustomerData] = useState({});
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,20 +23,21 @@ export default function SignIn() {
     });
     if (response.ok) {
       const data = await response.json();
-      const access_token = data?.access_token;
-      const customer = data?.customer;
-      if (typeof window !== "undefined") {
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("customer", JSON.stringify(customer));
-      }
-      router.push('/');
-      // setCustomerData(data?.customer);
+      setCustomerData(data);
+      router.push("/");
     } else {
       console.error("Login failed", response.status);
     }
   }
 
-  // useEffect(()=>{console.log(customerData)}, [customerData])
+  useEffect(() => {
+    const access_token = customerData?.access_token;
+    const customer = customerData?.customer;
+    if (typeof window !== "undefined") {
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("customer", JSON.stringify(customer));
+    }
+  }, [customerData]);
 
   return (
     <>

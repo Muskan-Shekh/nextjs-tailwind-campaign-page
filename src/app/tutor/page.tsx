@@ -11,7 +11,7 @@ import {
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 
-export default function Tuitor() {
+export default function Tutor() {
   return (
     <>
       <Navbar />
@@ -23,7 +23,7 @@ export default function Tuitor() {
         {...({} as React.ComponentProps<typeof Card>)}
       >
         <Typography variant="h4" color="blue-gray" {...({} as React.ComponentProps<typeof Typography>)}>
-          Tuitor
+          Tutor
         </Typography>
         <form className="mt-8 mb-2 w-full max-w-screen-lg shadow-lg p-4">
           <div className="mb-1 flex flex-col gap-6">

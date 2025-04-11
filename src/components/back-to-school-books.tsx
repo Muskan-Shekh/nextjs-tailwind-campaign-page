@@ -13,125 +13,125 @@ import axios from "axios";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
 
-const BOOKS = [
-  {
-    img: `/image/books/RectangleBig1.svg`,
-    category: "Natasha Wing",
-    title: "The Night Before Kindergarten",
-    desc: "A heartwarming and humorous picture book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "NCERT",
-  },
-  {
-    img: `/image/books/RectangleBig6.svg`,
-    category: "James Patterson",
-    title: "Middle School: The Worst Years of My Life",
-    desc: "A funny and relatable novel...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "CBSE",
-  },
-  {
-    img: `/image/books/RectangleBig2.svg`,
-    category: "Helen W. Colby",
-    title: "College Student: A Comprehensive Checklist",
-    desc: "A practical guidebook...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "Kids",
-  },
-  {
-    img: `/image/books/RectangleBig3.svg`,
-    category: "Walter Pauk",
-    title: "How to Study in College",
-    desc: "A valuable resource...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "RBSE",
-  },
-  {
-    img: `/image/books/RectangleBig4.svg`,
-    category: "William Strunk Jr.",
-    title: "The Elements of Style",
-    desc: "A classic reference book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "NCERT",
-  },
-  {
-    img: `/image/books/RectangleBig5.svg`,
-    category: "William Strunk Jr.",
-    title: "The Elements of Style",
-    desc: "A classic reference book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "Kids",
-  },
-  {
-    img: `/image/books/RectangleBig1.svg`,
-    category: "Natasha Wing",
-    title: "The Night Before Kindergarten",
-    desc: "A heartwarming and humorous picture book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "NCERT",
-  },
-  {
-    img: `/image/books/RectangleBig6.svg`,
-    category: "James Patterson",
-    title: "Middle School: The Worst Years of My Life",
-    desc: "A funny and relatable novel...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "Kids",
-  },
-  {
-    img: `/image/books/RectangleBig2.svg`,
-    category: "Helen W. Colby",
-    title: "College Student: A Comprehensive Checklist",
-    desc: "A practical guidebook...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "CBSE",
-  },
-  {
-    img: `/image/books/RectangleBig3.svg`,
-    category: "Walter Pauk",
-    title: "How to Study in College",
-    desc: "A valuable resource...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "CBSE",
-  },
-  {
-    img: `/image/books/RectangleBig4.svg`,
-    category: "William Strunk Jr.",
-    title: "The Elements of Style",
-    desc: "A classic reference book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "RBSE",
-  },
-  {
-    img: `/image/books/RectangleBig5.svg`,
-    category: "William Strunk Jr.",
-    title: "The Elements of Style",
-    desc: "A classic reference book...",
-    price: "$99",
-    offPrice: "$79",
-    tab: "RBSE",
-  },
-];
+// const BOOKS = [
+//   {
+//     img: `/image/books/RectangleBig1.svg`,
+//     category: "Natasha Wing",
+//     title: "The Night Before Kindergarten",
+//     desc: "A heartwarming and humorous picture book...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "NCERT",
+//   },
+//   {
+//     img: `/image/books/RectangleBig6.svg`,
+//     category: "James Patterson",
+//     title: "Middle School: The Worst Years of My Life",
+//     desc: "A funny and relatable novel...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "CBSE",
+//   },
+//   {
+//     img: `/image/books/RectangleBig2.svg`,
+//     category: "Helen W. Colby",
+//     title: "College Student: A Comprehensive Checklist",
+//     desc: "A practical guidebook...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "Kids",
+//   },
+//   {
+//     img: `/image/books/RectangleBig3.svg`,
+//     category: "Walter Pauk",
+//     title: "How to Study in College",
+//     desc: "A valuable resource...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "RBSE",
+//   },
+//   {
+//     img: `/image/books/RectangleBig4.svg`,
+//     category: "William Strunk Jr.",
+//     title: "The Elements of Style",
+//     desc: "A classic reference book...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "NCERT",
+//   },
+//   {
+//     img: `/image/books/RectangleBig5.svg`,
+//     category: "William Strunk Jr.",
+//     title: "The Elements of Style",
+//     desc: "A classic reference book...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "Kids",
+//   },
+//   {
+//     img: `/image/books/RectangleBig1.svg`,
+//     category: "Natasha Wing",
+//     title: "The Night Before Kindergarten",
+//     desc: "A heartwarming and humorous picture book...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "NCERT",
+//   },
+//   {
+//     img: `/image/books/RectangleBig6.svg`,
+//     category: "James Patterson",
+//     title: "Middle School: The Worst Years of My Life",
+//     desc: "A funny and relatable novel...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "Kids",
+//   },
+//   {
+//     img: `/image/books/RectangleBig2.svg`,
+//     category: "Helen W. Colby",
+//     title: "College Student: A Comprehensive Checklist",
+//     desc: "A practical guidebook...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "CBSE",
+//   },
+//   {
+//     img: `/image/books/RectangleBig3.svg`,
+//     category: "Walter Pauk",
+//     title: "How to Study in College",
+//     desc: "A valuable resource...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "CBSE",
+//   },
+//   {
+//     img: `/image/books/RectangleBig4.svg`,
+//     category: "William Strunk Jr.",
+//     title: "The Elements of Style",
+//     desc: "A classic reference book...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "RBSE",
+//   },
+//   {
+//     img: `/image/books/RectangleBig5.svg`,
+//     category: "William Strunk Jr.",
+//     title: "The Elements of Style",
+//     desc: "A classic reference book...",
+//     price: "$99",
+//     offPrice: "$79",
+//     tab: "RBSE",
+//   },
+// ];
 
-const BOOKS_TABS = [
-  "history",
-  "law",
-  "math",
-  "economy",
-  "business",
-  "communication",
-];
+// const BOOKS_TABS = [
+//   "history",
+//   "law",
+//   "math",
+//   "economy",
+//   "business",
+//   "communication",
+// ];
 
 export function BackToSchoolBooks() {
   const router = useRouter();
@@ -225,6 +225,7 @@ export function BackToSchoolBooks() {
         </Typography>
         <div className="mt-20 flex items-center justify-center">
           <Tabs value={activeTab} className="w-full lg:w-8/12">
+          {Array.isArray(category?.child) && category.child.length > 0 && (
             <TabsHeader
               className="h-12 bg-transparent"
               indicatorProps={{
@@ -235,7 +236,7 @@ export function BackToSchoolBooks() {
               {category?.child?.map((tab: any) => (
                 <Tab
                   key={tab.id}
-                  value={tab}
+                  value={tab.name}
                   className={`!font-medium capitalize transition-all duration-300 rounded-xl
                     ${
                       activeTab === tab?.name
@@ -250,6 +251,7 @@ export function BackToSchoolBooks() {
                 </Tab>
               ))}
             </TabsHeader>
+          )}
           </Tabs>
         </div>
       </div>

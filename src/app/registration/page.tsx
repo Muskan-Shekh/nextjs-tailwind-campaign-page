@@ -78,28 +78,6 @@ export default function RegistrationForm() {
     refreshCaptcha();
   }, []);
 
-  // async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-  //   event.preventDefault();
-
-  //   const formData = new FormData(event.currentTarget);
-  //   const name = formData.get("email");
-  //   const phone = formData.get("password");
-  //   const email = formData.get("email");
-  //   const password = formData.get("password");
-  //   if (captchaInput === captcha) {
-  //     const response = await fetch(`${config.apiUrl}api/v1/register`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ name, phone, email, password }),
-  //     });
-  //     if (response.ok) {
-  //       alert("CAPTCHA Verified Successfully!");
-  //     }
-  //   } else {
-  //     alert("Invalid CAPTCHA. Please try again.");
-  //     refreshCaptcha();
-  //   }
-  // }
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -211,7 +189,7 @@ export default function RegistrationForm() {
           </Alert>
         )}
         <form
-          className="mt-8 mb-8 w-80 max-w-screen-lg sm:w-96 shadow-lg p-4"
+          className="mt-8 mb-8 w-80 max-w-screen-lg sm:w-full shadow-lg p-4"
           onSubmit={handleSubmit}
         >
           <div className="mb-1 flex flex-col gap-6">

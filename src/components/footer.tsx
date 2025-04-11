@@ -6,6 +6,9 @@ import facebook from "../../public/logos/facebook-1-svgrepo-com.svg";
 import instagram from "../../public/logos/instagram-1-svgrepo-com.svg";
 import youtube from "../../public/logos/youtube-color-svgrepo-com.svg";
 import Image from "next/image";
+import React from "react";
+import axios from "axios";
+import config from "@/app/config";
 
 const LINKS = [
   {
@@ -40,9 +43,44 @@ const LINKS = [
   },
 ];
 
-const currentYear = new Date().getFullYear();
+// const currentYear = new Date().getFullYear();
 
 export function Footer() {
+  const [footerMenu, setFooterMenu] = React.useState([] as any);
+  React.useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/menus/Footer_Menu_1`,
+          responseType: "json",
+        });
+        setFooterMenu(response.data);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  React.useEffect(() => {
+    // console.log("footerMenu", footerMenu);
+  }, [footerMenu]);
+  function chunkArray(array: any[], size: number) {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      result.push(array.slice(i, i + size));
+    }
+    return result;
+  }
+  const chunkedMenu = chunkArray(
+    footerMenu?.data || [],
+    Math.ceil((footerMenu?.data?.length || 0) / 3)
+  );
+
   return (
     <footer className="relative w-full bg-gray-200">
       <div className="mx-auto w-full max-w-7xl px-8 pt-8">
@@ -80,22 +118,25 @@ export function Footer() {
               </a>
             </div>
           </div>
-          {LINKS.map(({ title, items }) => (
-            <ul key={title}>
-              {items.map(({ label, url }) => (
-                <li key={label}>
-                  <Typography
-                    as="a"
-                    href={url}
-                    color="gray"
-                    className="py-1.5 font-normal transition-colors hover:text-blue-gray-900"
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    {label}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
+          {/* Footer menu columns */}
+          {chunkedMenu.map((column, colIndex) => (
+            <div key={colIndex}>
+              <ul>
+                {column.map((menu: any) => (
+                  <li key={menu.id}>
+                    <Typography
+                      as="a"
+                      href={menu.url}
+                      color="gray"
+                      className="py-1.5 font-normal transition-colors hover:text-blue-gray-900"
+                      {...({} as React.ComponentProps<typeof Typography>)}
+                    >
+                      {menu.name}
+                    </Typography>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </div>
       </div>

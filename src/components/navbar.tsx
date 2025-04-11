@@ -24,6 +24,8 @@ export function Navbar() {
   const [open, setOpen] = React.useState(false);
   const [access_token, setAccessToken] = useState<string | null>(null);
   const [customer, setCustomer] = useState<any>(null); // You can type this better
+  const [searchTerm, setSearchTerm] = useState("");
+
   function handleOpen() {
     setOpen((cur) => !cur);
   }
@@ -43,6 +45,7 @@ export function Navbar() {
   const dropdownButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownMenuRef = useRef<HTMLDivElement>(null);
   const [publications, setPublications] = useState([] as any);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   // Handle dropdown button click
   const handleDropdownButtonClick = () => {
@@ -82,7 +85,7 @@ export function Navbar() {
           url: `${config.apiUrl}api/publications`,
           responseType: "json", // Assuming it's a JSON response, since you're calling .json() later
         });
-        setPublications(response.data);
+        setPublications(response.data?.data?.production);
       } catch (error) {
         // setError(error.message);
       } finally {
@@ -96,6 +99,29 @@ export function Navbar() {
   useEffect(() => {}, [publications]);
 
   useEffect(() => {
+    const lowerSearch = searchTerm.toLowerCase();
+
+    let allProducts = [];
+
+    if (selectedValue === "All Publications") {
+      publications.forEach((pub: any) => {
+        allProducts.push(...(pub.products || []));
+      });
+    } else {
+      const selectedPub = publications.find(
+        (pub: any) => pub.name === selectedValue
+      );
+      allProducts = selectedPub?.products || [];
+    }
+
+    const results = allProducts.filter((product: any) =>
+      product.name.toLowerCase().includes(lowerSearch)
+    );
+    // console.log("results", results);
+    setFilteredProducts(results);
+  }, [searchTerm, selectedValue, publications]);
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("access_token");
       const customerData = localStorage.getItem("customer");
@@ -104,15 +130,22 @@ export function Navbar() {
       setCustomer(customerData ? JSON.parse(customerData) : null);
     }
   }, []);
-  
+
   const logout = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("access_token");
       localStorage.removeItem("customer");
       localStorage.clear(); // Optional, clears all keys if that's your intent
+      // router.refresh();
+      window.location.reload();
     }
-    router.push("/");
   };
+
+  const getPublicationName = (id: number) => {
+    const pub = publications.find((p:any) => p.id === id);
+    return pub ? pub.name : "Unknown Publication";
+  };
+  
 
   return (
     <MTNavbar
@@ -162,25 +195,15 @@ export function Navbar() {
                   className="min-w-[150px] overflow-hidden absolute left-0 w-full mt-[32rem] bg-white border border-gray-200 rounded-md shadow-lg"
                 >
                   <ul>
-                    {/* {[
-                      "All Publications",
-                      "A J Publications",
-                      "Aadhya Publications",
-                      "Aapno Publications",
-                    ].map((value) => (
-                      <li
-                        key={value}
-                        className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
-                        onClick={() => handleOptionClick(value)}
-                      >
-                        {value}
-                      </li>
-                    ))} */}
                     {publications?.map((publication: any) => (
                       <li
                         className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
                         key={publication?.id}
-                        onClick={() => handleOptionClick(publication?.name)}
+                        // onClick={() => handleOptionClick(publication?.name)}
+                        onClick={() => {
+                          handleOptionClick(publication?.name); // this should update `selectedValue`
+                          setSearchTerm(""); // optionally reset search
+                        }}
                       >
                         {publication?.name}
                       </li> // Adjust the field based on the structure of your data
@@ -191,9 +214,40 @@ export function Navbar() {
             </div>
             <input
               type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-transparent placeholder:text-gray-600 text-gray-800 text-sm border border-gray-200 rounded-md pr-12 pl-[20rem] py-2 transition duration-300 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 shadow-sm focus:shadow"
-              placeholder="Search for products..."
             />
+
+            {searchTerm && filteredProducts.length > 0 && (
+              <div className="absolute top-full left-0 w-full z-20 bg-white border border-gray-200 rounded-md shadow-lg max-h-96 overflow-y-auto mt-1">
+                {filteredProducts?.map((product: any) => (
+                  <a
+                    key={product?.id}
+                    href={`/product/${product?.slug}`} // your route
+                    className="flex gap-3 items-start px-4 py-3 hover:bg-gray-100 border-b"
+                  >
+                    <img
+                      src={`${config.apiUrl}storage/${product?.image}`} // adjust path if needed
+                      alt={product?.name}
+                      className="w-12 h-16 object-cover rounded-sm"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm text-gray-900">
+                        {product?.name}
+                      </h4>
+                      <p className="text-xs text-gray-500">{product?.author}</p>
+                      <p className="text-xs text-gray-500">{getPublicationName(product?.production_id)}</p>
+                      <div className="text-sm font-semibold text-red-600 mt-1">
+                        ₹{product?.price}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+
             <button className="absolute right-1 top-1 rounded bg-black p-1.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-gray-700 focus:shadow-none active:bg-gray-700 hover:bg-gray-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -211,7 +265,7 @@ export function Navbar() {
           </div>
         </div>
         <div className="hidden items-center gap-2 lg:flex">
-          <Link href={"/add-to-cart"} className="relative">
+          <Link href={"/view-cart"} className="relative">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -234,14 +288,14 @@ export function Navbar() {
             <Menu allowHover>
               <MenuHandler>
                 <Typography
-                  // as="a"
-                  // href="/my-account"
+                  as="a"
+                  href="/my-account"
                   variant="small"
                   color="blue-gray"
                   className="font-medium flex items-center gap-1 whitespace-nowrap ml-2"
                   {...({} as React.ComponentProps<typeof Typography>)}
                 >
-                  {JSON.parse(customer).name}
+                  {customer?.name}
                   <ChevronDownIcon
                     strokeWidth={2}
                     className="h-3 w-3 transition-transform"
@@ -376,7 +430,7 @@ export function Navbar() {
             </div> */}
           </ul>
           <div className="mt-6 mb-4 flex items-center gap-2">
-            <Link href={"/add-to-cart"} className="relative">
+            <Link href={"/view-cart"} className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

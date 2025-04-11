@@ -58,6 +58,35 @@ export default function ProductDetail({ params }: any) {
       setQuantity(quantity - 1);
     }
   };
+
+  const handleAddToCart = async (productId:string,quantity:number) => {
+    try {
+      const response = await fetch("https://admin.bookwindow.in/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add auth token if required:
+          // Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          quantity: quantity,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add to cart");
+      }
+
+      const result = await response.json();
+      console.log("Cart updated:", result);
+      // alert("Product added to cart!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      // alert("Error adding product to cart.");
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -163,7 +192,7 @@ export default function ProductDetail({ params }: any) {
 
             <div className="flex space-x-4 mb-6 relative">
               <button
-                onClick={() => setShowPopup(true)}
+                onClick={() => {setShowPopup(true);handleAddToCart(productData?.id,quantity)}}
                 className="bg-indigo-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 <svg

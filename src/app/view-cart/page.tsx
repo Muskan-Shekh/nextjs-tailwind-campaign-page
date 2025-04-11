@@ -94,7 +94,7 @@ export default function ShoppingCart() {
                     className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm  md:p-6"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-6">
-                      <Image
+                      <img
                         className="h-20 w-20"
                         src={item.imageLight}
                         alt={item.name}

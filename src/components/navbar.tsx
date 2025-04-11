@@ -22,7 +22,8 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 export function Navbar() {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-
+  const [access_token, setAccessToken] = useState<string | null>(null);
+  const [customer, setCustomer] = useState<any>(null); // You can type this better
   function handleOpen() {
     setOpen((cur) => !cur);
   }
@@ -94,6 +95,16 @@ export function Navbar() {
 
   useEffect(() => {}, [publications]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      const customerData = localStorage.getItem("customer");
+
+      setAccessToken(token);
+      setCustomer(customerData ? JSON.parse(customerData) : null);
+    }
+  }, []);
+  
   const logout = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("access_token");

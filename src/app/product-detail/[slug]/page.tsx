@@ -16,6 +16,7 @@ export default function ProductDetail({ params }: any) {
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null as any);
   const [session, setSession] = useState("");
+  const [cartData, setCartData] = useState({} as any);
 
   const handleImageChange = (src: string) => {
     setMainImage(src);
@@ -77,7 +78,7 @@ export default function ProductDetail({ params }: any) {
     });
     const data = await res.json();
     setSession(data?.session_id);
-    console.log("Session info:", data);
+    // console.log("Session info:", data);
   };
 
   useEffect(() => {
@@ -88,7 +89,7 @@ export default function ProductDetail({ params }: any) {
 
   const handleAddToCart = async (productId: string, quantity: number) => {
     try {
-      const response = await fetch("https://admin.bookwindow.in/api/cart/add", {
+      const response = await fetch(`${config.apiUrl}api/cart/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,6 +102,7 @@ export default function ProductDetail({ params }: any) {
         }),
       });
       const result = await response.json();
+      setCartData(result);
       console.log("Cart updated:", result);
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -268,6 +270,7 @@ export default function ProductDetail({ params }: any) {
                   popupRef={popupRef}
                   setShowPopup={setShowPopup}
                   showPopup={showPopup}
+                  cartData ={cartData}
                 ></CartPopup>
               )}
 

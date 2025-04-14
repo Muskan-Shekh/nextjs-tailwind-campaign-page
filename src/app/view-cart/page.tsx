@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 // components
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 import { useRouter } from 'next/navigation'
+import config from "@/app/config";
+import axios from "axios";
 
 interface CartItem {
   id: number;
@@ -40,6 +42,43 @@ const initialCartItems: CartItem[] = [
 ];
 
 export default function ShoppingCart() {
+  const [session, setSession] = useState("");
+    const checkSession = async () => {
+      const res = await fetch("/api/debug", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      setSession(data?.session_id);
+      // console.log("Session info:", data);
+    };
+
+    
+    useEffect(() => {
+      const viewCart = async () => {
+        try {
+          const response = await axios({
+            method: "get",
+            url: `${config.apiUrl}api/cart/viewcart?session_id=${session}`,
+            responseType: "json",
+          });
+          console.log("cart list", response?.data)
+        } catch (error) {
+          console.log("error", error);
+        } finally {
+          // console.log("An error occured");
+        }
+      };
+  
+      viewCart();
+    }, [session]);
+
+    useEffect(() => {
+      checkSession();
+    }, []);
+  
+    useEffect(() => {}, [session]);
+
   const router = useRouter()
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCartItems);
 

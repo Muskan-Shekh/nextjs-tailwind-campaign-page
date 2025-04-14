@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   const res = new NextResponse();
 
   const session: any = await getIronSession(req, res, sessionOptions);
-  console.log("session", session);
+//   console.log("session", session);
   try {
     if (!session.session_id) {
       session.session_id = uuidv4();

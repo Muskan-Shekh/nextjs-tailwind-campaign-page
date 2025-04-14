@@ -4,7 +4,13 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-export function CartPopup({ popupRef, setShowPopup, showPopup }: any) {
+export function CartPopup({
+  popupRef,
+  setShowPopup,
+  showPopup,
+  cartData,
+}: any) {
+  console.log("cartData", cartData);
   const router = useRouter();
   // Function to handle clicks outside the popup
   useEffect(() => {
@@ -40,7 +46,8 @@ export function CartPopup({ popupRef, setShowPopup, showPopup }: any) {
         />
         <div>
           <h2 className="font-semibold text-sm">
-            Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication x 1
+            {/* Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication x 1 */}
+            {cartData?.cart?.items[0]?.product?.name}
           </h2>
           <p className="text-gray-600 text-sm mt-1">Added to cart</p>
           <button

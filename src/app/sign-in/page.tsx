@@ -1,21 +1,51 @@
 "use client";
 
-import { Card, Input, Button, Typography } from "@material-tailwind/react";
+import {
+  Card,
+  Input,
+  Button,
+  Typography,
+  Alert,
+} from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 import config from "../config";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Modal from "@/components/modal";
+import ForgotPassword from "@/components/forgot-password";
 
 export default function SignIn() {
   const router = useRouter();
   const [customerData, setCustomerData] = useState({} as any);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"error" | "success" | "">("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // const form = event.currentTarget;
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email");
-    const password = formData.get("password");
+    const password = formData.get("password")?.toString() || "";
+    if (!email) {
+      setAlertType("error");
+      setAlertMessage("Email is required.");
+      return;
+    }
+
+    if (!password) {
+      setAlertType("error");
+      setAlertMessage("Password is required.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setAlertType("error");
+      setAlertMessage("Password must be at least 8 characters long.");
+      return;
+    }
+
     const response = await fetch(`${config.apiUrl}api/v1/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,17 +56,37 @@ export default function SignIn() {
       setCustomerData(data);
       router.push("/");
     } else {
+      const data = await response.json();
+      // console.log("Login failed", data);
+      if (data?.error === "The provided credentials are incorrect.") {
+        setAlertType("error");
+        setAlertMessage("The provided credentials are incorrect.");
+        return;
+      }
       console.error("Login failed", response.status);
     }
   }
 
   useEffect(() => {
-    if (typeof window !== "undefined" && customerData?.access_token && customerData?.customer) {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      customerData?.access_token &&
+      customerData?.customer
+    ) {
       localStorage.setItem("access_token", customerData.access_token);
       localStorage.setItem("customer", JSON.stringify(customerData.customer));
     }
   }, [customerData]);
-  
 
   return (
     <>
@@ -55,6 +105,15 @@ export default function SignIn() {
         >
           Login
         </Typography>
+        {alertMessage && (
+          <Alert
+            color={alertType === "error" ? "red" : "green"}
+            className="mb-4"
+            onClose={() => setAlertMessage("")}
+          >
+            {alertMessage}
+          </Alert>
+        )}
         <form
           className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 shadow-lg p-4"
           onSubmit={handleSubmit}
@@ -102,6 +161,7 @@ export default function SignIn() {
           <Typography
             className="mt-4 text-center text-red-600 font-normal cursor-pointer"
             {...({} as React.ComponentProps<typeof Typography>)}
+            onClick={() => setIsModalOpen(true)}
           >
             Forgot Password?
           </Typography>
@@ -125,6 +185,9 @@ export default function SignIn() {
           </Typography>
         </form>
       </Card>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ForgotPassword />
+      </Modal>
       <Footer />
     </>
   );

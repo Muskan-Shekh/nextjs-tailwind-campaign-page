@@ -59,33 +59,70 @@ export default function ProductDetail({ params }: any) {
     }
   };
 
-  const handleAddToCart = async (productId:string,quantity:number) => {
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const savedSession = localStorage.getItem("session_id");
+  //     if (savedSession) {
+  //       console.log("savedSession", savedSession);
+  //       // You can attach this to headers on your fetch requests if needed
+  //     }
+  //   }
+  // }, []);
+
+  const handleAddToCart = async (productId: string, quantity: number) => {
     try {
+      // const sessionId = localStorage.getItem("session_id");
+
       const response = await fetch("https://admin.bookwindow.in/api/cart/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Add auth token if required:
-          // Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           product_id: productId,
-          quantity: quantity,
+          quantity,
+          // session_id: sessionId, // pass it manually if backend accepts it
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to add to cart");
-      }
-
       const result = await response.json();
       console.log("Cart updated:", result);
-      // alert("Product added to cart!");
+
+      // if (result.session_id) {
+      //   localStorage.setItem("session_id", result.session_id);
+      // }
     } catch (error) {
       console.error("Error adding to cart:", error);
-      // alert("Error adding product to cart.");
     }
   };
+
+  // const handleAddToCart = async (productId: string, quantity: number) => {
+  //   try {
+  //     const response = await fetch("https://admin.bookwindow.in/api/cart/add", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include", // 👈 this is the key line
+  //       body: JSON.stringify({
+  //         product_id: productId,
+  //         quantity: quantity,
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to add to cart");
+  //     }
+
+  //     const result = await response.json();
+  //     console.log("Cart updated:", result);
+  //     // alert("Product added to cart!");
+  //   } catch (error) {
+  //     console.error("Error adding to cart:", error);
+  //     // alert("Error adding product to cart.");
+  //   }
+  // };
 
   return (
     <>
@@ -192,7 +229,10 @@ export default function ProductDetail({ params }: any) {
 
             <div className="flex space-x-4 mb-6 relative">
               <button
-                onClick={() => {setShowPopup(true);handleAddToCart(productData?.id,quantity)}}
+                onClick={() => {
+                  setShowPopup(true);
+                  handleAddToCart(productData?.id, quantity);
+                }}
                 className="bg-indigo-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 <svg

@@ -15,6 +15,7 @@ export default function ProductDetail({ params }: any) {
   const [mainImage, setMainImage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null as any);
+  const [session, setSession] = useState("");
 
   const handleImageChange = (src: string) => {
     setMainImage(src);
@@ -59,20 +60,34 @@ export default function ProductDetail({ params }: any) {
     }
   };
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const savedSession = localStorage.getItem("session_id");
-  //     if (savedSession) {
-  //       console.log("savedSession", savedSession);
-  //       // You can attach this to headers on your fetch requests if needed
-  //     }
-  //   }
-  // }, []);
+  // const postToSession = async () => {
+  //   const res = await fetch("/api/debug", {
+  //     method: "POST",
+  //     credentials: "include", // required to include cookies
+  //   });
+
+  //   const data = await res.json();
+  //   console.log("Session POST response:", data);
+  // };
+
+  const checkSession = async () => {
+    const res = await fetch("/api/debug", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    setSession(data?.session_id);
+    console.log("Session info:", data);
+  };
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  useEffect(() => {}, [session]);
 
   const handleAddToCart = async (productId: string, quantity: number) => {
     try {
-      // const sessionId = localStorage.getItem("session_id");
-
       const response = await fetch("https://admin.bookwindow.in/api/cart/add", {
         method: "POST",
         headers: {
@@ -82,16 +97,11 @@ export default function ProductDetail({ params }: any) {
         body: JSON.stringify({
           product_id: productId,
           quantity,
-          // session_id: sessionId, // pass it manually if backend accepts it
+          session_id: session, // pass it manually if backend accepts it
         }),
       });
-
       const result = await response.json();
       console.log("Cart updated:", result);
-
-      // if (result.session_id) {
-      //   localStorage.setItem("session_id", result.session_id);
-      // }
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
@@ -231,6 +241,7 @@ export default function ProductDetail({ params }: any) {
               <button
                 onClick={() => {
                   setShowPopup(true);
+                  // postToSession();
                   handleAddToCart(productData?.id, quantity);
                 }}
                 className="bg-indigo-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"

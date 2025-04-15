@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { CartPopup } from "@/components/cart-popup";
 import {
@@ -9,6 +9,7 @@ import {
   CardHeader,
 } from "@material-tailwind/react";
 import ProductDialog from "./product-detail-popup";
+import config from "@/app/config";
 
 interface BookCardProps {
   img: string;
@@ -18,6 +19,9 @@ interface BookCardProps {
   price: string;
   offPrice?: string;
   slug?: string;
+  id?:string | any;
+  quantity:number;
+  onItemsCountUpdate?: (count: number) => void;
 }
 
 export function BookCard({
@@ -28,11 +32,58 @@ export function BookCard({
   price,
   offPrice,
   slug,
+  id,
+  quantity,
+  onItemsCountUpdate
 }: BookCardProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [open, setOpen] = React.useState(false);
   const popupRef = useRef(null as any);
   const handleOpen = () => setOpen(!open);
+  const [session, setSession] = useState("");
+  const [cartData, setCartData] = useState({} as any);
+
+  const checkSession = async () => {
+    const res = await fetch("/api/debug", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    setSession(data?.session_id);
+    // console.log("Session info:", data);
+  };
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  useEffect(() => {}, [session]);
+
+  const handleAddToCart = async (productId: string, quantity: number) => {
+    try {
+      const response = await fetch(`${config.apiUrl}api/cart/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          product_id: productId,
+          quantity,
+          session_id: session, // pass it manually if backend accepts it
+        }),
+      });
+      const result = await response.json();
+      setCartData(result);
+      // 👇 Notify parent of updated items count
+      if (onItemsCountUpdate && typeof result?.total_products_count === "number") {
+        onItemsCountUpdate(result.total_products_count);
+      }
+      // console.log("Cart updated:", result);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
 
   return (
     <Card
@@ -103,7 +154,10 @@ export function BookCard({
           </div>
           <div className="flex gap-2 relative">
             <svg
-              onClick={() => setShowPopup(true)}
+              onClick={() => {
+                setShowPopup(true);
+                handleAddToCart(id, 1);
+              }}
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -123,6 +177,7 @@ export function BookCard({
                 popupRef={popupRef}
                 setShowPopup={setShowPopup}
                 showPopup={showPopup}
+                cartData ={cartData}
               ></CartPopup>
             )}
             <svg

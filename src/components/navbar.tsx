@@ -19,7 +19,45 @@ import axios from "axios";
 import config from "@/app/config";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-export function Navbar() {
+export function Navbar(items_count?: any) {
+  const [session, setSession] = useState("");
+  const [itemsCount, setItemsCount] = useState(items_count?.items_count);
+
+  const checkSession = async () => {
+    const res = await fetch("/api/debug", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    setSession(data?.session_id);
+    // console.log("Session info:", data);
+  };
+  useEffect(() => {
+    const viewCart = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/cart/viewcart?session_id=${session}`,
+          responseType: "json",
+        });
+        const data = response?.data;
+        setItemsCount(data?.items_count);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+    viewCart();
+  }, [session]);
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  // console.log("itemsCount", itemsCount);
+  useEffect(() => {}, [itemsCount, session]);
+
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [access_token, setAccessToken] = useState<string | null>(null);
@@ -37,9 +75,8 @@ export function Navbar() {
     );
   }, []);
 
-  const [selectedValue, setSelectedValue] = useState<string>(
-    "All Publications"
-  );
+  const [selectedValue, setSelectedValue] =
+    useState<string>("All Publications");
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const dropdownButtonRef = useRef<HTMLButtonElement>(null);
@@ -142,10 +179,9 @@ export function Navbar() {
   };
 
   const getPublicationName = (id: number) => {
-    const pub = publications.find((p:any) => p.id === id);
+    const pub = publications.find((p: any) => p.id === id);
     return pub ? pub.name : "Unknown Publication";
   };
-  
 
   return (
     <MTNavbar
@@ -238,7 +274,9 @@ export function Navbar() {
                         {product?.name}
                       </h4>
                       <p className="text-xs text-gray-500">{product?.author}</p>
-                      <p className="text-xs text-gray-500">{getPublicationName(product?.production_id)}</p>
+                      <p className="text-xs text-gray-500">
+                        {getPublicationName(product?.production_id)}
+                      </p>
                       <div className="text-sm font-semibold text-red-600 mt-1">
                         ₹{product?.price}
                       </div>
@@ -281,7 +319,7 @@ export function Navbar() {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              3
+              {items_count?.items_count ? items_count?.items_count : itemsCount}
             </div>
           </Link>
           {access_token && customer ? (
@@ -446,7 +484,9 @@ export function Navbar() {
                 />
               </svg>
               <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-                3
+                {items_count?.items_count
+                  ? items_count?.items_count
+                  : itemsCount}
               </div>
             </Link>
             <Button

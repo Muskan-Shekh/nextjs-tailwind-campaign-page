@@ -278,6 +278,8 @@ export function BackToSchoolBooks() {
             price={product.mrp}
             offPrice={product.price}
             slug={product.slug}
+            id={product.id}
+            quantity={product.quantity}
           />
         ))}
       </div>

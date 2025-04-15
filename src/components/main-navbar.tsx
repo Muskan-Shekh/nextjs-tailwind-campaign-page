@@ -59,7 +59,7 @@ const MainNavbar: React.FC = () => {
       <div className="grid grid-col-7 text-blue-gray-900 justify-center">
         <div className="hidden gap-2 lg:flex">
           <List
-            className="mb-6 mt-4 p-8 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1 gap-14 items-center"
+            className="mb-6 mt-4 p-8 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1 gap-8 items-center"
             {...({} as React.ComponentProps<typeof List>)}
           >
             {categories.map((item: any, index: number) => (

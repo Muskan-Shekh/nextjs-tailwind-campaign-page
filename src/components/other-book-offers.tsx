@@ -111,7 +111,7 @@ export function OtherBookOffers({ description, similarProducts }: any) {
       </div>
       <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-3">
         {similarProducts && similarProducts.length > 0
-          ? similarProducts.map((product: any) => (
+          && similarProducts.map((product: any) => (
               <BookCard
                 key={product.id}
                 img={`${config.apiUrl}storage/${product.image}`}
@@ -124,9 +124,11 @@ export function OtherBookOffers({ description, similarProducts }: any) {
                 price={product.mrp}
                 offPrice={product.price}
                 slug={product.slug}
+                id={product.id}
+                quantity={product.quantity}
               />
-            ))
-          : OTHER_BOOKS.map((props, key) => <BookCard key={key} {...props} />)}
+            ))}
+          {/* // : OTHER_BOOKS.map((props, key) => <BookCard key={key} {...props} />)} */}
       </div>
     </section>
   );

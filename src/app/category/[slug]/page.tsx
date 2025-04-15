@@ -8,7 +8,6 @@ import axios from "axios";
 import config from "../../config";
 import CategoryPublicationSidebar from "@/components/category-publication-sidebar";
 import { useSearchParams } from "next/navigation";
-
 const OTHER_BOOKS = [
   {
     img: `/image/books/RectangleBig1.svg`,
@@ -37,12 +36,18 @@ const OTHER_BOOKS = [
 ];
 
 export default function Category({ params }: any) {
+  const [itemsCount, setItemsCount] = useState<number>(0);
+
+  // Callback function to receive data from child
+  const handleItemsCountUpdate = (count: number) => {
+    setItemsCount(count);
+  };
   const { slug } = params;
   const searchParams = useSearchParams();
   const [products, setProducts] = useState([] as any);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const productionId = searchParams.get("production_id");
-  
+
   useEffect(() => {
     const fetchProductsByCategory = async () => {
       try {
@@ -82,7 +87,8 @@ export default function Category({ params }: any) {
 
   return (
     <>
-      <Navbar />
+      {/* items_count={itemsCount} */}
+      <Navbar items_count={itemsCount} />
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex">
         <CategoryPublicationSidebar categorySlug={slug} />
@@ -104,6 +110,9 @@ export default function Category({ params }: any) {
                   price={product.mrp}
                   offPrice={product.price}
                   slug={product.slug}
+                  id={product.id}
+                  quantity={product.quantity}
+                  onItemsCountUpdate={handleItemsCountUpdate}
                 />
               ))
             : products.map((product: any) => (
@@ -119,6 +128,9 @@ export default function Category({ params }: any) {
                   price={product.mrp}
                   offPrice={product.price}
                   slug={product.slug}
+                  id={product.id}
+                  quantity={product.quantity}
+                  onItemsCountUpdate={handleItemsCountUpdate}
                 />
               ))}
         </div>

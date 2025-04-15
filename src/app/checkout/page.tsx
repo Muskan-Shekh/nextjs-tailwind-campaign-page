@@ -1,46 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 // components
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 import { NotificationDialog } from "@/components/notification";
+import config from "../config";
+import axios from "axios";
 
 export default function Checkout() {
   const [deliveryType, setDeliveryType] = useState("normal");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   interface CartItem {
-    id: number;
-    name: string;
-    price: number;
+    product_id: number;
+    product_name: string;
+    product_price: number;
     quantity: number;
-    imageLight: string;
+    image: string;
+    subtotal?: number;
   }
 
-  const initialCartItems: CartItem[] = [
-    {
-      id: 1,
-      name: "Utkarsh - Current Affairs Monthly February 2024 By Kumar Gaurav Sir",
-      price: 500,
-      quantity: 1,
-      imageLight: "https://bookwindow.in/assets/images/image/product/14.jpg",
-    },
-    {
-      id: 2,
-      name: "Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication",
-      price: 700,
-      quantity: 1,
-      imageLight: "https://bookwindow.in/assets/images/image/product/1.webp",
-    },
-    {
-      id: 3,
-      name: "Agriculture Supervisor Exam Guide by Dr. Rajeev & R K Gupta in Hindi Medium",
-      price: 400,
-      quantity: 1,
-      imageLight: "https://bookwindow.in/assets/images/image/product/90.webp",
-    },
-  ];
+  const [session, setSession] = useState("");
+  const [cartItems, setCartItems] = useState([] as CartItem[]);
+
+  const checkSession = async () => {
+    const res = await fetch("/api/debug", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    setSession(data?.session_id);
+    // console.log("Session info:", data);
+  };
+
+  useEffect(() => {
+    const viewCart = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/cart/viewcart?session_id=${session}`,
+          responseType: "json",
+        });
+        const data = response?.data;
+        console.log("checkout list", data);
+        setCartItems(data?.items);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    viewCart();
+  }, [session]);
+
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  useEffect(() => {}, [session, cartItems]);
+
+  // const initialCartItems: CartItem[] = [
+  //   {
+  //     id: 1,
+  //     name: "Utkarsh - Current Affairs Monthly February 2024 By Kumar Gaurav Sir",
+  //     price: 500,
+  //     quantity: 1,
+  //     imageLight: "https://bookwindow.in/assets/images/image/product/14.jpg",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication",
+  //     price: 700,
+  //     quantity: 1,
+  //     imageLight: "https://bookwindow.in/assets/images/image/product/1.webp",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Agriculture Supervisor Exam Guide by Dr. Rajeev & R K Gupta in Hindi Medium",
+  //     price: 400,
+  //     quantity: 1,
+  //     imageLight: "https://bookwindow.in/assets/images/image/product/90.webp",
+  //   },
+  // ];
 
   return (
     <>
@@ -119,16 +162,16 @@ export default function Checkout() {
           <div className="border-b pb-4 mb-4 border-gray-400">
             <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl mb-4">
               <div className="space-y-6">
-                {initialCartItems.map((item) => (
+                {cartItems?.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.product_id}
                     className="rounded-lg border border-gray-200 bg-white p-2 shadow-sm md:p-2"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-6">
-                      <Image
+                      <img
                         className="h-20 w-20"
-                        src={item.imageLight}
-                        alt={item.name}
+                        src={`${config.apiUrl}storage/${item.image}`}
+                        alt={item.product_name}
                         width={40}
                         height={40}
                       />
@@ -138,14 +181,14 @@ export default function Checkout() {
                           href="#"
                           className="text-base font-medium text-gray-900 hover:underline"
                         >
-                          {item.name} × {item.quantity}
+                          {item.product_name} × {item.quantity}
                         </a>
                       </div>
 
                       {/* Quantity & Price */}
                       <div className="text-end w-32">
                         <p className="text-base font-bold text-gray-900">
-                          ₹{item.price * item.quantity}
+                          {/* ₹{item.price * item.quantity} */}₹{item.subtotal}
                         </p>
                       </div>
                     </div>
@@ -155,7 +198,13 @@ export default function Checkout() {
             </div>
             <div className="flex justify-between border-b pb-4 border-gray-400">
               <span>Subtotal</span>
-              <span>₹1600</span>
+              <span>
+                ₹
+                {cartItems?.reduce(
+                  (acc, item) => acc + item.product_price * item.quantity,
+                  0
+                )}
+              </span>
             </div>
             <div className="flex justify-between border-b pb-4 border-gray-400">
               <span>Shipping</span>

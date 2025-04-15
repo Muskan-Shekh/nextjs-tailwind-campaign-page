@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import config from "@/app/config";
 
 export function CartPopup({
   popupRef,
@@ -10,7 +11,7 @@ export function CartPopup({
   showPopup,
   cartData,
 }: any) {
-  console.log("cartData", cartData);
+  // console.log("cartData", cartData);
   const router = useRouter();
   // Function to handle clicks outside the popup
   useEffect(() => {
@@ -38,7 +39,8 @@ export function CartPopup({
     >
       <div className="flex gap-3">
         <img
-          src="https://bookwindow.in/assets/images/image/product/1.webp"
+          // src="https://bookwindow.in/assets/images/image/product/1.webp"
+          src={`${config.apiUrl}storage/${cartData?.cart?.items[0]?.product?.image}`}
           alt="Book"
           className="object-cover rounded-md"
           width={40}

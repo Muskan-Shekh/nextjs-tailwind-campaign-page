@@ -17,6 +17,7 @@ export default function ProductDetail({ params }: any) {
   const popupRef = useRef(null as any);
   const [session, setSession] = useState("");
   const [cartData, setCartData] = useState({} as any);
+  const [items_count, setItemsCount] = useState(0);
 
   const handleImageChange = (src: string) => {
     setMainImage(src);
@@ -103,42 +104,16 @@ export default function ProductDetail({ params }: any) {
       });
       const result = await response.json();
       setCartData(result);
-      console.log("Cart updated:", result);
+      setItemsCount(result?.total_products_count);
+      // console.log("Cart updated:", result);
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
   };
 
-  // const handleAddToCart = async (productId: string, quantity: number) => {
-  //   try {
-  //     const response = await fetch("https://admin.bookwindow.in/api/cart/add", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       credentials: "include", // 👈 this is the key line
-  //       body: JSON.stringify({
-  //         product_id: productId,
-  //         quantity: quantity,
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to add to cart");
-  //     }
-
-  //     const result = await response.json();
-  //     console.log("Cart updated:", result);
-  //     // alert("Product added to cart!");
-  //   } catch (error) {
-  //     console.error("Error adding to cart:", error);
-  //     // alert("Error adding product to cart.");
-  //   }
-  // };
-
   return (
     <>
-      <Navbar />
+      <Navbar items_count={items_count}/>
       <MainNavbar />
       {/* <div className="bg-gray-100"> */}
       <div className="container mx-auto px-4 py-8 md:flex md:col-12">

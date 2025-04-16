@@ -83,7 +83,7 @@ export default function ShoppingCart() {
     checkSession();
   }, []);
 
-  useEffect(() => {}, [session, cartItems]);
+  useEffect(() => {}, [session, cartItems, items_count]);
 
   const updateCartQuantity = async (productId: number, quantity: number) => {
     try {
@@ -101,7 +101,7 @@ export default function ShoppingCart() {
       });
       const result = await response.json();
       // setCartData(result);
-      console.log("updated:", result);
+      // console.log("updated:", result);
     } catch (error) {
       console.error("Error adding to cart:", error);
     }

@@ -31,7 +31,7 @@ const OTHER_BOOKS = [
   },
 ];
 
-export function OtherBookOffers({ description, similarProducts }: any) {
+export function OtherBookOffers({ description, similarProducts, onItemsCountUpdate }: any) {
   return (
     <section className="px-8 pt-28 pb-28">
       <div className="container mx-auto mb-10">
@@ -126,6 +126,7 @@ export function OtherBookOffers({ description, similarProducts }: any) {
                 slug={product.slug}
                 id={product.id}
                 quantity={product.quantity}
+                onItemsCountUpdate={onItemsCountUpdate}
               />
             ))}
           {/* // : OTHER_BOOKS.map((props, key) => <BookCard key={key} {...props} />)} */}

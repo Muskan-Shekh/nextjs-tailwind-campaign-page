@@ -1,3 +1,4 @@
+"use client";
 // components
 import { Navbar, Footer} from "@/components";
 
@@ -11,15 +12,20 @@ import GetYourBookFromUs from "../components/get-your-book-from-us";
 import Faq from "../components/faq";
 import MainNavbar from "@/components/main-navbar";
 import Feature from "@/components/features";
+import { useState } from "react";
 
 export default function Campaign() {
+  const [itemsCount, setItemsCount] = useState<number>(0);
+  const handleItemsCountUpdate = (count: number) => {
+    setItemsCount(count);
+  };
   return (
     <>
-      <Navbar />
+      <Navbar items_count={itemsCount}/>
       <MainNavbar />
       <Hero />
       <TopBookCategories />
-      <BackToSchoolBooks />
+      <BackToSchoolBooks onItemsCountUpdate={handleItemsCountUpdate} />
       {/* <OtherBookOffers /> */}
       <CarouselFeatures />
       <GetYourBookFromUs />

@@ -8,20 +8,9 @@ import {
   Typography,
 } from "@material-tailwind/react";
 
-export function NotificationDialog({ open, handleOpen }: any) {
-  // const [open, setOpen] = React.useState(false);
-
-  // const handleOpen = () => setOpen(!open);
-
+export function ThankYouDialog({ open, handleOpen }: any) {
   return (
     <>
-      {/* <Button
-        onClick={handleOpen}
-        className="w-full"
-        {...({} as React.ComponentProps<typeof Button>)}
-      >
-        Place Order
-      </Button> */}
       <Dialog
         {...({
           size: "xl",
@@ -34,16 +23,13 @@ export function NotificationDialog({ open, handleOpen }: any) {
           style: {},
         } as any)}
       >
-        <DialogHeader
-          {...({} as React.ComponentProps<typeof DialogHeader>)}
-          className="grid place-items-center"
-        >
+        <DialogHeader {...({} as React.ComponentProps<typeof DialogHeader>)}>
           <Typography
             variant="h5"
-            color="red"
+            color="blue-gray"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            Your Attention is Required!
+            🎉 Successfully placed ordered 😊
           </Typography>
         </DialogHeader>
         <DialogBody
@@ -56,14 +42,21 @@ export function NotificationDialog({ open, handleOpen }: any) {
             alt="logo"
             className="h-16 w-40"
           ></img>
-
+          <Typography
+            color="blue-gray"
+            variant="h4"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
+            Your order id is 233s34842f
+          </Typography>
           <Typography
             className="text-center font-normal text-gray-600"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            your shipping payment failed, it&apos;s likely due to issues with
-            your payment method, such as insufficient funds, an expired card, or
-            a problem with the payment gateway
+            Thank you for your purchase. Your order has been placed
+            successfully.<br></br>
+            If you have questions about order , you can email us at
+            <b> info@bookwindow.in</b> or call us <b> at +91 96023 68227</b>
           </Typography>
         </DialogBody>
         <DialogFooter
@@ -78,13 +71,15 @@ export function NotificationDialog({ open, handleOpen }: any) {
           >
             close
           </Button>
-          <Button
-            variant="gradient"
-            onClick={handleOpen}
-            {...({} as React.ComponentProps<typeof Button>)}
+          <Typography
+            as="a"
+            href="/"
+            variant="h6"
+            className="bg-green-800 text-white p-3 rounded hover:bg-green-900"
+            {...({} as React.ComponentProps<typeof Typography>)}
           >
-            Ok, Got it
-          </Button>
+            View Orders
+          </Typography>
         </DialogFooter>
       </Dialog>
     </>

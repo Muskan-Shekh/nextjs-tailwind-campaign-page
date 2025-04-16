@@ -83,7 +83,7 @@ export function Footer() {
 
   return (
     <footer className="relative w-full bg-gray-200">
-      <div className="mx-auto w-full max-w-7xl px-8 pt-8">
+      <div className="mx-auto w-full max-w-7xl px-8 pt-8 pb-8">
         <div className="grid justify-between gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0 xl:grid-cols-4">
           <div>
             <a href="/">

@@ -2,8 +2,36 @@
 import { Typography } from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
+import React from "react";
+import config from "../config";
+import axios from "axios";
 
 export default function AboutUs() {
+  const [aboutUsData, setAboutUsData] = React.useState([] as any);
+
+  React.useEffect(() => {
+    const fetchAboutUsData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/cms-pages/about-us`,
+          responseType: "json",
+        });
+        setAboutUsData(response.data);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchAboutUsData();
+  }, []);
+
+  React.useEffect(() => {
+    // console.log("aboutUsData", aboutUsData);
+  }, [aboutUsData]);
+
   return (
     <>
       <Navbar />
@@ -15,9 +43,15 @@ export default function AboutUs() {
           className="mb-4"
           {...({} as React.ComponentProps<typeof Typography>)}
         >
-          About Us
+          {aboutUsData?.title}
         </Typography>
         <Typography
+          className="w-full text-gray-600"
+          variant="lead"
+          dangerouslySetInnerHTML={{ __html: aboutUsData?.content }}
+          {...({} as React.ComponentProps<typeof Typography>)}
+        ></Typography>
+        {/* <Typography
           className="w-full text-gray-600"
           variant="lead"
           {...({} as React.ComponentProps<typeof Typography>)}
@@ -50,7 +84,7 @@ export default function AboutUs() {
           <strong className="text-gray-700">Mail id: </strong>
           naresh@bookwindow.in
           <br />
-        </Typography>
+        </Typography> */}
       </section>
       <Footer />
     </>

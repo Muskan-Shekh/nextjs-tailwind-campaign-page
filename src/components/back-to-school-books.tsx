@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Typography,
@@ -133,7 +133,7 @@ import { useRouter } from "next/navigation";
 //   "communication",
 // ];
 
-export function BackToSchoolBooks() {
+export function BackToSchoolBooks({onItemsCountUpdate}:any) {
   const router = useRouter();
   const [category, setCategory] = React.useState([] as any);
   const [products, setProducts] = React.useState([] as any);
@@ -280,6 +280,7 @@ export function BackToSchoolBooks() {
             slug={product.slug}
             id={product.id}
             quantity={product.quantity}
+            onItemsCountUpdate={onItemsCountUpdate}
           />
         ))}
       </div>

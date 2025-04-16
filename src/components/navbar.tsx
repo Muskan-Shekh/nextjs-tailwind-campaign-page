@@ -319,7 +319,7 @@ export function Navbar(items_count?: any) {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              {items_count?.items_count ? items_count?.items_count : itemsCount}
+              {items_count?.items_count ? items_count?.items_count : itemsCount || 0}
             </div>
           </Link>
           {access_token && customer ? (
@@ -486,7 +486,7 @@ export function Navbar(items_count?: any) {
               <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
                 {items_count?.items_count
                   ? items_count?.items_count
-                  : itemsCount}
+                  : itemsCount || 0}
               </div>
             </Link>
             <Button

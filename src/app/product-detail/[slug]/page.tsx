@@ -25,6 +25,10 @@ export default function ProductDetail({ params }: any) {
 
   const [productData, setProductData] = useState([] as any);
   const [similarProducts, setSimilarProducts] = useState([] as any);
+   // Callback function to receive data from child
+   const handleItemsCountUpdate = (count: number) => {
+    setItemsCount(count);
+  };
 
   useEffect(() => {
     const fetchProductBySlug = async () => {
@@ -295,6 +299,7 @@ export default function ProductDetail({ params }: any) {
       <OtherBookOffers
         description={productData?.description}
         similarProducts={similarProducts}
+        onItemsCountUpdate={handleItemsCountUpdate}
       />
       <Footer />
     </>

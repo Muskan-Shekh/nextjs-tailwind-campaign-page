@@ -13,12 +13,13 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function CategoryPublicationSidebar({ categorySlug }: any) {
+export default function CategoryPublicationSidebar({ categorySlug, category_id }: any) {
   const [publications, setPublications] = useState([] as any);
   const [categories, setCategories] = useState([] as any);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchProductsByCategory = async () => {
+    const fetchProductsByCategoryAndPublication = async () => {
       try {
         const response = await axios({
           method: "get",
@@ -33,7 +34,7 @@ export default function CategoryPublicationSidebar({ categorySlug }: any) {
       }
     };
 
-    fetchProductsByCategory();
+    fetchProductsByCategoryAndPublication();
   }, []);
 
   useEffect(() => {
@@ -56,7 +57,18 @@ export default function CategoryPublicationSidebar({ categorySlug }: any) {
   }, []);
 
   useEffect(() => {
-    // console.log("categories", categories); 
+    // if (category_id) {
+    //   publications.map((publication:any)=>{
+    //     const filtered = publication?.products?.filter(
+    //       (product: any) => product.category_id === category_id
+    //     );
+    //     setFilteredProducts(filtered);
+    //     console.log("filtered", filtered);
+    //   })
+      
+    // } else {
+    //   setFilteredProducts(publications?.products);
+    // }
   }, [publications, categories]);
 
   return (

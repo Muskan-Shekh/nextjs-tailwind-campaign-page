@@ -91,7 +91,7 @@ export default function Category({ params }: any) {
       <Navbar items_count={itemsCount} />
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex">
-        <CategoryPublicationSidebar categorySlug={slug} />
+        <CategoryPublicationSidebar categorySlug={slug} category_id={filteredProducts ? filteredProducts&& filteredProducts[0]?.category_id : products[0]?.category_id} />
         <div className="grid grid-cols-1 gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-3 col-8 p-4 shadow-lg">
           {/* {OTHER_BOOKS.map((props, key) => (
             <BookCard key={key} {...props} />

@@ -19,8 +19,8 @@ interface BookCardProps {
   price: string;
   offPrice?: string;
   slug?: string;
-  id?:string | any;
-  quantity:number;
+  id?: string | any;
+  quantity: number;
   onItemsCountUpdate?: (count: number) => void;
 }
 
@@ -34,7 +34,7 @@ export function BookCard({
   slug,
   id,
   quantity,
-  onItemsCountUpdate
+  onItemsCountUpdate,
 }: BookCardProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [open, setOpen] = React.useState(false);
@@ -76,7 +76,10 @@ export function BookCard({
       const result = await response.json();
       setCartData(result);
       // 👇 Notify parent of updated items count
-      if (onItemsCountUpdate && typeof result?.total_products_count === "number") {
+      if (
+        onItemsCountUpdate &&
+        typeof result?.total_products_count === "number"
+      ) {
         onItemsCountUpdate(result.total_products_count);
       }
       // console.log("Cart updated:", result);
@@ -103,20 +106,22 @@ export function BookCard({
           height={768}
           src={img}
           alt={title}
-          className="h-full w-full scale-[1.1] object-cover object-center"
+          className="h-80 w-full scale-[1.1] object-contain object-center"
         />
       </CardHeader>
       <CardBody
         className="p-0"
         {...({} as React.ComponentProps<typeof CardBody>)}
       >
-        <Typography
-          color="blue"
-          className="mb-2 text-xs !font-semibold"
-          {...({} as React.ComponentProps<typeof Typography>)}
-        >
-          {category} % off
-        </Typography>
+        {price !== offPrice && (
+          <Typography
+            color="blue"
+            className="mb-2 text-xs !font-semibold"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
+            {category} % off
+          </Typography>
+        )}
         <a href={`/product-detail/${slug}`}>
           <Typography
             variant="h5"
@@ -129,24 +134,27 @@ export function BookCard({
         </a>
         <Typography
           className="mb-4 font-normal !text-gray-500"
+          dangerouslySetInnerHTML={{ __html: desc }}
           {...({} as React.ComponentProps<typeof Typography>)}
         >
-          {desc}
+          {/* {desc} */}
         </Typography>
         <div className="flex justify-between">
           <div className="flex gap-2">
             {" "}
+            {price !== offPrice && (
+              <Typography
+                variant="h5"
+                color="red"
+                className={offPrice ? "line-through" : ""}
+                {...({} as React.ComponentProps<typeof Typography>)}
+              >
+                ₹{price}
+              </Typography>
+            )}
             <Typography
               variant="h5"
               color="blue-gray"
-              className={offPrice ? "line-through" : ""}
-              {...({} as React.ComponentProps<typeof Typography>)}
-            >
-              ₹{price}
-            </Typography>
-            <Typography
-              variant="h5"
-              color="red"
               {...({} as React.ComponentProps<typeof Typography>)}
             >
               ₹{offPrice}
@@ -177,7 +185,7 @@ export function BookCard({
                 popupRef={popupRef}
                 setShowPopup={setShowPopup}
                 showPopup={showPopup}
-                cartData ={cartData}
+                cartData={cartData}
               ></CartPopup>
             )}
             <svg

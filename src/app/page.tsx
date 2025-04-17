@@ -1,6 +1,6 @@
 "use client";
 // components
-import { Navbar, Footer} from "@/components";
+import { Navbar, Footer } from "@/components";
 
 // sections
 import Hero from "../components/hero";
@@ -13,6 +13,7 @@ import Faq from "../components/faq";
 import MainNavbar from "@/components/main-navbar";
 import Feature from "@/components/features";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function Campaign() {
   const [itemsCount, setItemsCount] = useState<number>(0);
@@ -21,14 +22,54 @@ export default function Campaign() {
   };
   return (
     <>
-      <Navbar items_count={itemsCount}/>
+      <Navbar items_count={itemsCount} />
       <MainNavbar />
-      <Hero />
-      <TopBookCategories />
-      <BackToSchoolBooks onItemsCountUpdate={handleItemsCountUpdate} />
+      <motion.div
+        // className="footer-content text-light"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <Hero />
+      </motion.div>
+      <motion.div
+        // className="footer-content text-light"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <TopBookCategories />
+      </motion.div>
+      <motion.div
+        // className="footer-content text-light"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <BackToSchoolBooks onItemsCountUpdate={handleItemsCountUpdate} />
+      </motion.div>
       {/* <OtherBookOffers /> */}
-      <CarouselFeatures />
-      <GetYourBookFromUs />
+      <motion.div
+        // className="footer-content text-light"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.0, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <CarouselFeatures />
+      </motion.div>
+      <motion.div
+        // className="footer-content text-light"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+        viewport={{ once: true }}
+      >
+        <GetYourBookFromUs />
+      </motion.div>
       {/* <Faq /> */}
       {/* <Feature /> */}
       <Footer />

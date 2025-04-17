@@ -54,7 +54,7 @@ export default function Blogs() {
           <div key={blog?.id} className="bg-white p-4 rounded shadow">
             <Typography
               as="a"
-              href="#"
+              href={`blogs/${blog?.slug}`}
               color="black"
               variant="h2"
               className="mb-4 text-xl font-bold"
@@ -65,7 +65,7 @@ export default function Blogs() {
             <img
               src={`${config.apiUrl}storage/${blog?.image}`}
               alt={blog?.title}
-              className="w-full h-48 object-cover mb-4"
+              className="w-full h-80 object-contain mb-4"
             />
             <Typography
               className="w-full text-gray-600"
@@ -73,7 +73,7 @@ export default function Blogs() {
               dangerouslySetInnerHTML={{ __html: truncateContent(blog?.content) }}
               {...({} as React.ComponentProps<typeof Typography>)}
             ></Typography>
-            <a href="#" className="text-gray-800">Read more</a>
+            <a href={`blogs/${blog?.slug}`} className="text-gray-800">Read more</a>
           </div>
         ))}
       </section>

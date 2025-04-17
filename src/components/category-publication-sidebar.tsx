@@ -70,7 +70,7 @@ export default function CategoryPublicationSidebar({ categorySlug }: any) {
         >
           Categories
         </Typography>
-        <List {...({} as React.ComponentProps<typeof List>)}>
+        <List {...({} as React.ComponentProps<typeof List>)} className="h-[30rem] overflow-y-auto">
           <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
             Show All
           </ListItem>
@@ -111,7 +111,7 @@ export default function CategoryPublicationSidebar({ categorySlug }: any) {
         >
           Publications
         </Typography>
-        <List {...({} as React.ComponentProps<typeof List>)}>
+        <List {...({} as React.ComponentProps<typeof List>)} className="h-[30rem] overflow-y-auto">
           <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
             <Link href={`category/${categorySlug}`}>Show All</Link>
           </ListItem>

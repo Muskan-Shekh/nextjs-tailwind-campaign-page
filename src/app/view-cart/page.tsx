@@ -75,7 +75,6 @@ export default function ShoppingCart() {
         // console.log("An error occured");
       }
     };
-
     viewCart();
   }, [session]);
 
@@ -83,7 +82,11 @@ export default function ShoppingCart() {
     checkSession();
   }, []);
 
-  useEffect(() => {}, [session, cartItems, items_count]);
+  useEffect(() => {
+    if (!cartItems) {
+      router.push("/");
+    }
+  }, [session, cartItems, items_count, router]);
 
   const updateCartQuantity = async (productId: number, quantity: number) => {
     try {
@@ -130,7 +133,9 @@ export default function ShoppingCart() {
 
   const updateQuantity = (id: number, action: "increment" | "decrement") => {
     updateCartQuantity(id, action === "increment" ? +1 : -1);
-    action === "increment" ? setItemsCount(items_count +1): setItemsCount(items_count-1);
+    action === "increment"
+      ? setItemsCount(items_count + 1)
+      : setItemsCount(items_count - 1);
     setCartItems((prev) =>
       prev.map((item) =>
         item.product_id === id
@@ -147,7 +152,7 @@ export default function ShoppingCart() {
   };
 
   const removeItem = (id: number) => {
-    removeCartItem(id)
+    removeCartItem(id);
     setCartItems(cartItems?.filter((item) => item.product_id !== id));
   };
 

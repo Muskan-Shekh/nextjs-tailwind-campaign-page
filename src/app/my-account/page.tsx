@@ -1,219 +1,292 @@
 "use client";
 
-import React from "react";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
-import {
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-  TabPanel,
-} from "@material-tailwind/react";
-import Navbar from "@/components/navbar";
+// components/AccountPage.tsx
+import Footer from "@/components/footer";
 import MainNavbar from "@/components/main-navbar";
-import { Footer } from "@/components/footer";
+import Navbar from "@/components/navbar";
+import { useState } from "react";
+// types/account.ts
+export type AccountTab =
+  | "dashboard"
+  | "orders"
+  | "addresses"
+  | "payment-methods"
+  | "account-details"
+  | "password"
+  | "logout";
 
-const orders = [
-  {
-    id: "ORD-20250411",
-    date: "April 11, 2025",
-    total: "₹499.00",
-    items: [
-      { name: "Time Management by Sudhir Bhandari", qty: 1, price: "₹99.00" },
-      { name: "CS Executive Guide", qty: 2, price: "₹200.00" },
-    ],
-  },
-  // Add more mock orders as needed
-];
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  imageLight: string;
+export interface TabItem {
+  key: AccountTab;
+  label: string;
 }
+// import { AccountTab, TabItem } from '../types/account';
+// import { DashboardTab, OrdersTab, PasswordTab, AddressesTab, PaymentMethodsTab, AccountDetailsTab } from './tabs';
 
-const initialCartItems: CartItem[] = [
-  {
-    id: 1,
-    name: "Utkarsh - Current Affairs Monthly February 2024 By Kumar Gaurav Sir",
-    price: 1499,
-    quantity: 2,
-    imageLight: "https://bookwindow.in/assets/images/image/product/14.jpg",
-  },
-  {
-    id: 2,
-    name: "Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication",
-    price: 598,
-    quantity: 1,
-    imageLight: "https://bookwindow.in/assets/images/image/product/1.webp",
-  },
-  {
-    id: 3,
-    name:
-      "Agriculture Supervisor Exam Guide by Dr. Rajeev & R K Gupta in Hindi Medium",
-    price: 1799,
-    quantity: 1,
-    imageLight: "https://bookwindow.in/assets/images/image/product/90.webp",
-  },
+const tabs: TabItem[] = [
+  { key: "dashboard", label: "Dashboard" },
+  { key: "orders", label: "Orders" },
+  { key: "addresses", label: "Addresses" },
+  { key: "payment-methods", label: "Payment methods" },
+  { key: "account-details", label: "Account details" },
+  { key: "password", label: "Password" },
+  { key: "logout", label: "Log out" },
 ];
 
-export default function MyAccount() {
-  const [activeTab, setActiveTab] = React.useState("info");
+export default function AccountPage() {
+  const [activeTab, setActiveTab] = useState<AccountTab>("dashboard");
 
-  const [cartItems, setCartItems] = React.useState<CartItem[]>(
-    initialCartItems
-  );
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return <DashboardTab />;
+      case "orders":
+        return <OrdersTab />;
+      case "password":
+        return <PasswordTab />;
+      case "addresses":
+        return <AddressesTab />;
+      case "payment-methods":
+        return <PaymentMethodsTab />;
+      case "account-details":
+        return <AccountDetailsTab />;
+      case "logout":
+        return <div className="p-4">You have been logged out.</div>;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
       <Navbar />
       <MainNavbar />
-      <div className="max-w-5xl mx-auto py-10 px-4">
-        <Typography
-          variant="h4"
-          className="mb-6 text-center"
-          {...({} as React.ComponentProps<typeof Typography>)}
-        >
-          My Profile
-        </Typography>
-
-        <Tabs value={activeTab}>
-          <TabsHeader
-            className="bg-gray-100"
-            indicatorProps={{ className: "bg-gray-500 shadow-none " }}
-            {...({} as React.ComponentProps<typeof TabsHeader>)}
-          >
-            <Tab
-              value="info"
-              onClick={() => setActiveTab("info")}
-              {...({} as any)}
-            >
-              User Info
-            </Tab>
-            <Tab
-              value="orders"
-              onClick={() => setActiveTab("orders")}
-              {...({} as any)}
-            >
-              My Orders
-            </Tab>
-            <Tab
-              value="summary"
-              onClick={() => setActiveTab("summary")}
-              {...({} as any)}
-            >
-              Order Summary
-            </Tab>
-          </TabsHeader>
-
-          <TabsBody {...({} as React.ComponentProps<typeof TabsBody>)}>
-            {/* USER INFO */}
-            <TabPanel value="info" {...({} as any)}>
-              <Card
-                className="mt-4"
-                {...({} as React.ComponentProps<typeof Card>)}
+      <div className="container mx-auto flex  min-h-screen max-w-screen-xl px-2 pt-8 2xl:px-0 shadow-xl">
+        <aside className="w-64 border-r p-4">
+          <nav className="space-y-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`block w-full text-left p-2 rounded hover:bg-gray-100  border-b ${
+                  activeTab === tab.key ? "bg-gray-200 font-semibold" : ""
+                }`}
               >
-                <CardBody {...({} as React.ComponentProps<typeof CardBody>)}>
-                  <Typography
-                    variant="h6"
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Name: John Doe
-                  </Typography>
-                  <Typography
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Email: john@example.com
-                  </Typography>
-                  <Typography
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Phone: +91-9876543210
-                  </Typography>
-                  <Typography
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Address: 123 Book Street, Jaipur, Rajasthan
-                  </Typography>
-                </CardBody>
-              </Card>
-            </TabPanel>
-
-            {/* MY ORDERS */}
-            <TabPanel value="orders">
-              <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
-                <div className="space-y-6">
-                  {cartItems.map((item: any) => (
-                    <div
-                      key={item.id}
-                      className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm  md:p-6"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-6">
-                        <img
-                          className="h-20 w-20"
-                          src={item.imageLight}
-                          alt={item.name}
-                          width={80}
-                          height={80}
-                        />
-
-                        <div className="w-full min-w-0 flex-1 space-y-4">
-                          <a
-                            href="#"
-                            className="text-base font-medium text-gray-900 hover:underline"
-                          >
-                            {item.name}
-                          </a>
-                        </div>
-
-                        <div className="text-end w-32">
-                          <p className="text-base font-bold text-gray-900">
-                            ₹{item.price * item.quantity}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </TabPanel>
-
-            {/* ORDER SUMMARY */}
-            <TabPanel value="summary">
-              <Card
-                className="mt-4"
-                {...({} as React.ComponentProps<typeof Card>)}
-              >
-                <CardBody {...({} as React.ComponentProps<typeof CardBody>)}>
-                  <Typography
-                    variant="h6"
-                    className="mb-2"
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Thank you for your order!
-                  </Typography>
-                  <Typography
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Your order <strong>ORD-20250411</strong> has been placed
-                    successfully.
-                  </Typography>
-                  <Typography
-                    className="mt-2"
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    A confirmation email has been sent to your registered email
-                    address.
-                  </Typography>
-                </CardBody>
-              </Card>
-            </TabPanel>
-          </TabsBody>
-        </Tabs>
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+        <main className="flex-1 p-6">{renderTabContent()}</main>
       </div>
       <Footer />
     </>
+  );
+}
+
+// components/tabs/DashboardTab.tsx
+export function DashboardTab() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <p>
+        Hello <strong>Muskan</strong> (not <strong>Muskan</strong>?{" "}
+        <a href="#" className="text-blue-600">
+          Log out
+        </a>
+        )
+      </p>
+      <p className="mt-2">
+        From your account dashboard you can view your{" "}
+        <a href="#" className="text-blue-600">
+          recent orders
+        </a>
+        , manage your{" "}
+        <a href="#" className="text-blue-600">
+          shipping and billing addresses
+        </a>
+        , and{" "}
+        <a href="#" className="text-blue-600">
+          edit your password and account details
+        </a>
+        .
+      </p>
+    </div>
+  );
+}
+
+// components/tabs/OrdersTab.tsx
+export function OrdersTab() {
+  const orders = [
+    {
+      id: 6491,
+      date: "July 19, 2024",
+      status: "Processing",
+      total: "₹3,328.20 for 2 items",
+    },
+    {
+      id: 6490,
+      date: "July 19, 2024",
+      status: "Processing",
+      total: "₹2,024.10 for 1 item",
+    },
+    {
+      id: 5449,
+      date: "July 3, 2024",
+      status: "Processing",
+      total: "₹1,899.00 for 1 item",
+    },
+    {
+      id: 5447,
+      date: "July 3, 2024",
+      status: "Processing",
+      total: "₹3,699.00 for 1 item",
+    },
+    {
+      id: 2541,
+      date: "June 28, 2024",
+      status: "Completed",
+      total: "₹899.10 for 1 item",
+    },
+  ];
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Orders</h1>
+      <table className="w-full text-left border">
+        <thead>
+          <tr>
+            <th className="p-2 border">Order</th>
+            <th className="p-2 border">Date</th>
+            <th className="p-2 border">Status</th>
+            <th className="p-2 border">Total</th>
+            <th className="p-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.id}>
+              <td className="p-2 border">#{order.id}</td>
+              <td className="p-2 border">{order.date}</td>
+              <td className="p-2 border">{order.status}</td>
+              <td className="p-2 border">{order.total}</td>
+              <td className="p-2 border">
+                <a href="/view-orders" className="bg-black text-white px-3 py-1 rounded">
+                  View
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// components/tabs/PasswordTab.tsx
+export function PasswordTab() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Password</h1>
+      <form className="space-y-4">
+        <div>
+          <label className="block mb-1">Password</label>
+          <input
+            type="password"
+            defaultValue="12345678"
+            className="w-full border p-2"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Confirm Password</label>
+          <input
+            type="password"
+            defaultValue="12345678"
+            className="w-full border p-2"
+          />
+        </div>
+        <button className="bg-black text-white px-3 py-1 rounded">
+          Save changes
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// components/tabs/AddressesTab.tsx
+export function AddressesTab() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Addresses</h1>
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold">Billing Address</h2>
+        <p>
+          Muskan Shekh
+          <br />
+          Jaipur, Rajasthan 302002
+        </p>
+      </div>
+      <div>
+        <h2 className="text-xl font-semibold">Shipping Address</h2>
+        <p>You have not set up this type of address yet.</p>
+      </div>
+    </div>
+  );
+}
+
+// components/tabs/PaymentMethodsTab.tsx
+export function PaymentMethodsTab() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Payment Methods</h1>
+      <p>No saved payment methods yet.</p>
+    </div>
+  );
+}
+
+// components/tabs/AccountDetailsTab.tsx
+export function AccountDetailsTab() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Account Details</h1>
+      <form className="space-y-4">
+        <div>
+          <label className="block mb-1">First Name</label>
+          <input
+            type="text"
+            defaultValue="Muskan"
+            className="w-full border p-2"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Last Name</label>
+          <input
+            type="text"
+            defaultValue="Shekh"
+            className="w-full border p-2"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Display Name</label>
+          <input
+            type="text"
+            defaultValue="Muskan"
+            className="w-full border p-2"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Email Address</label>
+          <input
+            type="email"
+            defaultValue="muskan@gmail.com"
+            className="w-full border p-2"
+          />
+        </div>
+        <div>
+        <button className="bg-black text-white px-3 py-1 rounded">
+          Save changes
+        </button>
+        </div>
+      </form>
+    </div>
   );
 }

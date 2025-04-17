@@ -228,7 +228,7 @@ export function Navbar(items_count?: any) {
               {isOpen && (
                 <div
                   ref={dropdownMenuRef}
-                  className="min-w-[150px] overflow-hidden absolute left-0 w-full mt-[32rem] bg-white border border-gray-200 rounded-md shadow-lg"
+                  className="min-w-[200px] overflow-hidden absolute left-0 w-full mt-[23rem] bg-white border border-gray-200 rounded-md shadow-lg h-80 overflow-y-auto"
                 >
                   <ul>
                     {publications?.map((publication: any) => (

@@ -39,7 +39,7 @@ export default function Checkout() {
   const errorPopup = () => setOpen(!open);
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const thankYouPopup = () => setOpen(!open);
+  const thankYouPopup = () => setIsOpen(!isOpen);
 
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
@@ -177,7 +177,10 @@ export default function Checkout() {
         }),
       });
       const result = await response.json();
-      console.log("Place order", result);
+      if (response.ok) {
+        console.log("Place order", result);
+        form.reset();
+      }
       if (result.message == "Your cart is empty") {
         setOpen(true);
         // errorPopup();
@@ -493,8 +496,9 @@ export default function Checkout() {
           <button
             // type="submit"
             onClick={() => {
-              open ? errorPopup : thankYouPopup;
+              open ? errorPopup() : thankYouPopup();
               handlePlaceOrder;
+              // thankYouPopup();
             }}
             className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
           >
@@ -506,7 +510,7 @@ export default function Checkout() {
               handleOpen={errorPopup}
             ></NotificationDialog>
           )}
-          {open && (
+          {isOpen && (
             <ThankYouDialog
               open={isOpen}
               handleOpen={thankYouPopup}

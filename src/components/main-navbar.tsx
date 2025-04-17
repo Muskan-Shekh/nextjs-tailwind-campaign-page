@@ -56,15 +56,17 @@ const MainNavbar: React.FC = () => {
       className="w-full max-w-full backdrop-blur-2xl sticky top-20 z-40 border-0 px-4 py-2"
       {...({} as React.ComponentProps<typeof Navbar>)}
     >
-      <div className="grid grid-col-7 text-blue-gray-900 justify-center">
-        <div className="hidden gap-2 lg:flex">
-          <List
-            className="mb-6 mt-4 p-8 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1 gap-8 items-center"
+      {/* <div className="grid grid-col-7 text-blue-gray-900 justify-center"> */}
+      <div className="w-full text-blue-gray-900 flex justify-center">
+        {/* <div className="hidden gap-2 lg:flex"> */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4  gap-2">
+          {/* <List
+            className="mb-6 mt-4 p-8 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1 gap-2 items-center"
             {...({} as React.ComponentProps<typeof List>)}
-          >
+          > */}
             {categories.map((item: any, index: number) => (
               <ListItem
-                key={index}
+                key={item?.id}
                 className="p-1"
                 {...({} as React.ComponentProps<typeof ListItem>)}
               >
@@ -97,9 +99,9 @@ const MainNavbar: React.FC = () => {
                         {...({} as React.ComponentProps<typeof MenuList>)}
                       >
                         {item.child.map((child: any) => (
-                          <div className="relative group" key={child?.key}>
+                          <div className="relative group" key={child?.id}>
                             <MenuItem
-                              key={child?.key}
+                              key={child?.id}
                               {...({} as React.ComponentProps<typeof MenuItem>)}
                             >
                               <Typography
@@ -167,7 +169,7 @@ const MainNavbar: React.FC = () => {
                 )}
               </ListItem>
             ))}
-          </List>
+          {/* </List> */}
         </div>
         <IconButton
           variant="text"
@@ -190,7 +192,7 @@ const MainNavbar: React.FC = () => {
         >
           {categories.map((item: any, index: number) => (
             <ListItem
-              key={index}
+              key={item?.id}
               className="p-1"
               {...({} as React.ComponentProps<typeof ListItem>)}
             >

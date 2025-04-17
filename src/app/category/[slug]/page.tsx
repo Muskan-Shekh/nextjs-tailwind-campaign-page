@@ -78,7 +78,7 @@ export default function Category({ params }: any) {
         (product: any) => product.production_id.toString() === productionId
       );
       setFilteredProducts(filtered);
-      console.log("filtered", filtered);
+      // console.log("filtered", filtered);
     } else {
       // If no production_id, show all products
       setFilteredProducts(products);

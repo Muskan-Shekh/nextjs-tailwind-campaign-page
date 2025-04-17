@@ -58,7 +58,7 @@ export function TopBookCategories() {
         >
           <div className="absolute inset-0 h-full w-full bg-gray-900/75" />
           <CardBody className="relative w-full" {...({} as React.ComponentProps<typeof CardBody>)}>
-            <Typography color="white" className="text-xs font-bold opacity-50" {...({} as React.ComponentProps<typeof Typography>)}>
+            <Typography color="white" className="text-xs font-bold opacity-50 hover:opacity-100" {...({} as React.ComponentProps<typeof Typography>)}>
               up to 40% OFF
             </Typography>
             <Typography variant="h4" className="mt-9" color="white" {...({} as React.ComponentProps<typeof Typography>)}>
@@ -66,7 +66,7 @@ export function TopBookCategories() {
             </Typography>
             <Typography
               color="white"
-              className="mt-4 mb-14 font-normal opacity-50"
+              className="mt-4 mb-14 font-normal opacity-50 hover:opacity-100"
               {...({} as React.ComponentProps<typeof Typography>)}
             >
               Explore our extensive collection of textbooks, workbooks, novels,

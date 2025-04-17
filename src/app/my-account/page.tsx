@@ -6,7 +6,7 @@ import MainNavbar from "@/components/main-navbar";
 import Navbar from "@/components/navbar";
 import { useState } from "react";
 // types/account.ts
-export type AccountTab =
+type AccountTab =
   | "dashboard"
   | "orders"
   | "addresses"
@@ -15,7 +15,7 @@ export type AccountTab =
   | "password"
   | "logout";
 
-export interface TabItem {
+interface TabItem {
   key: AccountTab;
   label: string;
 }
@@ -84,7 +84,7 @@ export default function AccountPage() {
 }
 
 // components/tabs/DashboardTab.tsx
-export function DashboardTab() {
+function DashboardTab() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
@@ -115,7 +115,7 @@ export function DashboardTab() {
 }
 
 // components/tabs/OrdersTab.tsx
-export function OrdersTab() {
+function OrdersTab() {
   const orders = [
     {
       id: 6491,
@@ -183,7 +183,7 @@ export function OrdersTab() {
 }
 
 // components/tabs/PasswordTab.tsx
-export function PasswordTab() {
+function PasswordTab() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Password</h1>
@@ -213,7 +213,7 @@ export function PasswordTab() {
 }
 
 // components/tabs/AddressesTab.tsx
-export function AddressesTab() {
+function AddressesTab() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Addresses</h1>
@@ -234,7 +234,7 @@ export function AddressesTab() {
 }
 
 // components/tabs/PaymentMethodsTab.tsx
-export function PaymentMethodsTab() {
+function PaymentMethodsTab() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Payment Methods</h1>
@@ -244,7 +244,7 @@ export function PaymentMethodsTab() {
 }
 
 // components/tabs/AccountDetailsTab.tsx
-export function AccountDetailsTab() {
+function AccountDetailsTab() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Account Details</h1>

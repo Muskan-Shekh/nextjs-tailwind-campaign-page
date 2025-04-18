@@ -4,7 +4,9 @@
 import Footer from "@/components/footer";
 import MainNavbar from "@/components/main-navbar";
 import Navbar from "@/components/navbar";
-import { useState } from "react";
+import axios from "axios";
+import { FormEvent, useEffect, useState } from "react";
+import config from "../config";
 // types/account.ts
 type AccountTab =
   | "dashboard"
@@ -34,21 +36,65 @@ const tabs: TabItem[] = [
 
 export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<AccountTab>("dashboard");
+  const [access_token, setAccessToken] = useState<string | null>(null);
+  const [customer, setCustomer] = useState<any>(null);
+  const [userOrders, setUserOrders] = useState([] as any);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      const customerData = localStorage.getItem("customer");
+
+      setAccessToken(token);
+      setCustomer(customerData ? JSON.parse(customerData) : null);
+    }
+  }, []);
+
+  const logout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("customer");
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+  useEffect(() => {
+    const fetchOrdersData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/user_order/${customer?.id}`,
+          responseType: "json",
+        });
+        const orders = response?.data;
+        console.log("orders", orders?.data);
+        setUserOrders(orders?.data);
+      } catch (error) {
+        // setError(error.message);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchOrdersData();
+  }, [customer?.id]);
+
+  useEffect(() => {}, [userOrders]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return <DashboardTab />;
+        return <DashboardTab customer={customer} logout={logout} />;
       case "orders":
-        return <OrdersTab />;
+        return <OrdersTab userOrders={userOrders} />;
       case "password":
-        return <PasswordTab />;
+        return <PasswordTab customer={customer}/>;
       case "addresses":
         return <AddressesTab />;
       case "payment-methods":
         return <PaymentMethodsTab />;
       case "account-details":
-        return <AccountDetailsTab />;
+        return <AccountDetailsTab customer={customer} />;
       case "logout":
         return <div className="p-4">You have been logged out.</div>;
       default:
@@ -66,7 +112,12 @@ export default function AccountPage() {
             {tabs.map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
+                onClick={() => {
+                  setActiveTab(tab.key);
+                  if (tab.key === "logout") {
+                    logout();
+                  }
+                }}
                 className={`block w-full text-left p-2 rounded hover:bg-gray-100  border-b ${
                   activeTab === tab.key ? "bg-gray-200 font-semibold" : ""
                 }`}
@@ -84,13 +135,14 @@ export default function AccountPage() {
 }
 
 // components/tabs/DashboardTab.tsx
-function DashboardTab() {
+function DashboardTab({ customer, logout }: any) {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <p>
-        Hello <strong>Muskan</strong> (not <strong>Muskan</strong>?{" "}
-        <a href="#" className="text-blue-600">
+        Hello <strong>{customer?.first_name}</strong> (not{" "}
+        <strong>{customer?.first_name}</strong>?{" "}
+        <a href="/" onClick={() => logout()} className="text-blue-600">
           Log out
         </a>
         )
@@ -115,40 +167,7 @@ function DashboardTab() {
 }
 
 // components/tabs/OrdersTab.tsx
-function OrdersTab() {
-  const orders = [
-    {
-      id: 6491,
-      date: "July 19, 2024",
-      status: "Processing",
-      total: "₹3,328.20 for 2 items",
-    },
-    {
-      id: 6490,
-      date: "July 19, 2024",
-      status: "Processing",
-      total: "₹2,024.10 for 1 item",
-    },
-    {
-      id: 5449,
-      date: "July 3, 2024",
-      status: "Processing",
-      total: "₹1,899.00 for 1 item",
-    },
-    {
-      id: 5447,
-      date: "July 3, 2024",
-      status: "Processing",
-      total: "₹3,699.00 for 1 item",
-    },
-    {
-      id: 2541,
-      date: "June 28, 2024",
-      status: "Completed",
-      total: "₹899.10 for 1 item",
-    },
-  ];
-
+function OrdersTab({ userOrders }: any) {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Orders</h1>
@@ -163,14 +182,17 @@ function OrdersTab() {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => (
+          {userOrders?.orders?.map((order:any) => (
             <tr key={order.id}>
-              <td className="p-2 border">#{order.id}</td>
-              <td className="p-2 border">{order.date}</td>
-              <td className="p-2 border">{order.status}</td>
-              <td className="p-2 border">{order.total}</td>
+              <td className="p-2 border">#{order?.order_details?.order_number}</td>
+              <td className="p-2 border">{order?.order_details?.created_at}</td>
+              <td className="p-2 border">{order?.order_details?.status}</td>
+              <td className="p-2 border">{order?.order_details?.total_amount} for {order?.items.length} items</td>
               <td className="p-2 border">
-                <a href="/view-orders" className="bg-black text-white px-3 py-1 rounded">
+                <a
+                  href={`/view-orders?order_number=${order?.order_details?.order_number}`}
+                  className="bg-black text-white px-3 py-1 rounded"
+                >
                   View
                 </a>
               </td>
@@ -183,15 +205,37 @@ function OrdersTab() {
 }
 
 // components/tabs/PasswordTab.tsx
-function PasswordTab() {
+function PasswordTab({customer}:any) {
+
+  async function changePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(event.currentTarget);
+    const email = customer?.email;
+    const password_confirmation = formData.get("password_confirmation")?.toString().trim() || "";
+    const password = formData.get("password")?.toString() || "";
+    const response = await fetch(`${config.apiUrl}api/v1/passwordchange`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, password_confirmation }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      alert("password updated!")
+    } else{
+      console.log("something went wrong!!")
+    }
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Password</h1>
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={changePassword}>
         <div>
           <label className="block mb-1">Password</label>
           <input
             type="password"
+            name="password"
             defaultValue="12345678"
             className="w-full border p-2"
           />
@@ -200,11 +244,12 @@ function PasswordTab() {
           <label className="block mb-1">Confirm Password</label>
           <input
             type="password"
+            name="password_confirmation"
             defaultValue="12345678"
             className="w-full border p-2"
           />
         </div>
-        <button className="bg-black text-white px-3 py-1 rounded">
+        <button type="submit" className="bg-black text-white px-3 py-1 rounded">
           Save changes
         </button>
       </form>
@@ -244,16 +289,38 @@ function PaymentMethodsTab() {
 }
 
 // components/tabs/AccountDetailsTab.tsx
-function AccountDetailsTab() {
+function AccountDetailsTab({ customer }: any) {
+  async function updateUser(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(event.currentTarget);
+    const email = customer?.email;
+    const first_name = formData.get("password_confirmation")?.toString().trim() || "";
+    const lastname = formData.get("password")?.toString() || "";
+    const response = await fetch(`${config.apiUrl}api/v1/updateuser`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, first_name, lastname }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      // console.log("yy",data)
+      alert("user updated!")
+    } else{
+      console.log("something went wrong!!")
+    }
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Account Details</h1>
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={updateUser}>
         <div>
           <label className="block mb-1">First Name</label>
           <input
             type="text"
-            defaultValue="Muskan"
+            name="first_name"
+            defaultValue={customer?.first_name}
             className="w-full border p-2"
           />
         </div>
@@ -261,7 +328,8 @@ function AccountDetailsTab() {
           <label className="block mb-1">Last Name</label>
           <input
             type="text"
-            defaultValue="Shekh"
+            name="last_name"
+            defaultValue={customer?.last_name}
             className="w-full border p-2"
           />
         </div>
@@ -269,7 +337,7 @@ function AccountDetailsTab() {
           <label className="block mb-1">Display Name</label>
           <input
             type="text"
-            defaultValue="Muskan"
+            defaultValue={customer?.first_name}
             className="w-full border p-2"
           />
         </div>
@@ -277,14 +345,16 @@ function AccountDetailsTab() {
           <label className="block mb-1">Email Address</label>
           <input
             type="email"
-            defaultValue="muskan@gmail.com"
+            name="email"
+            defaultValue={customer?.email}
             className="w-full border p-2"
+            disabled
           />
         </div>
         <div>
-        <button className="bg-black text-white px-3 py-1 rounded">
-          Save changes
-        </button>
+          <button type="submit" className="bg-black text-white px-3 py-1 rounded">
+            Update
+          </button>
         </div>
       </form>
     </div>

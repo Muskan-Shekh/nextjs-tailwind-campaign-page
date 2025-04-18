@@ -42,9 +42,7 @@ export function CartPopup({
           // src="https://bookwindow.in/assets/images/image/product/1.webp"
           src={`${config.apiUrl}storage/${cartData?.cart?.items[0]?.product?.image}`}
           alt="Book"
-          className="object-cover rounded-md"
-          width={40}
-          height={40}
+          className="object-contain rounded-md h-20 w-30"
         />
         <div>
           <h2 className="font-semibold text-sm">

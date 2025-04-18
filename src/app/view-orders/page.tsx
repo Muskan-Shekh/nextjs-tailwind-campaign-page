@@ -4,141 +4,67 @@ import { useEffect, useState } from "react";
 // components
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
-import { useRouter } from "next/navigation";
 import config from "@/app/config";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 interface CartItem {
-  product_id: number;
+  id: number;
   product_name: string;
-  product_price: number;
+  price: number;
   quantity: number;
-  image: string;
+  total: number;
+  product_image: string;
 }
 
 export default function ShoppingCart() {
-  const router = useRouter();
-  const [session, setSession] = useState("");
-  const [cartItems, setCartItems] = useState([] as CartItem[]);
-  const [items_count, setItemsCount] = useState(0);
+  const searchParams = useSearchParams();
+  // const [session, setSession] = useState("");
+  const [orderItems, setOrderItems] = useState([] as CartItem[]);
+  const orderNumber = searchParams.get("orderNumber");
+  const [orderData, setOrderData] = useState({} as any);
 
-  const checkSession = async () => {
-    const res = await fetch("/api/debug", {
-      method: "GET",
-      credentials: "include",
-    });
-    const data = await res.json();
-    setSession(data?.session_id);
-    // console.log("Session info:", data);
-  };
+  // const checkSession = async () => {
+  //   const res = await fetch("/api/debug", {
+  //     method: "GET",
+  //     credentials: "include",
+  //   });
+  //   const data = await res.json();
+  //   setSession(data?.session_id);
+  //   // console.log("Session info:", data);
+  // };
 
   useEffect(() => {
     const viewCart = async () => {
       try {
         const response = await axios({
           method: "get",
-          url: `${config.apiUrl}api/cart/orders/24464`,
+          url: `${config.apiUrl}api/orders/${orderNumber}`,
           responseType: "json",
         });
-        const data = response?.data;
-        // console.log("cart list", data);
-        setCartItems(data?.items);
-        setItemsCount(data?.items_count);
+        const data = response?.data?.data;
+        console.log("data?.order", data?.order);
+        setOrderItems(data?.items);
+        setOrderData(data?.order)
       } catch (error) {
         console.log("error", error);
       } finally {
-        // console.log("An error occured");
+        // console.log("An error occured");89192
       }
     };
 
     viewCart();
-  }, [session]);
+  }, [orderNumber]);
 
-  useEffect(() => {
-    checkSession();
-  }, []);
+  // useEffect(() => {
+  //   checkSession();
+  // }, []);
 
-  useEffect(() => {}, [session, cartItems, items_count]);
-
-  const updateCartQuantity = async (productId: number, quantity: number) => {
-    try {
-      const response = await fetch(`${config.apiUrl}api/cart/cartupdate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          product_id: productId,
-          session_id: session,
-          quantity_change: quantity,
-        }),
-      });
-      const result = await response.json();
-      // setCartData(result);
-      // console.log("updated:", result);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
-  };
-
-  const removeCartItem = async (productId: number) => {
-    try {
-      const response = await fetch(`${config.apiUrl}api/cart/remove`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          product_id: productId,
-          session_id: session,
-        }),
-      });
-      const result = await response.json();
-      // setCartData(result);
-      console.log("remove:", result);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
-  };
-
-  const updateQuantity = (id: number, action: "increment" | "decrement") => {
-    updateCartQuantity(id, action === "increment" ? +1 : -1);
-    action === "increment"
-      ? setItemsCount(items_count + 1)
-      : setItemsCount(items_count - 1);
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.product_id === id
-          ? {
-              ...item,
-              quantity:
-                action === "increment"
-                  ? item.quantity + 1
-                  : Math.max(1, item.quantity - 1),
-            }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: number) => {
-    removeCartItem(id);
-    setCartItems(cartItems?.filter((item) => item.product_id !== id));
-  };
-
-  const calculateTotal = () => {
-    const subtotal = cartItems?.reduce(
-      (acc, item) => acc + item.product_price * item.quantity,
-      0
-    );
-    return subtotal;
-  };
+  useEffect(() => {}, [orderItems, orderData]);
 
   return (
     <>
-      <Navbar items_count={items_count} />
+      <Navbar />
       <MainNavbar />
       <section className="bg-white py-8 md:py-16 mb-4">
         <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -158,50 +84,49 @@ export default function ShoppingCart() {
                   <div className="text-center">Quantity</div>
                   <div className="text-end">Total</div>
                 </div>
-                {/* {cartItems?.length &&
-                  cartItems?.map((item) => ( */}
-                {/* Product Item */}
-                <div
-                  key={`item.product_id`}
-                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6"
-                >
-                  <div className="grid grid-cols-5 gap-6 items-center">
-                    {/* Image */}
-                    <img
-                      className="h-20 w-20 object-cover"
-                      src={`${config.apiUrl}storage/${`item.image`}`}
-                      alt={`item.product_name`}
-                      width={80}
-                      height={80}
-                    />
+                {orderItems?.length &&
+                  orderItems?.map((item) => (
+                    <div
+                      key={item?.id}
+                      className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6"
+                    >
+                      <div className="grid grid-cols-5 gap-6 items-center">
+                        {/* Image */}
+                        <img
+                          className="h-20 w-20 object-contain"
+                          src={`${config.apiUrl}storage/${item.product_image}`}
+                          alt={`item.product_name`}
+                          width={80}
+                          height={80}
+                        />
 
-                    {/* Product Name */}
-                    <div className="space-y-1">
-                      <a
-                        href="#"
-                        className="text-base font-medium text-gray-900 hover:underline"
-                      >
-                        {`item.product_name`}
-                      </a>
-                    </div>
+                        {/* Product Name */}
+                        <div className="space-y-1">
+                          <a
+                            href="#"
+                            className="text-base font-medium text-gray-900 hover:underline"
+                          >
+                            {item.product_name}
+                          </a>
+                        </div>
 
-                    {/* Unit Price */}
-                    <div className="text-center text-base font-bold text-gray-900">
-                      ₹{`item.product_price`}
-                    </div>
+                        {/* Unit Price */}
+                        <div className="text-center text-base font-bold text-gray-900">
+                          ₹{item.price}
+                        </div>
 
-                    {/* Quantity */}
-                    <div className="text-center text-base font-bold text-gray-900">
-                      {`item.quantity`}
-                    </div>
+                        {/* Quantity */}
+                        <div className="text-center text-base font-bold text-gray-900">
+                          {item.quantity}
+                        </div>
 
-                    {/* Total */}
-                    <div className="text-end text-base font-bold text-gray-900">
-                      ₹{`item.product_price * item.quantity`}
+                        {/* Total */}
+                        <div className="text-end text-base font-bold text-gray-900">
+                          ₹{item.total}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                {/* ))} */}
+                  ))}
               </div>
             </div>
 
@@ -215,25 +140,25 @@ export default function ShoppingCart() {
                 <div className="space-y-4">
                   <dl className="flex justify-between gap-4">
                     <dt className="text-base font-normal text-gray-900">
-                      Order ID
+                      Order Number
                     </dt>
                     <dd className="text-base font-medium text-gray-500">
-                      987939
+                     {orderData?.order_number}
                     </dd>
                   </dl>
 
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
-                    <dt className="text-base font-normal text-gray-900">Total</dt>
-                    <dd className="text-base font-bold text-gray-500">
-                      ₹{calculateTotal()}
-                    </dd>
+                    <dt className="text-base font-normal text-gray-900">
+                      Total
+                    </dt>
+                    <dd className="text-base font-bold text-gray-500">₹{orderData?.subtotal}</dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-gray-900">
                       Order Status
                     </dt>
                     <dd className="text-base font-bold text-gray-500">
-                      Pending
+                    {orderData?.status}
                     </dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
@@ -241,7 +166,8 @@ export default function ShoppingCart() {
                       Ordered On
                     </dt>
                     <dd className="text-base font-bold text-gray-500">
-                      16/04/2025
+                      {/* 16/04/2025  */}
+                      {orderData?.created_at}
                     </dd>
                   </dl>
                 </div>

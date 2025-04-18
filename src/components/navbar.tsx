@@ -333,7 +333,7 @@ export function Navbar(items_count?: any) {
                   className="font-medium flex items-center gap-1 whitespace-nowrap ml-2"
                   {...({} as React.ComponentProps<typeof Typography>)}
                 >
-                  {customer?.name}
+                  {customer?.first_name} {customer?.last_name}
                   <ChevronDownIcon
                     strokeWidth={2}
                     className="h-3 w-3 transition-transform"

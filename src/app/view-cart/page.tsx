@@ -83,9 +83,6 @@ export default function ShoppingCart() {
   }, []);
 
   useEffect(() => {
-    if (!cartItems) {
-      router.push("/");
-    }
   }, [session, cartItems, items_count, router]);
 
   const updateCartQuantity = async (productId: number, quantity: number) => {
@@ -124,6 +121,9 @@ export default function ShoppingCart() {
         }),
       });
       const result = await response.json();
+      if(result?.success){
+        setItemsCount(items_count - 1);
+      }
       // setCartData(result);
       console.log("remove:", result);
     } catch (error) {

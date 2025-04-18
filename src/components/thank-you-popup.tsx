@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 
-export function ThankYouDialog({ open, handleOpen }: any) {
+export function ThankYouDialog({ open, handleOpen, orderNumber }: any) {
   return (
     <>
       <Dialog
@@ -47,7 +47,7 @@ export function ThankYouDialog({ open, handleOpen }: any) {
             variant="h4"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            Your order id is 233s34842f
+            Your order number is {orderNumber}
           </Typography>
           <Typography
             className="text-center font-normal text-gray-600"
@@ -73,7 +73,7 @@ export function ThankYouDialog({ open, handleOpen }: any) {
           </Button>
           <Typography
             as="a"
-            href="/view-orders"
+            href={`/view-orders?orderNumber=${orderNumber}`}
             variant="h6"
             className="bg-green-800 text-white p-3 rounded hover:bg-green-900"
             {...({} as React.ComponentProps<typeof Typography>)}

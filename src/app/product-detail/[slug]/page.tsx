@@ -127,7 +127,7 @@ export default function ProductDetail({ params }: any) {
             <img
               src={mainImage}
               alt="Product"
-              className="w-full h-auto rounded-lg shadow-md mb-4"
+              className="w-[40rem] h-80 rounded-lg shadow-md mb-4 object-contain"
             />
             {/* gallary image */}
             <div className="flex gap-4 py-4 justify-center overflow-x-auto">

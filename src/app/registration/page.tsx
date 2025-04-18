@@ -82,15 +82,22 @@ export default function RegistrationForm() {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(event.currentTarget);
-    const name = formData.get("name")?.toString().trim() || "";
+    const first_name = formData.get("first_name")?.toString().trim() || "";
+    const last_name = formData.get("last_name")?.toString().trim() || "";
     const email = formData.get("email")?.toString().trim() || "";
     const phone = formData.get("phone")?.toString().trim() || "";
     const password = formData.get("password")?.toString() || "";
 
     // --- Validation ---
-    if (name.length > 255) {
+    if (first_name.length > 255) {
       setAlertType("error");
-      setAlertMessage("Name cannot be more than 255 characters.");
+      setAlertMessage("First name cannot be more than 255 characters.");
+      return;
+    }
+
+    if (first_name.length > 255) {
+      setAlertType("error");
+      setAlertMessage("Last name cannot be more than 255 characters.");
       return;
     }
 
@@ -117,7 +124,7 @@ export default function RegistrationForm() {
       const response = await fetch(`${config.apiUrl}api/v1/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, email, password }),
+        body: JSON.stringify({ first_name, last_name, phone, email, password }),
       });
 
       const data = await response.json();
@@ -179,15 +186,7 @@ export default function RegistrationForm() {
         >
           Nice to meet you! Enter your details to register.
         </Typography>
-        {alertMessage && (
-          <Alert
-            color={alertType === "error" ? "red" : "green"}
-            className="mb-4"
-            onClose={() => setAlertMessage("")}
-          >
-            {alertMessage}
-          </Alert>
-        )}
+       
         <form
           className="mt-8 mb-8 w-80 max-w-screen-lg sm:w-full shadow-lg p-4"
           onSubmit={handleSubmit}
@@ -199,13 +198,32 @@ export default function RegistrationForm() {
               className="-mb-3"
               {...({} as React.ComponentProps<typeof Typography>)}
             >
-              Full Name
+              First Name
             </Typography>
             <Input
               size="lg"
               type="text"
-              name="name"
-              placeholder="Full Name"
+              name="first_name"
+              placeholder="First Name"
+              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+              {...({} as React.ComponentProps<typeof Input>)}
+            />
+            <Typography
+              variant="h6"
+              color="blue-gray"
+              className="-mb-3"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
+              Last Name
+            </Typography>
+            <Input
+              size="lg"
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -347,6 +365,15 @@ export default function RegistrationForm() {
             </a>
           </Typography>
         </form>
+        {alertMessage && (
+          <Alert
+            color={alertType === "error" ? "red" : "green"}
+            className="mb-4"
+            onClose={() => setAlertMessage("")}
+          >
+            {alertMessage}
+          </Alert>
+        )}
       </Card>
       <Footer />
     </>

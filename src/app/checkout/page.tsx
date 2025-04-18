@@ -26,8 +26,10 @@ export default function Checkout() {
   const [session, setSession] = useState("");
   const [cartItems, setCartItems] = useState([] as CartItem[]);
   const [items_count, setItemsCount] = useState(0);
+  const [customerData, setCustomerData] = useState({} as any);
 
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [userFound, setUserFound] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isBuffering, setIsBuffering] = useState(false);
@@ -35,9 +37,9 @@ export default function Checkout() {
     null
   );
 
+  const [orderNumber, setOrderNumber] = useState<number>(0);
   const [open, setOpen] = React.useState(false);
   const errorPopup = () => setOpen(!open);
-
   const [isOpen, setIsOpen] = React.useState(false);
   const thankYouPopup = () => setIsOpen(!isOpen);
 
@@ -60,7 +62,7 @@ export default function Checkout() {
           responseType: "json",
         });
         const data = response?.data;
-        console.log("checkout list", data);
+        // console.log("checkout list", data);
         setCartItems(data?.items);
         setItemsCount(data?.items_count);
       } catch (error) {
@@ -123,21 +125,30 @@ export default function Checkout() {
       setIsBuffering(false);
     }
   };
-  // const payload = {
-  //   session_id: session,
-  //   shipping_method: paymentMethod,
-  //   address,
-  //   address_2,
-  //   email,
-  //   is_guest: userFound ? false : true,
-  //   phone,
-  //   first_name,
-  //   last_name,
-  //   city,
-  //   state,
-  //   zip_code,
-  //   country,
-  // };
+
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const response = await fetch(`${config.apiUrl}api/v1/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setUserFound(false);
+      // console.log("login data", data?.customer);
+      setCustomerData(data?.customer);
+      setPassword("");
+      // setEmail("");
+      setItemsCount(0);
+    } else {
+      const data = await response.json();
+      console.error("Login failed", response.status);
+      alert(data?.error);
+    }
+  }
+
   const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -146,7 +157,7 @@ export default function Checkout() {
       const first_name = formData.get("first_name")?.toString().trim() || "";
       const last_name = formData.get("last_name")?.toString().trim() || "";
       const phone = formData.get("phone")?.toString().trim() || "";
-      // const email = formData.get("email")?.toString().trim() || "";
+      // const password = formData.get("password")?.toString().trim() || "";
       const city = formData.get("city")?.toString() || "";
       const state = formData.get("state")?.toString() || "";
       const country = formData.get("country")?.toString() || "";
@@ -166,6 +177,7 @@ export default function Checkout() {
           address: address,
           address_2: address_2,
           email: email,
+          password: password ? password : "",
           is_guest: userFound ? false : true,
           phone: phone,
           first_name: first_name,
@@ -179,6 +191,7 @@ export default function Checkout() {
       const result = await response.json();
       if (response.ok) {
         console.log("Place order", result);
+        setOrderNumber(result?.order_number);
         form.reset();
       }
       if (result.message == "Your cart is empty") {
@@ -224,7 +237,7 @@ export default function Checkout() {
 
   return (
     <>
-      <Navbar />
+      <Navbar items_count={items_count}/>
       <MainNavbar />
       {/* Shipping Details */}
       <form
@@ -253,20 +266,29 @@ export default function Checkout() {
               <>
                 <p className="text-gray-600 text-sm mb-2">{errorMessage}</p>
                 {errorMessage && (
-                  <div className="flex gap-2 p-2 mt-2">
-                    <a
-                      href="/registration"
-                      className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
-                    >
-                      Register
-                    </a>
-                    <button
-                      onClick={() => setErrorMessage("")}
-                      className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
-                    >
-                      Continue as guest
-                    </button>
-                  </div>
+                  <>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      name="password"
+                      value={password}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setPassword(e.target.value)
+                      }
+                      className="w-full border p-2 rounded border-gray-400"
+                      required
+                    />
+                    {!password && (
+                      <div className="flex gap-2 p-2 mt-2">
+                        <button
+                          onClick={() => setErrorMessage("")}
+                          className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+                        >
+                          Continue as guest
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -278,12 +300,26 @@ export default function Checkout() {
                   type="password"
                   placeholder="Password"
                   name="password"
+                  value={password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPassword(e.target.value)
+                  }
                   className="w-full border p-2 rounded border-gray-400"
                   required
                 />
                 <div className="flex gap-2 p-2 mt-2">
                   <button
                     type="button"
+                    onClick={(e) => {
+                      const fakeFormEvent = {
+                        preventDefault: () => {},
+                        currentTarget: document.querySelector(
+                          "form"
+                        ) as HTMLFormElement,
+                      } as unknown as FormEvent<HTMLFormElement>;
+
+                      handleLogin(fakeFormEvent);
+                    }}
                     className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
                   >
                     Login
@@ -302,6 +338,7 @@ export default function Checkout() {
                 type="text"
                 placeholder="First Name"
                 name="first_name"
+                // value={customerData ? customerData.first_name : ''}
                 className="border p-2 rounded border-gray-400"
                 required
               />
@@ -324,6 +361,7 @@ export default function Checkout() {
               type="text"
               placeholder="Address 1"
               name="address"
+              // value={customerData && customerData.address || ''}
               className="w-full border p-2 rounded border-gray-400"
               required
             />
@@ -368,7 +406,6 @@ export default function Checkout() {
         </div>
 
         {/* Order Summary */}
-        {/* <form onSubmit={handlePlaceOrder}> */}
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Your Order</h2>
           <div className="border-b pb-4 mb-4 border-gray-400">
@@ -514,6 +551,7 @@ export default function Checkout() {
             <ThankYouDialog
               open={isOpen}
               handleOpen={thankYouPopup}
+              orderNumber={orderNumber}
             ></ThankYouDialog>
           )}
         </div>

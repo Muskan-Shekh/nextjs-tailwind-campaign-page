@@ -12,7 +12,7 @@ import GetYourBookFromUs from "../components/get-your-book-from-us";
 import Faq from "../components/faq";
 import MainNavbar from "@/components/main-navbar";
 import Feature from "@/components/features";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function Campaign() {
@@ -20,6 +20,21 @@ export default function Campaign() {
   const handleItemsCountUpdate = (count: number) => {
     setItemsCount(count);
   };
+
+  const [highlightDiv, setHighlightDiv] = useState(false);
+  const divRef: any = useRef(null); // Create a reference to the Div
+
+  const handleButtonClick = () => {
+    // Scroll to the Div in the topcategory component
+    divRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    // Highlight the div
+    setHighlightDiv(true);
+
+    // Reset the highlight after 3 seconds
+    setTimeout(() => setHighlightDiv(false), 2000);
+  };
+
   return (
     <>
       <Navbar items_count={itemsCount} />
@@ -31,7 +46,7 @@ export default function Campaign() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <Hero />
+        <Hero onButtonClick={handleButtonClick} />
       </motion.div>
       <motion.div
         // className="footer-content text-light"
@@ -40,7 +55,7 @@ export default function Campaign() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <TopBookCategories />
+        <TopBookCategories highlightDiv={highlightDiv} divRef={divRef} />
       </motion.div>
       <motion.div
         // className="footer-content text-light"
@@ -59,7 +74,7 @@ export default function Campaign() {
         transition={{ duration: 1.0, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <CarouselFeatures />
+        <CarouselFeatures onButtonClick={handleButtonClick} />
       </motion.div>
       <motion.div
         // className="footer-content text-light"

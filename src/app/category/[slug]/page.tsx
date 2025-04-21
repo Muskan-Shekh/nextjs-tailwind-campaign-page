@@ -75,7 +75,7 @@ export default function Category({ params }: any) {
     // Filter products if productionId is available
     if (productionId) {
       const filtered = products.filter(
-        (product: any) => product.production_id.toString() === productionId
+        (product: any) => product.production_id?.toString() === productionId
       );
       setFilteredProducts(filtered);
       // console.log("filtered", filtered);

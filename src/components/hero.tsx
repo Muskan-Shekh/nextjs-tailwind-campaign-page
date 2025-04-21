@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button, Typography } from "@material-tailwind/react";
 import logo from "../../public/logos/logo.png";
 
-function Hero() {
+function Hero({ onButtonClick }:any) {
   return (
     <header className="bg-yellow-50 px-8 pb-8">
       <div className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2">
@@ -30,7 +30,7 @@ function Hero() {
             <br />
             To get all RAS class and books -
           </Typography>
-          <Button size="lg" color="gray" {...({} as React.ComponentProps<typeof Button>)}>
+          <Button size="lg" color="gray" {...({} as React.ComponentProps<typeof Button>)}  onClick={onButtonClick}>
             Buy Now
           </Button>
         </div>

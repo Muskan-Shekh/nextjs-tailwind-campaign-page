@@ -12,7 +12,7 @@ type AccountTab =
   | "dashboard"
   | "orders"
   | "addresses"
-  | "payment-methods"
+  // | "payment-methods"
   | "account-details"
   | "password"
   | "logout";
@@ -28,7 +28,7 @@ const tabs: TabItem[] = [
   { key: "dashboard", label: "Dashboard" },
   { key: "orders", label: "Orders" },
   { key: "addresses", label: "Addresses" },
-  { key: "payment-methods", label: "Payment methods" },
+  // { key: "payment-methods", label: "Payment methods" },
   { key: "account-details", label: "Account details" },
   { key: "password", label: "Password" },
   { key: "logout", label: "Log out" },
@@ -58,6 +58,7 @@ export default function AccountPage() {
       window.location.reload();
     }
   };
+
   useEffect(() => {
     const fetchOrdersData = async () => {
       try {
@@ -88,11 +89,11 @@ export default function AccountPage() {
       case "orders":
         return <OrdersTab userOrders={userOrders} />;
       case "password":
-        return <PasswordTab customer={customer}/>;
+        return <PasswordTab customer={customer} />;
       case "addresses":
-        return <AddressesTab />;
-      case "payment-methods":
-        return <PaymentMethodsTab />;
+        return <AddressesTab customer={customer} />;
+      // case "payment-methods":
+      //   return <PaymentMethodsTab />;
       case "account-details":
         return <AccountDetailsTab customer={customer} />;
       case "logout":
@@ -118,7 +119,7 @@ export default function AccountPage() {
                     logout();
                   }
                 }}
-                className={`block w-full text-left p-2 rounded hover:bg-gray-100  border-b ${
+                className={`block w-full text-left p-2 rounded hover:bg-gray-100 border-b cursor-pointer ${
                   activeTab === tab.key ? "bg-gray-200 font-semibold" : ""
                 }`}
               >
@@ -182,12 +183,17 @@ function OrdersTab({ userOrders }: any) {
           </tr>
         </thead>
         <tbody>
-          {userOrders?.orders?.map((order:any) => (
+          {userOrders?.orders?.map((order: any) => (
             <tr key={order.id}>
-              <td className="p-2 border">#{order?.order_details?.order_number}</td>
+              <td className="p-2 border">
+                #{order?.order_details?.order_number}
+              </td>
               <td className="p-2 border">{order?.order_details?.created_at}</td>
               <td className="p-2 border">{order?.order_details?.status}</td>
-              <td className="p-2 border">{order?.order_details?.total_amount} for {order?.items.length} items</td>
+              <td className="p-2 border">
+                {order?.order_details?.total_amount} for {order?.items.length}{" "}
+                items
+              </td>
               <td className="p-2 border">
                 <a
                   href={`/view-orders?order_number=${order?.order_details?.order_number}`}
@@ -205,14 +211,14 @@ function OrdersTab({ userOrders }: any) {
 }
 
 // components/tabs/PasswordTab.tsx
-function PasswordTab({customer}:any) {
-
+function PasswordTab({ customer }: any) {
   async function changePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(event.currentTarget);
     const email = customer?.email;
-    const password_confirmation = formData.get("password_confirmation")?.toString().trim() || "";
+    const password_confirmation =
+      formData.get("password_confirmation")?.toString().trim() || "";
     const password = formData.get("password")?.toString() || "";
     const response = await fetch(`${config.apiUrl}api/v1/passwordchange`, {
       method: "POST",
@@ -221,9 +227,9 @@ function PasswordTab({customer}:any) {
     });
     if (response.ok) {
       const data = await response.json();
-      alert("password updated!")
-    } else{
-      console.log("something went wrong!!")
+      alert("password updated!");
+    } else {
+      console.log("something went wrong!!");
     }
   }
 
@@ -258,23 +264,195 @@ function PasswordTab({customer}:any) {
 }
 
 // components/tabs/AddressesTab.tsx
-function AddressesTab() {
+function AddressesTab({ customer }: any) {
+  const [isEdit, setIsEdit] = useState(false);
+  const [address, setAddress] = useState("");
+  const [address_2, setAddress2] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zipcode, setZipCode] = useState("");
+  const [country, setCountry] = useState("India");
+  const [customerData, setCustomerData] = useState({} as any);
+
+  async function updateUser(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const response = await fetch(`${config.apiUrl}api/v1/updateuser`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: customer.email,
+        first_name: customer.first_name,
+        last_name: customer.first_name,
+        phone: customer.phone,
+        date_of_birth: customer.date_of_birth,
+        address: address ? address : customer?.address,
+        address_2: address_2 ? address_2 : customer?.address_2,
+        city: city ? city : customer?.city,
+        state: state ? state : customer?.state,
+        zip_code: zipcode ? zipcode : customer?.zip_code,
+        country: country ? country : customer?.country,
+      }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      console.log("customerData1", data);
+      setCustomerData(data);
+      // customer = customerData?.customer;
+      alert("user updated!");
+    } else {
+      console.log("something went wrong!!");
+    }
+  }
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && customerData?.customer) {
+      console.log("customerData2", customerData);
+      localStorage.setItem("customer", JSON.stringify(customerData.customer));
+    }
+  }, [customerData]);
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Addresses</h1>
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold">Billing Address</h2>
-        <p>
-          Muskan Shekh
-          <br />
-          Jaipur, Rajasthan 302002
-        </p>
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold">Shipping Address</h2>
-        <p>You have not set up this type of address yet.</p>
-      </div>
-    </div>
+    <>
+      {isEdit ? (
+        <div>
+          <div className="flex gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6 cursor-pointer"
+              onClick={() => setIsEdit(false)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+              />
+            </svg>
+            <h1 className="text-2xl font-bold mb-4">Address Details</h1>
+          </div>
+          <form className="space-y-4" onSubmit={updateUser}>
+            <div>
+              <label className="block mb-1">Address</label>
+              <input
+                type="text"
+                name="address"
+                defaultValue={customer?.address}
+                onChange={(e: any) => setAddress(e.target.value)}
+                className="w-full border p-2 rounded border-gray-400"
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Address2</label>
+              <input
+                type="text"
+                name="address_2"
+                defaultValue={customer?.address_2}
+                onChange={(e: any) => setAddress2(e.target.value)}
+                className="w-full border p-2 rounded border-gray-400"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1">Country</label>
+                <select
+                  className="border p-2 rounded w-full border-gray-400"
+                  name="country"
+                  onChange={(e: any) => setCountry(e.target.value)}
+                  defaultValue={customer?.country}
+                >
+                  <option value="India">India</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1">State</label>
+                <select
+                  className="border p-2 rounded w-full border-gray-400"
+                  name="state"
+                  onChange={(e: any) => setState(e.target.value)}
+                  defaultValue={customer?.state}
+                >
+                  <option>State</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Punjab">Punjab</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block mb-1">City</label>
+                <select
+                  className="border p-2 rounded w-full border-gray-400"
+                  name="city"
+                  onChange={(e: any) => setCity(e.target.value)}
+                  defaultValue={customer?.city}
+                >
+                  <option>City</option>
+                  <option value="Jaipur">Jaipur</option>
+                  <option value="Delhi">Delhi</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block mb-1">Zipcode</label>
+                <input
+                  type="text"
+                  name="zip_code"
+                  defaultValue={customer?.zip_code}
+                  onChange={(e: any) => setZipCode(e.target.value)}
+                  className="border p-2 rounded border-gray-400 w-full"
+                />
+              </div>
+            </div>
+            <div>
+              <button
+                type="submit"
+                className="bg-black text-white px-3 py-1 rounded"
+              >
+                Update
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        <div>
+          <h1 className="text-2xl font-bold mb-4">Addresses</h1>
+          <div className="mb-8 flex gap-2">
+            <h2 className="text-xl font-semibold">Billing Address</h2>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6 cursor-pointer"
+              onClick={() => setIsEdit(true)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+              />
+            </svg>
+          </div>
+          <p>{customer?.address}</p>
+          <p>{customer?.address_2}</p>
+          <p>
+            {customer?.city}, {customer?.zip_code}
+          </p>
+          <p>
+            {customer?.state}, {customer?.country || "India"}
+          </p>
+          {/* <div>
+            <h2 className="text-xl font-semibold">Shipping Address</h2>
+            <p>You have not set up this type of address yet.</p>
+          </div> */}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -290,73 +468,159 @@ function PaymentMethodsTab() {
 
 // components/tabs/AccountDetailsTab.tsx
 function AccountDetailsTab({ customer }: any) {
+  const [isEdit, setIsEdit] = useState(false);
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [DOB, setDob] = useState("");
+  const [customerData, setCustomerData] = useState({} as any);
   async function updateUser(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(event.currentTarget);
-    const email = customer?.email;
-    const first_name = formData.get("password_confirmation")?.toString().trim() || "";
-    const lastname = formData.get("password")?.toString() || "";
     const response = await fetch(`${config.apiUrl}api/v1/updateuser`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, first_name, lastname }),
+      body: JSON.stringify({
+        email: customer?.email,
+        first_name: firstName ? firstName : customer?.first_name,
+        last_name: lastName ? lastName : customer?.last_name,
+        phone: phone ? phone : customer?.phone,
+        date_of_birth: DOB ? DOB : customer?.date_of_birth,
+        address: customer?.address,
+        address_2: customer?.address_2,
+        city: customer?.city,
+        state: customer?.state,
+        zip_code: customer?.zip_code,
+        country: customer?.country || "India",
+      }),
     });
     if (response.ok) {
       const data = await response.json();
-      // console.log("yy",data)
-      alert("user updated!")
-    } else{
-      console.log("something went wrong!!")
+      console.log("customerData1", data);
+      setCustomerData(data);
+      // customer = customerData?.customer;
+      alert("user updated!");
+    } else {
+      console.log("something went wrong!!");
     }
   }
+  useEffect(() => {
+    if (typeof window !== "undefined" && customerData?.customer) {
+      console.log("customerData2", customerData);
+      localStorage.setItem("customer", JSON.stringify(customerData.customer));
+    }
+  }, [customerData]);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Account Details</h1>
-      <form className="space-y-4" onSubmit={updateUser}>
+    <>
+      {isEdit ? (
         <div>
-          <label className="block mb-1">First Name</label>
-          <input
-            type="text"
-            name="first_name"
-            defaultValue={customer?.first_name}
-            className="w-full border p-2"
-          />
+          <div className="flex gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6 cursor-pointer"
+              onClick={() => setIsEdit(false)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+              />
+            </svg>
+            <h1 className="text-2xl font-bold mb-4">Account Details</h1>
+          </div>
+          <form className="space-y-4" onSubmit={updateUser}>
+            <div>
+              <label className="block mb-1">First Name</label>
+              <input
+                type="text"
+                name="first_name"
+                defaultValue={customer?.first_name}
+                onChange={(e: any) => setFirstName(e.target.value)}
+                className="w-full border p-2"
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Last Name</label>
+              <input
+                type="text"
+                name="last_name"
+                defaultValue={customer?.last_name}
+                onChange={(e: any) => setLastName(e.target.value)}
+                className="w-full border p-2"
+              />
+            </div>
+            {/* <div>
+              <label className="block mb-1">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                defaultValue={customer?.email}
+                className="w-full border p-2"
+                disabled
+              />
+            </div> */}
+            <div>
+              <label className="block mb-1">Phone</label>
+              <input
+                type="text"
+                name="phone"
+                defaultValue={customer?.phone}
+                onChange={(e: any) => setPhone(e.target.value)}
+                className="w-full border p-2"
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Date of Birth</label>
+              <input
+                type="date"
+                name="date_of_birth"
+                defaultValue={customer?.date_of_birth}
+                onChange={(e: any) => setDob(e.target.value)}
+                className="w-full border p-2"
+              />
+            </div>
+            <div>
+              <button
+                type="submit"
+                className="bg-black text-white px-3 py-1 rounded"
+              >
+                Update
+              </button>
+            </div>
+          </form>
         </div>
+      ) : (
         <div>
-          <label className="block mb-1">Last Name</label>
-          <input
-            type="text"
-            name="last_name"
-            defaultValue={customer?.last_name}
-            className="w-full border p-2"
-          />
+          <div className="mb-8 flex gap-2">
+            <h2 className="text-xl font-semibold">User Info</h2>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6 cursor-pointer"
+              onClick={() => setIsEdit(true)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+              />
+            </svg>
+          </div>
+          <p>
+            {customer?.first_name} {customer?.last_name}
+          </p>
+          <p>{customer?.email}</p>
+          <p>{customer?.phone}</p>
+          <p>DOB: {customer?.date_of_birth}</p>
         </div>
-        <div>
-          <label className="block mb-1">Display Name</label>
-          <input
-            type="text"
-            defaultValue={customer?.first_name}
-            className="w-full border p-2"
-          />
-        </div>
-        <div>
-          <label className="block mb-1">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            defaultValue={customer?.email}
-            className="w-full border p-2"
-            disabled
-          />
-        </div>
-        <div>
-          <button type="submit" className="bg-black text-white px-3 py-1 rounded">
-            Update
-          </button>
-        </div>
-      </form>
-    </div>
+      )}
+    </>
   );
 }

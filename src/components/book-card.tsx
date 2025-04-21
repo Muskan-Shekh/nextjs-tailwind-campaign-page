@@ -129,12 +129,12 @@ export function BookCard({
             className="mb-3 font-bold normal-case"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            {title}
+            {title?.replace(/#COMMA#/g, ',')}
           </Typography>
         </a>
         <Typography
           className="mb-4 font-normal !text-gray-500"
-          dangerouslySetInnerHTML={{ __html: desc }}
+          dangerouslySetInnerHTML={{ __html: desc?.replace(/#COMMA#/g, ',') }}
           {...({} as React.ComponentProps<typeof Typography>)}
         >
           {/* {desc} */}

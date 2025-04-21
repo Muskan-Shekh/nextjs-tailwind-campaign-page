@@ -38,14 +38,28 @@ const CATEGORIES = [
   },
 ];
 
-export function TopBookCategories() {
+export function TopBookCategories({ highlightDiv, divRef }: any) {
   return (
-    <section className="container mx-auto px-8 pb-20 pt-20 lg:pt-0">
+    <section
+      ref={divRef}
+      className={`container mx-auto px-8 pb-20 pt-20 lg:pt-0 ${
+        highlightDiv ? "bg-gray-300 shadow-2xl p-4" : ""
+      }`}
+    >
       <div className="mb-20 grid place-items-center text-center pt-20">
-        <Typography variant="h2" color="blue-gray" className="my-3" {...({} as React.ComponentProps<typeof Typography>)}>
+        <Typography
+          variant="h2"
+          color="blue-gray"
+          className="my-3"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           Top Book Categories
         </Typography>
-        <Typography variant="lead" className="!text-gray-500 lg:w-6/12" {...({} as React.ComponentProps<typeof Typography>)}>
+        <Typography
+          variant="lead"
+          className="!text-gray-500 lg:w-6/12"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
           Explore our diverse range of categories and embark on a reading
           journey that suits your mood, passion, or curiosity.
         </Typography>
@@ -57,11 +71,23 @@ export function TopBookCategories() {
           {...({} as React.ComponentProps<typeof Card>)}
         >
           <div className="absolute inset-0 h-full w-full bg-gray-900/75" />
-          <CardBody className="relative w-full" {...({} as React.ComponentProps<typeof CardBody>)}>
-            <Typography color="white" className="text-xs font-bold opacity-50 hover:opacity-100" {...({} as React.ComponentProps<typeof Typography>)}>
+          <CardBody
+            className="relative w-full"
+            {...({} as React.ComponentProps<typeof CardBody>)}
+          >
+            <Typography
+              color="white"
+              className="text-xs font-bold opacity-50 hover:opacity-100"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               up to 40% OFF
             </Typography>
-            <Typography variant="h4" className="mt-9" color="white" {...({} as React.ComponentProps<typeof Typography>)}>
+            <Typography
+              variant="h4"
+              className="mt-9"
+              color="white"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
               Bestselling Books
             </Typography>
             <Typography
@@ -73,7 +99,11 @@ export function TopBookCategories() {
               and more. From preschool to post-grad, we have books for every age
               and academic level.
             </Typography>
-            <Button size="sm" color="white" {...({} as React.ComponentProps<typeof Button>)}>
+            <Button
+              size="sm"
+              color="white"
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
               Read More
             </Button>
           </CardBody>

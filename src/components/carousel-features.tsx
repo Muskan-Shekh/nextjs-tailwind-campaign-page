@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Typography, Carousel, Button } from "@material-tailwind/react";
 
-export function CarouselFeatures() {
+export function CarouselFeatures({ onButtonClick }: any) {
   return (
     <div className="px-8 py-32">
       <section className="container mx-auto !rounded-lg bg-[url('https://bookwindow.in/assets/images/_slides/U4ZTD6.webp')] bg-center py-10 lg:px-16 relative">
@@ -43,7 +43,12 @@ export function CarouselFeatures() {
                   competitve exam books.To get all RAS class and books -
                 </Typography>
                 <div className="flex items-center gap-2">
-                  <Button size="lg" color="gray" {...({} as React.ComponentProps<typeof Button>)}>
+                  <Button
+                    size="lg"
+                    color="gray"
+                    {...({} as React.ComponentProps<typeof Button>)}
+                    onClick={onButtonClick}
+                  >
                     🛍️ Buy Now
                   </Button>
                 </div>

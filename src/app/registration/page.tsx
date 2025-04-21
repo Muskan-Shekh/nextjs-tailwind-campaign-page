@@ -296,7 +296,7 @@ export default function RegistrationForm() {
             >
               CAPTCHA
             </Typography>
-            <canvas ref={canvasRef} className="mb-2 border border-gray-300" />
+            <canvas ref={canvasRef} className="mb-2 border border-gray-300 w-40" />
 
             <div className="flex items-center gap-2">
               <Input

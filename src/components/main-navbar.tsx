@@ -24,19 +24,39 @@ import config from "@/app/config";
 const MainNavbar: React.FC = () => {
   const [openNav, setOpenNav] = React.useState(false);
   const [categories, setCategories] = React.useState([] as any);
+  const [headerMenu, setHeaderMenu] = React.useState([] as any);
 
   const toggleNav = () => setOpenNav(!openNav);
   const closeNav = () => setOpenNav(false);
 
+  // React.useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios({
+  //         method: "get",
+  //         url: `${config.apiUrl}api/category`,
+  //         responseType: "json",
+  //       });
+  //       setCategories(response.data);
+  //     } catch (error) {
+  //       console.log("error", error);
+  //     } finally {
+  //       // console.log("An error occured");
+  //     }
+  //   };
+
+  //   fetchCategories();
+  // }, []);
+
   React.useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchHeaderMenu = async () => {
       try {
         const response = await axios({
           method: "get",
-          url: `${config.apiUrl}api/category`,
+          url: `${config.apiUrl}api/menus/header_menu`,
           responseType: "json",
         });
-        setCategories(response.data);
+        setHeaderMenu(response.data?.data);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -44,33 +64,33 @@ const MainNavbar: React.FC = () => {
       }
     };
 
-    fetchCategories();
+    fetchHeaderMenu();
   }, []);
 
   React.useEffect(() => {
-    // console.log("categories", categories);
-  }, [categories]);
+    // console.log("headerMenu", headerMenu);
+  }, [categories, headerMenu]);
 
   return (
     <Navbar
       className="w-full max-w-full backdrop-blur-2xl sticky top-20 z-40 border-0 px-4 py-2"
       {...({} as React.ComponentProps<typeof Navbar>)}
     >
-      {/* <div className="grid grid-col-7 text-blue-gray-900 justify-center"> */}
-      <div className="w-full text-blue-gray-900 flex justify-center">
-        {/* <div className="hidden gap-2 lg:flex"> */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4  gap-2">
-          {/* <List
-            className="mb-6 mt-4 p-8 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1 gap-2 items-center"
+      <div className="grid grid-col-7 text-blue-gray-900 justify-center">
+        {/* <div className="w-full text-blue-gray-900 flex justify-center"> */}
+        <div className="hidden gap-2 lg:flex">
+          {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4  gap-2"> */}
+          <List
+            className="mb-6 mt-4 p-8 lg:mb-0 lg:mt-0 lg:flex-row lg:p-1 gap-8 items-center"
             {...({} as React.ComponentProps<typeof List>)}
-          > */}
-            {categories.map((item: any, index: number) => (
+          >
+            {headerMenu?.map((item: any, index: number) => (
               <ListItem
                 key={item?.id}
                 className="p-1"
                 {...({} as React.ComponentProps<typeof ListItem>)}
               >
-                {item.child && item.child?.length ? (
+                {item.children && item.children?.length ? (
                   <Menu allowHover>
                     <MenuHandler>
                       <Typography
@@ -78,7 +98,7 @@ const MainNavbar: React.FC = () => {
                         href={
                           index === 6
                             ? "current-affairs"
-                            : `/category/${item.slug}`
+                            : `/category/${item.url}`
                         }
                         variant="small"
                         color="blue-gray"
@@ -98,7 +118,7 @@ const MainNavbar: React.FC = () => {
                       <MenuList
                         {...({} as React.ComponentProps<typeof MenuList>)}
                       >
-                        {item.child.map((child: any) => (
+                        {item.children?.map((child: any) => (
                           <div className="relative group" key={child?.id}>
                             <MenuItem
                               key={child?.id}
@@ -106,7 +126,7 @@ const MainNavbar: React.FC = () => {
                             >
                               <Typography
                                 as="a"
-                                href={`/category/${child.slug}`}
+                                href={`/category/${child.url}`}
                                 variant="small"
                                 color="blue-gray"
                                 className="font-medium flex items-center gap-1"
@@ -134,12 +154,12 @@ const MainNavbar: React.FC = () => {
                                 {child?.child?.map(
                                   (sub: any, subIndex: number) => (
                                     <Typography
-                                    {...({} as React.ComponentProps<
-                                      typeof Typography
-                                    >)}
+                                      {...({} as React.ComponentProps<
+                                        typeof Typography
+                                      >)}
                                       key={subIndex}
                                       as="a"
-                                      href={`/category/${sub.slug}`}
+                                      href={`/category/${sub.url}`}
                                       variant="small"
                                       className="block px-4 py-2 text-blue-gray-700 hover:bg-blue-gray-50 rounded transition-colors"
                                     >
@@ -157,7 +177,7 @@ const MainNavbar: React.FC = () => {
                 ) : (
                   <Typography
                     as="a"
-                    href={`/category/${item.slug}`}
+                    href={`/category/${item.url}`}
                     variant="small"
                     color="blue-gray"
                     className="font-medium whitespace-nowrap"
@@ -169,7 +189,7 @@ const MainNavbar: React.FC = () => {
                 )}
               </ListItem>
             ))}
-          {/* </List> */}
+          </List>
         </div>
         <IconButton
           variant="text"
@@ -185,18 +205,20 @@ const MainNavbar: React.FC = () => {
           )}
         </IconButton>
       </div>
+
+      {/* mobile menu */}
       <Collapse open={openNav}>
         <List
           className="flex flex-col gap-2 mt-2"
           {...({} as React.ComponentProps<typeof List>)}
         >
-          {categories.map((item: any, index: number) => (
+          {headerMenu.map((item: any, index: number) => (
             <ListItem
               key={item?.id}
               className="p-1"
               {...({} as React.ComponentProps<typeof ListItem>)}
             >
-              {item.child ? (
+              {item.children ? (
                 <Menu allowHover>
                   <MenuHandler>
                     <Typography
@@ -204,7 +226,7 @@ const MainNavbar: React.FC = () => {
                       href={
                         index === 6
                           ? "current-affairs"
-                          : `/category/${item.slug}`
+                          : `/category/${item.url}`
                       }
                       variant="small"
                       color="blue-gray"
@@ -224,14 +246,14 @@ const MainNavbar: React.FC = () => {
                     <MenuList
                       {...({} as React.ComponentProps<typeof MenuList>)}
                     >
-                      {item.child.map((child: any, childIndex: number) => (
+                      {item.children?.map((child: any, childIndex: number) => (
                         <MenuItem
                           key={childIndex}
                           {...({} as React.ComponentProps<typeof MenuItem>)}
                         >
                           <Typography
                             as="a"
-                            href={`/category/${child.slug}`}
+                            href={`/category/${child.url}`}
                             variant="small"
                             color="blue-gray"
                             className="font-medium"
@@ -248,7 +270,7 @@ const MainNavbar: React.FC = () => {
               ) : (
                 <Typography
                   as="a"
-                  href={`/category/${item.slug}`}
+                  href={`/category/${item.url}`}
                   variant="small"
                   color="blue-gray"
                   className="font-medium"

@@ -133,7 +133,8 @@ import { useRouter } from "next/navigation";
 //   "communication",
 // ];
 
-export function BackToSchoolBooks({onItemsCountUpdate}:any) {
+export function BackToSchoolBooks({onItemsCountUpdate, category_tabs}:any) {
+  // console.log("category_tabs",category_tabs);
   const router = useRouter();
   const [category, setCategory] = React.useState([] as any);
   const [products, setProducts] = React.useState([] as any);
@@ -204,7 +205,8 @@ export function BackToSchoolBooks({onItemsCountUpdate}:any) {
           className="mb-3 font-bold uppercase"
           {...({} as React.ComponentProps<typeof Typography>)}
         >
-          up to 40% OFF
+          {/* up to 40% OFF */}
+          {category_tabs?.cat_tab_subtitle}
         </Typography>
         <Typography
           variant="h1"
@@ -212,16 +214,18 @@ export function BackToSchoolBooks({onItemsCountUpdate}:any) {
           className="mb-2"
           {...({} as React.ComponentProps<typeof Typography>)}
         >
-          Back-to-School Books
+          {/* Back-to-School Books */}
+          {category_tabs?.cat_tab_title}
         </Typography>
         <Typography
           variant="lead"
           className="mx-auto w-full px-4 !text-gray-500 lg:w-9/12"
           {...({} as React.ComponentProps<typeof Typography>)}
         >
-          We offer a wide range of study guides, test prep materials, and
+          {/* We offer a wide range of study guides, test prep materials, and
           reference books. Whether you&apos;re tackling calculus or diving into
-          Shakespeare, we&apos;ve got you covered.
+          Shakespeare, we&apos;ve got you covered. */}
+          {category_tabs?.cat_tab_description}
         </Typography>
         <div className="mt-20 flex items-center justify-center">
           <Tabs value={activeTab} className="w-full lg:w-8/12">

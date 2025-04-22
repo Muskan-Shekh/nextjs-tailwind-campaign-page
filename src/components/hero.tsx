@@ -3,13 +3,23 @@
 import Image from "next/image";
 import { Button, Typography } from "@material-tailwind/react";
 import logo from "../../public/logos/logo.png";
+import config from "@/app/config";
 
-function Hero({ onButtonClick }:any) {
+function Hero({ onButtonClick, bannerData }: any) {
   return (
     <header className="bg-yellow-50 px-8 pb-8">
       <div className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2">
         <div className="row-start-2 lg:row-auto lg:-mt-6">
+          <a href="/">
+            <img src={`${config.apiUrl}storage/${bannerData?.logo_img}`} alt={"book window logo"} className="w-[55%]" />
+          </a>
           <Typography
+            className="mb-6 font-normal !text-gray-500 md:pr-16 xl:pr-28"
+            dangerouslySetInnerHTML={{ __html: bannerData?.banner_description }}
+            variant="lead"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          />
+          {/* <Typography
             variant="h1"
             color="red"
             className="text-3xl !leading-snug"
@@ -27,11 +37,16 @@ function Hero({ onButtonClick }:any) {
           >
             Ace your exam with our expertly curated selection of competitve exam
             books.
-            <br />
+            <br /> 
             To get all RAS class and books -
-          </Typography>
-          <Button size="lg" color="gray" {...({} as React.ComponentProps<typeof Button>)}  onClick={onButtonClick}>
-            Buy Now
+          </Typography> */}
+          <Button
+            size="lg"
+            color="gray"
+            {...({} as React.ComponentProps<typeof Button>)}
+            onClick={onButtonClick}
+          >
+            {bannerData?.banner_button_title}
           </Button>
         </div>
         <div className="mt-40 grid gap-6">

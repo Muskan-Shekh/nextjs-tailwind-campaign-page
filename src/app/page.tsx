@@ -14,9 +14,37 @@ import MainNavbar from "@/components/main-navbar";
 import Feature from "@/components/features";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import React from "react";
+import axios from "axios";
+import config from "./config";
 
 export default function Campaign() {
   const [itemsCount, setItemsCount] = useState<number>(0);
+  const [homePageData, setHomePageData] = React.useState([] as any);
+
+  React.useEffect(() => {
+    const fetchAboutUsData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/home-page`,
+          responseType: "json",
+        });
+        setHomePageData(response.data);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchAboutUsData();
+  }, []);
+
+  React.useEffect(() => {
+    // console.log("homePageData", homePageData);
+  }, [homePageData]);
+
   const handleItemsCountUpdate = (count: number) => {
     setItemsCount(count);
   };
@@ -40,35 +68,41 @@ export default function Campaign() {
       <Navbar items_count={itemsCount} />
       <MainNavbar />
       <motion.div
-        // className="footer-content text-light"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <Hero onButtonClick={handleButtonClick} />
+        <Hero
+          onButtonClick={handleButtonClick}
+          bannerData={homePageData?.banner}
+        />
       </motion.div>
       <motion.div
-        // className="footer-content text-light"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <TopBookCategories highlightDiv={highlightDiv} divRef={divRef} />
+        <TopBookCategories
+          highlightDiv={highlightDiv}
+          divRef={divRef}
+          category_section={homePageData?.category_section}
+        />
       </motion.div>
       <motion.div
-        // className="footer-content text-light"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <BackToSchoolBooks onItemsCountUpdate={handleItemsCountUpdate} />
+        <BackToSchoolBooks
+          onItemsCountUpdate={handleItemsCountUpdate}
+          category_tabs={homePageData?.category_tabs}
+        />
       </motion.div>
       {/* <OtherBookOffers /> */}
       <motion.div
-        // className="footer-content text-light"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.0, ease: "easeOut" }}
@@ -77,13 +111,12 @@ export default function Campaign() {
         <CarouselFeatures onButtonClick={handleButtonClick} />
       </motion.div>
       <motion.div
-        // className="footer-content text-light"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <GetYourBookFromUs />
+        <GetYourBookFromUs feature_sections={homePageData?.feature_sections} />
       </motion.div>
       {/* <Faq /> */}
       {/* <Feature /> */}

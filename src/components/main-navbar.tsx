@@ -177,7 +177,11 @@ const MainNavbar: React.FC = () => {
                 ) : (
                   <Typography
                     as="a"
-                    href={`/category/${item.url}`}
+                    href={
+                      index === 6
+                        ? "current-affairs"
+                        : `/category/${item.url}`
+                    }
                     variant="small"
                     color="blue-gray"
                     className="font-medium whitespace-nowrap"

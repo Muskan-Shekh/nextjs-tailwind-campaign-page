@@ -30,12 +30,15 @@ const FEATURES = [
   },
 ];
 
-export function GetYourBookFromUs() {
+export function GetYourBookFromUs(feature_sections:any) {
+  // console.log("feature_sections", feature_sections);
+
   return (
     <section className="px-8 pb-8">
       <div className="container mx-auto mb-16 text-center">
         <Typography variant="h2" color="blue-gray" className="mb-4" {...({} as React.ComponentProps<typeof Typography>)}>
           Get your book from us!
+          {/* {feature_sections?.feature_title} */}
         </Typography>
         <Typography
           variant="lead"
@@ -44,6 +47,7 @@ export function GetYourBookFromUs() {
         >
           Start your literary adventure today by exploring these captivating
           worlds of words.
+          {/* {feature_sections?.feature_description} */}
         </Typography>
       </div>
       <div className="container mx-auto grid grid-cols-1 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
@@ -52,6 +56,11 @@ export function GetYourBookFromUs() {
             {description}
           </FeatureCard>
         ))}
+        {/* {feature_sections?.feature_data?.map((data:any) => (
+          <FeatureCard key={data?.id} icon={data?.image} title={data?.title}>
+            {data?.content}
+          </FeatureCard>
+        ))} */}
       </div>
     </section>
   );

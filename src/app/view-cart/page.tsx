@@ -82,8 +82,7 @@ export default function ShoppingCart() {
     checkSession();
   }, []);
 
-  useEffect(() => {
-  }, [session, cartItems, items_count, router]);
+  useEffect(() => {}, [session, cartItems, items_count, router]);
 
   const updateCartQuantity = async (productId: number, quantity: number) => {
     try {
@@ -121,7 +120,7 @@ export default function ShoppingCart() {
         }),
       });
       const result = await response.json();
-      if(result?.success){
+      if (result?.success) {
         setItemsCount(items_count - 1);
       }
       // setCartData(result);
@@ -180,10 +179,10 @@ export default function ShoppingCart() {
 
           <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
             {/* Cart Items */}
-            <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
-              <div className="space-y-6">
-                {cartItems?.length &&
-                  cartItems?.map((item) => (
+            {cartItems?.length ? (
+              <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+                <div className="space-y-6">
+                  {cartItems?.map((item) => (
                     <div
                       key={item.product_id}
                       className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm  md:p-6"
@@ -250,8 +249,40 @@ export default function ShoppingCart() {
                       </div>
                     </div>
                   ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              // <div className="ph-col-12">
+              //   <div className="ph-picture"></div>
+              // </div>
+              <div
+                role="status"
+                className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
+              >
+                <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded-sm sm:w-96 dark:bg-gray-700">
+                  <svg
+                    className="w-10 h-10 text-gray-200 dark:text-gray-600"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 18"
+                  >
+                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                  </svg>
+                </div>
+
+                <div className="w-full">
+                  <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
+                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
+                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
+                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                </div>
+
+                <span className="sr-only">Loading...</span>
+              </div>
+            )}
 
             {/* Order Summary */}
             <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">

@@ -8,6 +8,9 @@ import {
 } from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
+import React from "react";
+import axios from "axios";
+import config from "../config";
 
 interface TestimonialCardPropsType {
   img: string;
@@ -66,7 +69,7 @@ function CurrentAffairs({
             {clientInfo}
           </Typography>
         </div>
-        {/* <img src={img} className="max-w-[8rem]" alt={client} /> */}
+        {/* <Image src={img} className="max-w-[8rem]" alt={client} /> */}
       </CardBody>
     </Card>
   );
@@ -105,6 +108,27 @@ const testimonials = [
 ];
 
 export default function CurrentAffairsPage() {
+  const [currentAffairsData, setCurrentAffairsData] = React.useState([] as any);
+
+  React.useEffect(() => {
+    const fetchCurrentAffairsData = async () => {
+      try {
+        const response = await fetch(`${config.apiUrl}api/news`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setCurrentAffairsData(data);
+      } catch (error) {
+        console.error("Error fetching current affairs:", error);
+      }
+    };
+
+    fetchCurrentAffairsData();
+  }, []);
+
+  React.useEffect(() => {}, [currentAffairsData]);
+
   return (
     <>
       <Navbar />

@@ -1,11 +1,126 @@
 "use client";
 
-import React from "react";
-import { Button, Input, Textarea, Typography } from "@material-tailwind/react";
+import React, { FormEvent } from "react";
+import {
+  Button,
+  Input,
+  Textarea,
+  Typography,
+  Alert,
+} from "@material-tailwind/react";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
+import config from "../config";
+import axios from "axios";
 
 export default function ContactSection() {
+  const [alertMessage, setAlertMessage] = React.useState("");
+  const [alertType, setAlertType] = React.useState<"error" | "success" | "">(
+    ""
+  );
+  const [contactPageData, setContactPageData] = React.useState([] as any);
+
+  React.useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/contact-page`,
+          responseType: "json",
+        });
+        setContactPageData(response.data?.contact_detials);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchContactData();
+  }, []);
+
+  React.useEffect(() => {}, [contactPageData]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(event.currentTarget);
+    const first_name = formData.get("first_name")?.toString().trim() || "";
+    const last_name = formData.get("last_name")?.toString().trim() || "";
+    const email = formData.get("email")?.toString().trim() || "";
+    const subject = formData.get("subject")?.toString().trim() || "";
+    const emailMessage = formData.get("emailMessage")?.toString() || "";
+
+    // --- Validation ---
+    if (first_name.length > 255) {
+      setAlertType("error");
+      setAlertMessage("First name cannot be more than 255 characters.");
+      return;
+    }
+
+    if (last_name.length > 255) {
+      setAlertType("error");
+      setAlertMessage("Last name cannot be more than 255 characters.");
+      return;
+    }
+
+    if (subject.length > 255) {
+      setAlertType("error");
+      setAlertMessage("Subject cannot be more than 255 characters.");
+      return;
+    }
+
+    if (email.length > 255) {
+      setAlertType("error");
+      setAlertMessage("Email cannot be more than 255 characters.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.apiUrl}api/contact-form`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          first_name,
+          last_name,
+          subject,
+          email,
+          emailMessage,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setAlertType("success");
+        setAlertMessage("Send mail successful!");
+        form.reset();
+      } else {
+        if (data?.error) {
+          setAlertType("error");
+          setAlertMessage(data?.error);
+        } else {
+          setAlertType("error");
+          setAlertMessage(data?.error || "Submission failed.");
+        }
+      }
+    } catch (error) {
+      console.error("Error during Submission:", error);
+      console.log("Error during Submission:", error);
+      // alert("Something went wrong. Please try again later.");
+    }
+  }
+
+  React.useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
+
   return (
     <>
       <Navbar />
@@ -26,34 +141,70 @@ export default function ContactSection() {
             className="mb-4 !text-3xl lg:!text-5xl"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            Our Location
+            {/* Our Location */}
+            {contactPageData?.con_title}
           </Typography>
+
           <div className="mb-10 font-normal !text-lg lg:mb-20 mx-auto max-w-3xl !text-gray-500 grid grid-cols-1 gap-x-12 gap-y-6 lg:grid-cols-3 items-start">
             <div className="">
               <strong className="text-gray-700">Bookwindow: </strong> <br />
-              Shop No. 8, Maharani Garden road near by Hotel Dwarika Palace,
-              Mangyawas, Jaipur, 302020, Rajasthan
+              {/* Shop No. 8, Maharani Garden road near by Hotel Dwarika Palace,
+              Mangyawas, Jaipur, 302020, Rajasthan */}
+              {!contactPageData?.con_address ? (
+                <div>
+                  <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-32 mb-2"></div>
+                  <div className="w-48 h-2 bg-gray-200 rounded-full dark:bg-gray-700"></div>
+                  <span className="sr-only">Loading...</span>
+                </div>
+              ) : (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: contactPageData?.con_address,
+                  }}
+                ></div>
+              )}
             </div>
             <div className="">
               <strong className="text-gray-700">Mobile: </strong> <br />
-              +91 96023 68227
+              {/* +91 96023 68227 */}
+              <div
+                dangerouslySetInnerHTML={{ __html: contactPageData?.con_phone }}
+              ></div>
             </div>
             <div className="">
               <strong className="text-gray-700">Email: </strong>
               <br />
-              info@bookwindow.in
+              {/* info@bookwindow.in */}
+              <div
+                dangerouslySetInnerHTML={{ __html: contactPageData?.con_email }}
+              ></div>
             </div>
           </div>
+          {alertMessage && (
+            <Alert
+              color={alertType === "error" ? "red" : "green"}
+              className="mb-4"
+              onClose={() => setAlertMessage("")}
+            >
+              {alertMessage}
+            </Alert>
+          )}
           <div className="grid grid-cols-1 gap-x-12 gap-y-6 lg:grid-cols-2 items-start">
-            <iframe
+            <div
+              dangerouslySetInnerHTML={{ __html: contactPageData?.con_map }}
+            ></div>
+            {/* <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d649.1622899692323!2d75.78353552039037!3d26.872709862147758!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db5759aa54889%3A0x63b0e198923e4670!2sRajesh%20Ramsinghani!5e1!3m2!1sen!2sbd!4v1726603072398!5m2!1sen!2sbd"
               width="100%"
               height="450"
               style={{ border: "0" }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-            <form action="#" className="flex flex-col gap-4 lg:max-w-sm">
+            ></iframe> */}
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-4 lg:max-w-sm"
+            >
               <Typography
                 variant="small"
                 className="text-left !font-semibold !text-gray-600"
@@ -75,7 +226,7 @@ export default function ContactSection() {
                     color="gray"
                     size="lg"
                     placeholder="First Name"
-                    name="first-name"
+                    name="first_name"
                     className="focus:border-t-gray-900"
                     containerProps={{
                       className: "min-w-full",
@@ -98,7 +249,7 @@ export default function ContactSection() {
                     color="gray"
                     size="lg"
                     placeholder="Last Name"
-                    name="last-name"
+                    name="last_name"
                     className="focus:border-t-gray-900"
                     containerProps={{
                       className: "!min-w-full",
@@ -107,6 +258,7 @@ export default function ContactSection() {
                       className: "hidden",
                     }}
                     {...({} as React.ComponentProps<typeof Input>)}
+                    required
                   />
                 </div>
               </div>
@@ -131,6 +283,7 @@ export default function ContactSection() {
                     className: "hidden",
                   }}
                   {...({} as React.ComponentProps<typeof Input>)}
+                  required
                 />
               </div>
               <div>
@@ -154,6 +307,7 @@ export default function ContactSection() {
                     className: "hidden",
                   }}
                   {...({} as React.ComponentProps<typeof Input>)}
+                  required
                 />
               </div>
               <div>
@@ -168,7 +322,7 @@ export default function ContactSection() {
                   rows={6}
                   color="gray"
                   placeholder="Message"
-                  name="message"
+                  name="emailMessage"
                   className="focus:border-t-gray-900"
                   containerProps={{
                     className: "!min-w-full",
@@ -177,9 +331,15 @@ export default function ContactSection() {
                     className: "hidden",
                   }}
                   {...({} as React.ComponentProps<typeof Textarea>)}
+                  required
                 />
               </div>
-              <Button className="w-full" color="gray" {...({} as React.ComponentProps<typeof Button>)}>
+              <Button
+                className="w-full"
+                color="gray"
+                type="submit"
+                {...({} as React.ComponentProps<typeof Button>)}
+              >
                 Send message
               </Button>
             </form>

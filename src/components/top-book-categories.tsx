@@ -11,13 +11,13 @@ import {
   HeartIcon,
 } from "@heroicons/react/24/solid";
 
-const CATEGORIES = [
-  {
-    cat_image: "/image/blogs/blog-3.png",
-    cat_icon: HeartIcon,
-    cat_title: "Fiction Books",
-    cat_content: "up to 40% OFF",
-  },
+// const CATEGORIES = [
+//   {
+//     cat_image: "/image/blogs/blog-3.png",
+//     cat_icon: HeartIcon,
+//     cat_title: "Fiction Books",
+//     cat_content: "up to 40% OFF",
+//   },
   // {
   //   img: "/image/blogs/blog-12.jpeg",
   //   icon: PuzzlePieceIcon,
@@ -36,14 +36,13 @@ const CATEGORIES = [
   //   title: "SF & Fantasy Books",
   //   desc: "up to 40% OFF",
   // },
-];
+// ];
 
 export function TopBookCategories({
   highlightDiv,
   divRef,
   category_section,
 }: any) {
-  
   const sellingContent = category_section?.category_sections[0];
   return (
     <section
@@ -130,24 +129,34 @@ export function TopBookCategories({
           {/* {CATEGORIES.slice(0, 2).map((props, key) => (
             <CategoryCard key={key} {...props} />
           ))} */}
-          {category_section?.category_sections.map(
-            (data: any, index: number) =>
-              index !== 0 && (
-                <CategoryCard
-                  key={data?.id}
-                  cat_image={data.cat_image}
-                  cat_title={data.cat_title}
-                  cat_content={data.cat_content}
-                  cat_icon={data.cat_icon}
-                />
-              )
-          )}
+          {category_section?.category_sections
+            ?.slice(1, 3)
+            .map((data: any, index: number) => (
+              <CategoryCard
+                key={data?.id}
+                cat_image={data.cat_image}
+                cat_title={data.cat_title}
+                cat_content={data.cat_content}
+                cat_icon={data.cat_icon}
+              />
+            ))}
         </div>
-        {/* <div className="col-span-1 flex flex-col gap-6">
-          {CATEGORIES.slice(2, 4).map((props, key) => (
+        <div className="col-span-1 flex flex-col gap-6">
+          {/* {CATEGORIES.slice(2, 4).map((props, key) => (
             <CategoryCard key={key} {...props} />
-          ))}
-        </div> */}
+          ))} */}
+          {category_section?.category_sections
+            ?.slice(3, 5)
+            .map((data: any, index: number) => (
+              <CategoryCard
+                key={data?.id}
+                cat_image={data.cat_image}
+                cat_title={data.cat_title}
+                cat_content={data.cat_content}
+                cat_icon={data.cat_icon}
+              />
+            ))}
+        </div>
       </div>
     </section>
   );

@@ -34,39 +34,37 @@ export default function RegistrationForm() {
   const drawCaptcha = (text: string) => {
     const canvas: any = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    canvas.width = 120;
+  
+    const letterSpacing = 20;
+    const padding = 20;
+    canvas.width = text.length * letterSpacing + padding; // <-- dynamic width
     canvas.height = 40;
-
-    // Background
+  
     ctx.fillStyle = "#f0f0f0";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Text Style
+  
     ctx.font = "24px Arial";
     ctx.fillStyle = "#333";
     ctx.textBaseline = "middle";
-
-    // Draw distorted text
+  
     for (let i = 0; i < text.length; i++) {
-      const angle = Math.random() * 0.4 - 0.2; // Random rotation
+      const angle = Math.random() * 0.4 - 0.2;
       ctx.save();
-      ctx.translate(20 * i + 10, 20);
+      ctx.translate(letterSpacing * i + 15, 20); // Adjusted a bit
       ctx.rotate(angle);
       ctx.fillText(text[i], 0, 0);
       ctx.restore();
     }
-
-    // Add noise lines
+  
     for (let i = 0; i < 5; i++) {
-      ctx.strokeStyle = `rgba(${Math.random() * 255},${Math.random() * 255},${
-        Math.random() * 255
-      },0.5)`;
+      ctx.strokeStyle = `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.5)`;
       ctx.beginPath();
       ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
       ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
       ctx.stroke();
     }
   };
+  
 
   const refreshCaptcha = () => {
     const newCaptcha = generateCaptchaText();

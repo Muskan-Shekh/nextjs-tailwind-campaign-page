@@ -96,7 +96,9 @@ const MainNavbar: React.FC = () => {
                       <Typography
                         as="a"
                         href={
-                          index === 6
+                          item.url === "#"
+                            ? "#"
+                            : index === 6
                             ? "current-affairs"
                             : `/category/${item.url}`
                         }
@@ -178,7 +180,9 @@ const MainNavbar: React.FC = () => {
                   <Typography
                     as="a"
                     href={
-                      index === 6
+                      item.url === "#"
+                        ? "#"
+                        : index === 6
                         ? "current-affairs"
                         : `/category/${item.url}`
                     }
@@ -228,7 +232,9 @@ const MainNavbar: React.FC = () => {
                     <Typography
                       as="a"
                       href={
-                        index === 6
+                        item.url === "#"
+                          ? "#"
+                          : index === 6
                           ? "current-affairs"
                           : `/category/${item.url}`
                       }

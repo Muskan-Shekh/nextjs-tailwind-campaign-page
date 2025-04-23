@@ -51,9 +51,10 @@ function CategoryCard({ cat_image, cat_title, cat_content, cat_icon }: CategoryC
           <Typography
             color="white"
             className="text-xs font-bold opacity-50"
+            dangerouslySetInnerHTML={{__html: cat_content}}
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            {cat_content}
+            {/* {cat_content} */}
           </Typography>
         </motion.div>
       </CardBody>

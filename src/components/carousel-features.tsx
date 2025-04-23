@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { Typography, Carousel, Button } from "@material-tailwind/react";
+import { index } from "@material-tailwind/react/types/components/select";
+import config from "@/app/config";
 
-export function CarouselFeatures({ onButtonClick }: any) {
+export function CarouselFeatures({ onButtonClick, testimonial_sections }: any) {
+
   return (
     <div className="px-8 py-32">
       <section className="container mx-auto !rounded-lg bg-[url('https://bookwindow.in/assets/images/_slides/U4ZTD6.webp')] bg-center py-10 lg:px-16 relative">
@@ -14,7 +17,7 @@ export function CarouselFeatures({ onButtonClick }: any) {
           prevArrow={() => <></>}
           navigation={({ setActiveIndex, activeIndex, length }) => (
             <div className="absolute left-16 bottom-0 z-50 flex h-5 w-20 -translate-x-2/4 gap-2 md:left-2/4">
-              {new Array(length).fill("").map((_, i) => (
+              {new Array(testimonial_sections?.length).fill("").map((_, i) => (
                 <span
                   key={i}
                   className={`block h-1 w-10 cursor-pointer transition-all content-[''] ${
@@ -27,7 +30,7 @@ export function CarouselFeatures({ onButtonClick }: any) {
           )}
           {...({} as React.ComponentProps<typeof Carousel>)}
         >
-          {new Array(2).fill("").map((_, i) => (
+          {testimonial_sections?.map((data:any, i:index) => (
             <div
               key={i}
               className="!relative flex grid-cols-1 flex-col-reverse gap-6 px-10 py-14 md:grid md:grid-cols-5  md:gap-14 md:py-20"
@@ -39,8 +42,9 @@ export function CarouselFeatures({ onButtonClick }: any) {
                   className="mb-5 text-xl font-normal "
                   {...({} as React.ComponentProps<typeof Typography>)}
                 >
-                  Ace your exam with our expertly curated selection of
-                  competitve exam books.To get all RAS class and books -
+                  {/* Ace your exam with our expertly curated selection of
+                  competitve exam books.To get all RAS class and books - */}
+                  {data?.testimonial_content}
                 </Typography>
                 <div className="flex items-center gap-2">
                   <Button
@@ -49,16 +53,17 @@ export function CarouselFeatures({ onButtonClick }: any) {
                     {...({} as React.ComponentProps<typeof Button>)}
                     onClick={onButtonClick}
                   >
-                    🛍️ Buy Now
+                    {/* 🛍️ Buy Now  */}
+                    🛍️ {data?.testimonial_button_title}
                   </Button>
                 </div>
               </div>
               <div className="col-span-2 flex w-full shrink-0 md:!justify-end">
-                <Image
+                <img
                   width={768}
                   height={768}
-                  src="/logos/logo.png"
-                  alt="testimonial image"
+                  src={`${config.apiUrl}storage/${data?.testimonial_image}`}
+                  alt="testimonial_image"
                   className="h-full w-2/4 object-contain md:!w-2/3"
                 />
               </div>

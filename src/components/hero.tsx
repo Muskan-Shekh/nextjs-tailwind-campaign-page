@@ -8,10 +8,19 @@ import config from "@/app/config";
 function Hero({ onButtonClick, bannerData }: any) {
   return (
     <header className="bg-yellow-50 px-8 pb-8">
-      <div className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2">
+      <div
+        className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2 relative bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${config.apiUrl}storage/${bannerData?.images})`,
+        }}
+      >
         <div className="row-start-2 lg:row-auto lg:-mt-6">
           <a href="/">
-            <img src={`${config.apiUrl}storage/${bannerData?.logo_img}`} alt={"book window logo"} className="w-[55%]" />
+            <img
+              src={`${config.apiUrl}storage/${bannerData?.logo_img}`}
+              alt={"book window logo"}
+              className="w-[55%]"
+            />
           </a>
           <Typography
             className="mb-6 font-normal !text-gray-500 md:pr-16 xl:pr-28"
@@ -49,7 +58,7 @@ function Hero({ onButtonClick, bannerData }: any) {
             {bannerData?.banner_button_title}
           </Button>
         </div>
-        <div className="mt-40 grid gap-6">
+        {/* <div className="mt-40 grid gap-6">
           <div className="grid grid-cols-4 gap-6">
             <Image
               width={768}
@@ -104,7 +113,7 @@ function Hero({ onButtonClick, bannerData }: any) {
               alt="flowers"
             />
           </div>
-        </div>
+        </div> */}
       </div>
     </header>
   );

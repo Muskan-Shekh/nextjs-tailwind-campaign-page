@@ -108,7 +108,7 @@ export default function Campaign() {
         transition={{ duration: 1.0, ease: "easeOut" }}
         viewport={{ once: true }}
       >
-        <CarouselFeatures onButtonClick={handleButtonClick} />
+        <CarouselFeatures onButtonClick={handleButtonClick} testimonial_sections={homePageData?.testimonial_sections}/>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 50 }}

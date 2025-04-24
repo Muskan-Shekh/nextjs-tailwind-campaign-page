@@ -37,20 +37,34 @@ export default function AboutUs() {
       <Navbar />
       <MainNavbar />
       <section className="container mx-auto px-4 mb-4 mt-10">
-        <Typography
-          color="black"
-          variant="h2"
-          className="mb-4"
-          {...({} as React.ComponentProps<typeof Typography>)}
-        >
-          {aboutUsData?.title}
-        </Typography>
-        <Typography
-          className="w-full text-gray-600"
-          variant="lead"
-          dangerouslySetInnerHTML={{ __html: aboutUsData?.content }}
-          {...({} as React.ComponentProps<typeof Typography>)}
-        ></Typography>
+        {!aboutUsData?.title ? (
+          <div role="status" className="animate-pulse min-h-screen">
+            <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+            <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+            <span className="sr-only">Loading...</span>
+          </div>
+        ) : (
+          <>
+            <Typography
+              color="black"
+              variant="h2"
+              className="mb-4"
+              {...({} as React.ComponentProps<typeof Typography>)}
+            >
+              {aboutUsData?.title}
+            </Typography>
+            <Typography
+              className="w-full text-gray-600"
+              variant="lead"
+              dangerouslySetInnerHTML={{ __html: aboutUsData?.content }}
+              {...({} as React.ComponentProps<typeof Typography>)}
+            ></Typography>
+          </>
+        )}
       </section>
       <Footer />
     </>

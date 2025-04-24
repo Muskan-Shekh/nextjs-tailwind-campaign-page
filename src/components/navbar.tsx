@@ -231,6 +231,15 @@ export function Navbar(items_count?: any) {
                   className="min-w-[200px] overflow-hidden absolute left-0 w-full mt-[23rem] bg-white border border-gray-200 rounded-md shadow-lg h-80 overflow-y-auto"
                 >
                   <ul>
+                    <li
+                      className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
+                      onClick={() => {
+                        handleOptionClick("All Publications"); 
+                        setSearchTerm(""); 
+                      }}
+                    >
+                      All Publications
+                    </li>
                     {publications?.map((publication: any) => (
                       <li
                         className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
@@ -319,7 +328,9 @@ export function Navbar(items_count?: any) {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              {items_count?.items_count ? items_count?.items_count : itemsCount || 0}
+              {items_count?.items_count
+                ? items_count?.items_count
+                : itemsCount || 0}
             </div>
           </Link>
           {access_token && customer ? (

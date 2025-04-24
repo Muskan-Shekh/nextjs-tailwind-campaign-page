@@ -186,7 +186,7 @@ export default function RegistrationForm() {
         </Typography>
        
         <form
-          className="mt-8 mb-8 w-80 max-w-screen-lg sm:w-full shadow-lg p-4"
+          className="mt-8 mb-8 w-80 max-w-screen-lg sm:w-full shadow-xl p-4 ring-2 ring-gray-500/50 rounded-xl"
           onSubmit={handleSubmit}
         >
           <div className="mb-1 flex flex-col gap-6">

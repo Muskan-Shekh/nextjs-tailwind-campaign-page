@@ -13,14 +13,17 @@ import axios from "axios";
 import config from "../config";
 
 interface TestimonialCardPropsType {
-  img: string;
-  client: string;
+  img?: string;
+  client?: string;
   title: string;
   slug: string;
-  clientInfo: string;
+  clientInfo?: string;
+  id?: number;
+  news_category_id?: number;
 }
 
 function CurrentAffairs({
+  id,
   img,
   client,
   title,
@@ -43,17 +46,17 @@ function CurrentAffairs({
           as="a"
           color="blue-gray"
           className="mb-4 text-2xl font-bold cursor-pointer"
-          href={`/current-affairs${slug}`}
+          href={`/current-affairs/${slug}`}
           {...({} as React.ComponentProps<typeof Typography>)}
         >
           &quot;{title}&quot;
         </Typography>
       </CardHeader>
-      <CardBody
+      {/* <CardBody
         className="px-4 py-0 flex flex-wrap-reverse gap-x-6 justify-between items-center"
         {...({} as React.ComponentProps<typeof CardBody>)}
-      >
-        <div>
+      > 
+       <div>
           <Typography
             variant="h6"
             color="blue-gray"
@@ -68,44 +71,44 @@ function CurrentAffairs({
           >
             {clientInfo}
           </Typography>
-        </div>
-        {/* <Image src={img} className="max-w-[8rem]" alt={client} /> */}
-      </CardBody>
+        </div> 
+     <Image src={img} className="max-w-[8rem]" alt={client} /> 
+      {/* </CardBody> */}
     </Card>
   );
 }
 
-const testimonials = [
-  {
-    title:
-      "इंडिया ने तूफानी अंदाज में जीता पहला वनडे, इंग्लैंड को बुरी तरह धोया",
-    slug: "/इंडिया-ने-तूफानी-अंदाज-में-जीता-पहला-वनडे,-इंग्लैंड-को-बुरी-तरह-धोया",
-    client: "Shaheen Mistri",
-    clientInfo: "Full Stack Developer @Netflix",
-    img: "/image/netflix.svg",
-  },
-  {
-    title: "Government vs private schools: What works better?",
-    slug: "/Government-vs-private-schools:-What-works-better?",
-    client: "India Development Review ",
-    clientInfo: "Graphic Designer, @Coinbase",
-    img: "/image/Logo-coinbase.svg",
-  },
-  {
-    title: "राष्ट्रीय नमूना सर्वेक्षण (एनएसएस) की 75वीं वर्षगांठ",
-    slug: "/राष्ट्रीय-नमूना-सर्वेक्षण-(एनएसएस)-की-75वीं-वर्षगांठ",
-    client: "Pankil Goswami ",
-    clientInfo: "Full Stack Developer @Netflix",
-    img: "/image/netflix.svg",
-  },
-  {
-    title: "Can neighbourhood repair shops help in reducing e-waste?",
-    slug: "/Can-neighbourhood-repair-shops-help-in-reducing-e-waste?",
-    client: "Debojit Dutta, Rakesh Swami, Srishti Gupta",
-    clientInfo: "Graphic Designer, @Coinbase",
-    img: "/image/Logo-coinbase.svg",
-  },
-];
+// const testimonials = [
+//   {
+//     title:
+//       "इंडिया ने तूफानी अंदाज में जीता पहला वनडे, इंग्लैंड को बुरी तरह धोया",
+//     slug: "/इंडिया-ने-तूफानी-अंदाज-में-जीता-पहला-वनडे,-इंग्लैंड-को-बुरी-तरह-धोया",
+//     client: "Shaheen Mistri",
+//     clientInfo: "Full Stack Developer @Netflix",
+//     img: "/image/netflix.svg",
+//   },
+//   {
+//     title: "Government vs private schools: What works better?",
+//     slug: "/Government-vs-private-schools:-What-works-better?",
+//     client: "India Development Review ",
+//     clientInfo: "Graphic Designer, @Coinbase",
+//     img: "/image/Logo-coinbase.svg",
+//   },
+//   {
+//     title: "राष्ट्रीय नमूना सर्वेक्षण (एनएसएस) की 75वीं वर्षगांठ",
+//     slug: "/राष्ट्रीय-नमूना-सर्वेक्षण-(एनएसएस)-की-75वीं-वर्षगांठ",
+//     client: "Pankil Goswami ",
+//     clientInfo: "Full Stack Developer @Netflix",
+//     img: "/image/netflix.svg",
+//   },
+//   {
+//     title: "Can neighbourhood repair shops help in reducing e-waste?",
+//     slug: "/Can-neighbourhood-repair-shops-help-in-reducing-e-waste?",
+//     client: "Debojit Dutta, Rakesh Swami, Srishti Gupta",
+//     clientInfo: "Graphic Designer, @Coinbase",
+//     img: "/image/Logo-coinbase.svg",
+//   },
+// ];
 
 export default function CurrentAffairsPage() {
   const [currentAffairsData, setCurrentAffairsData] = React.useState([] as any);
@@ -113,12 +116,12 @@ export default function CurrentAffairsPage() {
   React.useEffect(() => {
     const fetchCurrentAffairsData = async () => {
       try {
-          const response = await axios({
-            method: "get",
-            url: `${config.apiUrl}api/news`,
-            responseType: "json",
-          });
-        
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/news`,
+          responseType: "json",
+        });
+
         const data = await response.data;
         setCurrentAffairsData(data);
       } catch (error) {
@@ -129,7 +132,9 @@ export default function CurrentAffairsPage() {
     fetchCurrentAffairsData();
   }, []);
 
-  React.useEffect(() => {console.log("currentAffairsData",currentAffairsData)}, [currentAffairsData]);
+  React.useEffect(() => {
+    // console.log("currentAffairsData", currentAffairsData);
+  }, [currentAffairsData]);
 
   return (
     <>
@@ -154,24 +159,83 @@ export default function CurrentAffairsPage() {
             requires a shift in how nonprofits use monitoring and evaluation to
             drive real impact.
           </Typography>
+
           <div className="grid gap-8 grid-cols-1 lg:grid-cols-2">
-            <Typography
-              color="blue-gray"
-              className="mb-4 text-2xl font-bold text-center"
-              {...({} as React.ComponentProps<typeof Typography>)}
-            >
-              Hindi
-            </Typography>
-            <Typography
-              color="blue-gray"
-              className="mb-4 text-2xl font-bold text-center"
-              {...({} as React.ComponentProps<typeof Typography>)}
-            >
-              English
-            </Typography>
-            {testimonials.map((props, key) => (
+            {/* {testimonials.map((props, key) => (
               <CurrentAffairs key={key} {...props} />
-            ))}
+            ))} */}
+            {currentAffairsData && currentAffairsData.length ? (
+              <>
+                {/* Column 1 - Hindi */}
+                <div>
+                  <Typography
+                    color="blue-gray"
+                    className="mb-4 text-2xl font-bold text-center"
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    Hindi
+                  </Typography>
+                  {currentAffairsData
+                    .filter(
+                      (data: TestimonialCardPropsType) =>
+                        data.news_category_id === 1
+                    )
+                    .map((data: TestimonialCardPropsType) => (
+                      <CurrentAffairs key={data.id} {...data} />
+                    ))}
+                </div>
+
+                {/* Column 2 - English */}
+                <div>
+                  <Typography
+                    color="blue-gray"
+                    className="mb-4 text-2xl font-bold text-center"
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    English
+                  </Typography>
+                  {currentAffairsData
+                    .filter(
+                      (data: TestimonialCardPropsType) =>
+                        data.news_category_id === 2
+                    )
+                    .map((data: TestimonialCardPropsType) => (
+                      <CurrentAffairs key={data.id} {...data} />
+                    ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  role="status"
+                  className="w-full space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
+                >
+                  <div className="w-full">
+                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                  </div>
+                  <span className="sr-only">Loading...</span>
+                </div>
+                <div
+                  role="status"
+                  className="w-full space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
+                >
+                  <div className="w-full">
+                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
+                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                  </div>
+                  <span className="sr-only">Loading...</span>
+                </div>
+              </>
+            )}
           </div>
 
           <Card

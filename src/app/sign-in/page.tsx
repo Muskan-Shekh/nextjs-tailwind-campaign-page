@@ -115,7 +115,7 @@ export default function SignIn() {
           </Alert>
         )}
         <form
-          className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 shadow-lg p-4"
+          className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96 shadow-xl p-4 ring-2 ring-gray-500/50 rounded-xl"
           onSubmit={handleSubmit}
         >
           <div className="mb-1 flex flex-col gap-6">

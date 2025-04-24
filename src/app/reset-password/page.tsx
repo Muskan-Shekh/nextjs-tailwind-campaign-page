@@ -5,8 +5,13 @@ import { Footer, Navbar } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 import { Alert } from "@material-tailwind/react";
 import React, { FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ResetPassword: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  const email = searchParams.get("email");
   const [alertMessage, setAlertMessage] = React.useState("");
   const [alertType, setAlertType] = React.useState<"error" | "success" | "">(
     ""
@@ -20,14 +25,19 @@ const ResetPassword: React.FC = () => {
       formData.get("password_confirmation")?.toString().trim() || "";
     const password = formData.get("password")?.toString() || "";
     try {
-      const response = await fetch(`${config.apiUrl}api/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          password,
-          password_confirmation,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiUrl}api/customer/reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: token,
+            email: email,
+            password,
+            password_confirmation,
+          }),
+        }
+      );
 
       const data = await response.json();
       console.log("reset", data);
@@ -52,17 +62,29 @@ const ResetPassword: React.FC = () => {
     }
   }
 
+  React.useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 3000);
+      return () => {
+        clearTimeout(timer);
+        router.push("/sign-in");
+      };
+    }
+  }, [alertMessage, router]);
+
   return (
     <>
       <Navbar />
       <MainNavbar />
-      <div className="flex items-center justify-center bg-gray-600 bg-opacity-50">
         <main
           id="content"
           role="main"
           className="w-full max-w-md mx-auto p-6 mb-7"
         >
-          <div className="mt-7 bg-white rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700">
+          <div className="mt-7 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-xl p-6 ring-2 ring-gray-500/50 rounded-xl">
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
@@ -117,9 +139,7 @@ const ResetPassword: React.FC = () => {
                 </form>
               </div>
             </div>
-          </div>
-
-          <p className="mt-3 flex justify-center items-center text-center divide-x divide-gray-300 dark:divide-gray-700">
+            <p className="mt-3 flex justify-center items-center text-center divide-x divide-gray-300 dark:divide-gray-700">
             <a
               className="text-blue-600 decoration-2 hover:underline font-medium"
               href="/sign-in"
@@ -127,6 +147,9 @@ const ResetPassword: React.FC = () => {
               Login
             </a>
           </p>
+          </div>
+
+          
           {alertMessage && (
             <Alert
               color={alertType === "error" ? "red" : "green"}
@@ -137,8 +160,6 @@ const ResetPassword: React.FC = () => {
             </Alert>
           )}
         </main>
-      </div>
-
       <Footer />
     </>
   );

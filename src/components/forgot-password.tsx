@@ -15,16 +15,19 @@ const ForgotPassword: React.FC = () => {
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email")?.toString().trim() || "";
     try {
-      const response = await fetch(`${config.apiUrl}api/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-        }),
-      });
+      const response = await fetch(
+        `${config.apiUrl}api/customer/forgot-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+          }),
+        }
+      );
 
       const data = await response.json();
-      console.log("data", data)
+      console.log("data", data);
 
       if (response.ok) {
         setAlertType("success");
@@ -45,6 +48,15 @@ const ForgotPassword: React.FC = () => {
       // alert("Something went wrong. Please try again later.");
     }
   }
+  React.useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
   return (
     <main id="content" role="main" className="w-full max-w-md mx-auto p-6">
       <div className="mt-7 bg-white rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700">

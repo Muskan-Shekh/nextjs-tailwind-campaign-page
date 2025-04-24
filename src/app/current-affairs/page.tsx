@@ -113,11 +113,13 @@ export default function CurrentAffairsPage() {
   React.useEffect(() => {
     const fetchCurrentAffairsData = async () => {
       try {
-        const response = await fetch(`${config.apiUrl}api/news`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+          const response = await axios({
+            method: "get",
+            url: `${config.apiUrl}api/news`,
+            responseType: "json",
+          });
+        
+        const data = await response.data;
         setCurrentAffairsData(data);
       } catch (error) {
         console.error("Error fetching current affairs:", error);
@@ -127,7 +129,7 @@ export default function CurrentAffairsPage() {
     fetchCurrentAffairsData();
   }, []);
 
-  React.useEffect(() => {}, [currentAffairsData]);
+  React.useEffect(() => {console.log("currentAffairsData",currentAffairsData)}, [currentAffairsData]);
 
   return (
     <>

@@ -1,8 +1,50 @@
 "use client";
 
-import React from "react";
+import config from "@/app/config";
+import { Alert } from "@material-tailwind/react";
+import React, { FormEvent } from "react";
 
 const ForgotPassword: React.FC = () => {
+  const [alertMessage, setAlertMessage] = React.useState("");
+  const [alertType, setAlertType] = React.useState<"error" | "success" | "">(
+    ""
+  );
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email")?.toString().trim() || "";
+    try {
+      const response = await fetch(`${config.apiUrl}api/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("data", data)
+
+      if (response.ok) {
+        setAlertType("success");
+        setAlertMessage("Reset link sent to your email");
+        form.reset();
+      } else {
+        if (data?.error) {
+          setAlertType("error");
+          setAlertMessage(data?.error);
+        } else {
+          setAlertType("error");
+          setAlertMessage(data?.error || "failed.");
+        }
+      }
+    } catch (error) {
+      console.error("Error during Submission:", error);
+      console.log("Error during Submission:", error);
+      // alert("Something went wrong. Please try again later.");
+    }
+  }
   return (
     <main id="content" role="main" className="w-full max-w-md mx-auto p-6">
       <div className="mt-7 bg-white rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700">
@@ -23,7 +65,7 @@ const ForgotPassword: React.FC = () => {
           </div>
 
           <div className="mt-5">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="grid gap-y-4">
                 <div>
                   <label
@@ -77,6 +119,15 @@ const ForgotPassword: React.FC = () => {
           Contact us!
         </a>
       </p>
+      {alertMessage && (
+        <Alert
+          color={alertType === "error" ? "red" : "green"}
+          className="mb-4"
+          onClose={() => setAlertMessage("")}
+        >
+          {alertMessage}
+        </Alert>
+      )}
     </main>
   );
 };

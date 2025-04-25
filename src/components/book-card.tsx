@@ -21,6 +21,8 @@ interface BookCardProps {
   slug?: string;
   id?: string | any;
   quantity: number;
+  subcategoryName?: string;
+  mainCategoryName?:string;
   onItemsCountUpdate?: (count: number) => void;
 }
 
@@ -34,6 +36,8 @@ export function BookCard({
   slug,
   id,
   quantity,
+  subcategoryName,
+  mainCategoryName,
   onItemsCountUpdate,
 }: BookCardProps) {
   const [showPopup, setShowPopup] = useState(false);
@@ -91,8 +95,8 @@ export function BookCard({
   return (
     <Card
       color="transparent"
-      shadow={false}
-      className="mb-4"
+      shadow={true}
+      className="mb-4 border border-1"
       {...({} as React.ComponentProps<typeof Card>)}
     >
       <CardHeader
@@ -110,7 +114,7 @@ export function BookCard({
         />
       </CardHeader>
       <CardBody
-        className="p-0"
+        className="p-0 px-4"
         {...({} as React.ComponentProps<typeof CardBody>)}
       >
         {price !== offPrice && (
@@ -124,14 +128,16 @@ export function BookCard({
         )}
         <a href={`/product-detail/${slug}`}>
           <Typography
-            variant="h5"
+            variant="h2"
             color="blue-gray"
-            className="mb-3 font-bold normal-case"
+            className="mb-3 font-bold normal-case text-[1rem]"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
             {title?.replace(/#COMMA#/g, ",")}
           </Typography>
         </a>
+        <p>subcategoryName = {subcategoryName}</p>
+        <p>mainCategoryName = {mainCategoryName}</p>
         <Typography
           className="mb-4 font-normal !text-gray-500"
           dangerouslySetInnerHTML={{ __html: desc?.replace(/#COMMA#/g, ",") }}

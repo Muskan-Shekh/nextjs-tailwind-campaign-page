@@ -8,6 +8,7 @@ import MainNavbar from "@/components/main-navbar";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
 import axios from "axios";
+import { Button } from "@material-tailwind/react";
 
 interface CartItem {
   product_id: number;
@@ -46,6 +47,7 @@ export default function ShoppingCart() {
   const [session, setSession] = useState("");
   const [cartItems, setCartItems] = useState([] as CartItem[]);
   const [items_count, setItemsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
@@ -59,6 +61,7 @@ export default function ShoppingCart() {
 
   useEffect(() => {
     const viewCart = async () => {
+      setLoading(true);
       try {
         const response = await axios({
           method: "get",
@@ -66,16 +69,18 @@ export default function ShoppingCart() {
           responseType: "json",
         });
         const data = response?.data;
-        // console.log("cart list", data);
         setCartItems(data?.items);
         setItemsCount(data?.items_count);
       } catch (error) {
-        console.log("error", error);
+        console.error("Error loading cart:", error);
+        setCartItems([]); // fallback to empty array
       } finally {
-        // console.log("An error occured");
+        setLoading(false); // stop loader
       }
     };
-    viewCart();
+    if (session) {
+      viewCart();
+    }
   }, [session]);
 
   useEffect(() => {
@@ -124,7 +129,7 @@ export default function ShoppingCart() {
         setItemsCount(items_count - 1);
       }
       // setCartData(result);
-      console.log("remove:", result);
+      // console.log("remove:", result);
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
@@ -153,6 +158,7 @@ export default function ShoppingCart() {
   const removeItem = (id: number) => {
     removeCartItem(id);
     setCartItems(cartItems?.filter((item) => item.product_id !== id));
+    setItemsCount(items_count - 1);
   };
 
   const calculateTotal = () => {
@@ -171,15 +177,87 @@ export default function ShoppingCart() {
     <>
       <Navbar items_count={items_count} />
       <MainNavbar />
-      <section className="bg-white py-8  md:py-16 mb-4">
-        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-          <h2 className="text-xl font-semibold text-gray-900  sm:text-2xl">
-            Shopping Cart
-          </h2>
+      <section className="bg-white py-8 md:py-16 mb-4">
+        {loading ? (
+          <div
+            role="status"
+            className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
+          >
+            <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded-sm sm:w-96 dark:bg-gray-700">
+              <svg
+                className="w-10 h-10 text-gray-200 dark:text-gray-600"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 18"
+              >
+                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+              </svg>
+            </div>
 
-          <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
-            {/* Cart Items */}
-            {cartItems?.length ? (
+            <div className="w-full">
+              <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
+              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
+              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
+              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+            </div>
+
+            <span className="sr-only">Loading...</span>
+          </div>
+        ) : cartItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white p-6 shadow-md rounded-xl">
+            <div className="mb-6">
+              <img
+                src="https://img.freepik.com/free-vector/supermarket-shopping-cart-concept-illustration_114360-22408.jpg?ga=GA1.1.572757015.1729593940&semt=ais_hybrid&w=740" // Place this image in your /public folder
+                alt="Empty Cart"
+                width={150}
+                height={150}
+              />
+            </div>
+
+            <h2 className="text-2xl font-semibold text-gray-700">
+              Your Cart is{" "}
+              <span className="text-red-800 font-bold">Empty!</span>
+            </h2>
+
+            <p className="text-gray-500 mt-2">
+              Must add items on the cart before you proceed to check out.
+            </p>
+
+            <Button
+              className="mt-6 px-6 py-3 rounded-full shadow-lg flex bg-red-800"
+              onClick={() => router.push("/all-products")}
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              <svg
+                className="w-6 h-6 text-white "
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
+                />
+              </svg>
+             <p className="mt-1"> Return to Shop</p> 
+            </Button>
+          </div>
+        ) : (
+          <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+            <h2 className="text-xl font-semibold text-gray-900  sm:text-2xl">
+              Shopping Cart
+            </h2>
+
+            <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
               <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
                 <div className="space-y-6">
                   {cartItems?.map((item) => (
@@ -251,61 +329,30 @@ export default function ShoppingCart() {
                   ))}
                 </div>
               </div>
-            ) : (
-              // <div className="ph-col-12">
-              //   <div className="ph-picture"></div>
-              // </div>
-              <div
-                role="status"
-                className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
-              >
-                <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded-sm sm:w-96 dark:bg-gray-700">
-                  <svg
-                    className="w-10 h-10 text-gray-200 dark:text-gray-600"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 18"
-                  >
-                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-                  </svg>
-                </div>
 
-                <div className="w-full">
-                  <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
-                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
-                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
-                  <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-                </div>
+              {/* Order Summary */}
+              <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
+                <div className="space-y-4 border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                  <p className="text-xl font-semibold text-gray-900">
+                    Order Summary
+                  </p>
 
-                <span className="sr-only">Loading...</span>
-              </div>
-            )}
+                  <div className="space-y-4">
+                    <dl className="flex justify-between gap-4">
+                      <dt className="text-base font-normal text-gray-500">
+                        Subtotal
+                      </dt>
+                      <dd className="text-base font-medium text-gray-900">
+                        ₹
+                        {cartItems?.reduce(
+                          (acc, item) =>
+                            acc + item.product_price * item.quantity,
+                          0
+                        )}
+                      </dd>
+                    </dl>
 
-            {/* Order Summary */}
-            <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
-              <div className="space-y-4 border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-                <p className="text-xl font-semibold text-gray-900">
-                  Order Summary
-                </p>
-
-                <div className="space-y-4">
-                  <dl className="flex justify-between gap-4">
-                    <dt className="text-base font-normal text-gray-500">
-                      Subtotal
-                    </dt>
-                    <dd className="text-base font-medium text-gray-900">
-                      ₹
-                      {cartItems?.reduce(
-                        (acc, item) => acc + item.product_price * item.quantity,
-                        0
-                      )}
-                    </dd>
-                  </dl>
-
-                  {/* <dl className="flex justify-between gap-4">
+                    {/* <dl className="flex justify-between gap-4">
                     <dt className="text-base font-normal text-gray-500">
                       Savings
                     </dt>
@@ -314,38 +361,41 @@ export default function ShoppingCart() {
                     </dd>
                   </dl> */}
 
-                  {/* <dl className="flex justify-between gap-4">
+                    {/* <dl className="flex justify-between gap-4">
                     <dt className="text-base font-normal text-gray-500">
                       Store Pickup
                     </dt>
                     <dd className="text-base font-medium text-gray-900">₹99</dd>
                   </dl> */}
 
-                  <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
-                    <dt className="text-base font-bold text-gray-900">Total</dt>
-                    <dd className="text-base font-bold text-gray-900">
-                      ₹{calculateTotal()}
-                    </dd>
-                  </dl>
+                    <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
+                      <dt className="text-base font-bold text-gray-900">
+                        Total
+                      </dt>
+                      <dd className="text-base font-bold text-gray-900">
+                        ₹{calculateTotal()}
+                      </dd>
+                    </dl>
+                  </div>
+
+                  <button
+                    className="w-full rounded-lg bg-gray-800 px-5 py-2.5 text-white hover:bg-gray-900"
+                    onClick={() => router.push("/checkout")}
+                  >
+                    Proceed to Checkout
+                  </button>
+
+                  <a
+                    href="/"
+                    className="text-center text-sm font-medium text-gray-900 underline"
+                  >
+                    Continue Shopping
+                  </a>
                 </div>
-
-                <button
-                  className="w-full rounded-lg bg-gray-800 px-5 py-2.5 text-white hover:bg-gray-900"
-                  onClick={() => router.push("/checkout")}
-                >
-                  Proceed to Checkout
-                </button>
-
-                <a
-                  href="/"
-                  className="text-center text-sm font-medium text-gray-900 underline"
-                >
-                  Continue Shopping
-                </a>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </section>
       <Footer />
     </>

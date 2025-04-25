@@ -5,11 +5,11 @@ import MainNavbar from "@/components/main-navbar";
 import BookCard from "@/components/book-card";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import config from "../../config";
+import config from "../config";
 import CategoryPublicationSidebar from "@/components/category-publication-sidebar";
 import { useSearchParams } from "next/navigation";
 
-export default function Category({ params }: any) {
+export default function Category() {
   const [itemsCount, setItemsCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -18,33 +18,22 @@ export default function Category({ params }: any) {
   const handleItemsCountUpdate = (count: number) => {
     setItemsCount(count);
   };
-  const { slug } = params;
   const searchParams = useSearchParams();
   const [products, setProducts] = useState([] as any);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const productionId = searchParams.get("production_id");
   const [loading, setLoading] = useState(true);
-  const [childCategory, setChildCategory] = useState([] as any);
-  const [mainCategories, setMainCategories] = useState([] as any);
-
 
   useEffect(() => {
-    const fetchProductsByCategory = async () => {
+    const fetchProducts = async () => {
       setLoading(true);
       try {
         const response = await axios({
           method: "get",
-          url: `${config.apiUrl}api/category/${slug}`,
+          url: `${config.apiUrl}api/products`,
           responseType: "json",
         });
-        const response2 = await axios({
-          method: "get",
-          url: `${config.apiUrl}api/category`,
-          responseType: "json",
-        });
-        setMainCategories(response2?.data)
-        setChildCategory(response.data?.category)
-        setProducts(response.data?.products);
+        setProducts(response.data);
       } catch (error) {
         console.error("Error loading products:", error);
         setProducts([]);
@@ -52,12 +41,11 @@ export default function Category({ params }: any) {
         setLoading(false);
       }
     };
-    if (slug) {
-      fetchProductsByCategory();
-    }
-  }, [slug]);
+    
+      fetchProducts();
+  }, []);
 
-  useEffect(() => {}, [products, childCategory, mainCategories]);
+  useEffect(() => {}, [products]);
 
   useEffect(() => {
     // Filter products if productionId is available
@@ -81,6 +69,7 @@ export default function Category({ params }: any) {
     indexOfFirstItem,
     indexOfLastItem
   );
+
   const totalPages = Math.ceil(displayedProducts.length / itemsPerPage);
 
   useEffect(() => {
@@ -93,9 +82,7 @@ export default function Category({ params }: any) {
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex shadow-lg border border-1">
         <CategoryPublicationSidebar
-          categorySlug={slug}
-          childCategory={childCategory}
-          products={filteredProducts?.length>0 ? filteredProducts : products}
+        categorySlug={"all-products"}
           category_id={
             filteredProducts
               ? filteredProducts && filteredProducts[0]?.category_id
@@ -142,10 +129,7 @@ export default function Category({ params }: any) {
         ) : (
           <div className="col-8">
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3 p-8">
-              {currentItems.map((product: any) => {
-                const subcategory = childCategory.find((sub:any) => sub.id === product.sub_category_id);
-                const mainCategory = mainCategories.find((main:any) => main.id === product.category_id);
-                return(
+              {currentItems.map((product: any) => (
                 <BookCard
                   key={product.id}
                   img={`${config.apiUrl}storage/${product.image}`}
@@ -161,10 +145,8 @@ export default function Category({ params }: any) {
                   id={product.id}
                   quantity={product.quantity}
                   onItemsCountUpdate={handleItemsCountUpdate}
-                  subcategoryName={subcategory?.name || 'N/A'}
-                  mainCategoryName={mainCategory?.name || 'N/A'}
-                />)
-              })}
+                />
+              ))}
             </div>
           </div>
         )}

@@ -26,7 +26,10 @@ export default function Category({ params }: any) {
   const [loading, setLoading] = useState(true);
   const [childCategory, setChildCategory] = useState([] as any);
   const [mainCategories, setMainCategories] = useState([] as any);
-
+  // const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+  //   null
+  // );
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchProductsByCategory = async () => {
@@ -42,9 +45,15 @@ export default function Category({ params }: any) {
           url: `${config.apiUrl}api/category`,
           responseType: "json",
         });
-        setMainCategories(response2?.data)
-        setChildCategory(response.data?.category)
-        setProducts(response.data?.products);
+        setMainCategories(response2?.data);
+        setChildCategory(response.data?.category);
+        setProducts(response.data?.products
+          // response.data?.products.filter(
+          //   (product: any) =>
+          //     product?.sub_category_id !== null &&
+          //     product?.sub_category_id !== undefined
+          // )
+        );
       } catch (error) {
         console.error("Error loading products:", error);
         setProducts([]);
@@ -60,27 +69,44 @@ export default function Category({ params }: any) {
   useEffect(() => {}, [products, childCategory, mainCategories]);
 
   useEffect(() => {
-    // Filter products if productionId is available
-    if (productionId) {
+    // if (selectedCategoryId) {
+    //   const filtered = products.filter(
+    //     (product: any) =>
+    //       product?.sub_category_id === selectedCategoryId
+    //   );
+    if (selectedCategoryIds.length > 0) {
       const filtered = products.filter(
-        (product: any) => product.production_id?.toString() === productionId
+        (product: any) =>
+          product?.sub_category_id &&
+          selectedCategoryIds.includes(product.sub_category_id)
       );
       setFilteredProducts(filtered);
-      // console.log("filtered", filtered);
     } else {
-      // If no production_id, show all products
       setFilteredProducts(products);
     }
-  }, [products, productionId]);
+  }, [products, productionId, selectedCategoryIds]);
+  
+  const handleCategorySelect = (categoryId: number | 'clear') => {
+    if (categoryId === 'clear') {
+      setSelectedCategoryIds([]); // Clear all filters
+    } else {
+      setSelectedCategoryIds(prev =>
+        prev.includes(categoryId)
+          ? prev.filter(id => id !== categoryId) // uncheck
+          : [...prev, categoryId]               // check
+      );
+    }
+  };
 
-  const displayedProducts =
-    filteredProducts.length > 0 ? filteredProducts : products;
+  const displayedProducts = filteredProducts
+    // filteredProducts.length > 0 ? filteredProducts : products;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = displayedProducts.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
+
   const totalPages = Math.ceil(displayedProducts.length / itemsPerPage);
 
   useEffect(() => {
@@ -93,9 +119,10 @@ export default function Category({ params }: any) {
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex shadow-lg border border-1">
         <CategoryPublicationSidebar
-          categorySlug={slug}
+          onCategorySelect={handleCategorySelect}
+          selectedCategoryIds={selectedCategoryIds}
           childCategory={childCategory}
-          products={filteredProducts?.length>0 ? filteredProducts : products}
+          products={filteredProducts?.length > 0 ? filteredProducts : products}
           category_id={
             filteredProducts
               ? filteredProducts && filteredProducts[0]?.category_id
@@ -103,7 +130,7 @@ export default function Category({ params }: any) {
           }
         />
         {loading ? (
-          [1, 2, 3].map((_i) => (
+          [1, 2].map((_i) => (
             <div
               key={_i}
               className="grid grid-cols-1 w-full p-4 text-center text-6xl font-extrabold"
@@ -143,27 +170,32 @@ export default function Category({ params }: any) {
           <div className="col-8">
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3 p-8">
               {currentItems.map((product: any) => {
-                const subcategory = childCategory.find((sub:any) => sub.id === product.sub_category_id);
-                const mainCategory = mainCategories.find((main:any) => main.id === product.category_id);
-                return(
-                <BookCard
-                  key={product.id}
-                  img={`${config.apiUrl}storage/${product.image}`}
-                  category={(product?.mrp && product?.price
-                    ? ((product?.mrp - product?.price) / product?.mrp) * 100
-                    : 0
-                  ).toFixed(2)}
-                  title={product.name}
-                  desc={product.description}
-                  price={product.mrp}
-                  offPrice={product.price}
-                  slug={product.slug}
-                  id={product.id}
-                  quantity={product.quantity}
-                  onItemsCountUpdate={handleItemsCountUpdate}
-                  subcategoryName={subcategory?.name || 'N/A'}
-                  mainCategoryName={mainCategory?.name || 'N/A'}
-                />)
+                const subcategory = childCategory?.find(
+                  (sub: any) => sub.id === product.sub_category_id
+                );
+                const mainCategory = mainCategories?.find(
+                  (main: any) => main.id === product.category_id
+                );
+                return (
+                  <BookCard
+                    key={product.id}
+                    img={`${config.apiUrl}storage/${product.image}`}
+                    category={(product?.mrp && product?.price
+                      ? ((product?.mrp - product?.price) / product?.mrp) * 100
+                      : 0
+                    ).toFixed(2)}
+                    title={product.name}
+                    desc={product.description}
+                    price={product.mrp}
+                    offPrice={product.price}
+                    slug={product.slug}
+                    id={product.id}
+                    quantity={product.quantity}
+                    onItemsCountUpdate={handleItemsCountUpdate}
+                    subcategoryName={subcategory?.name}
+                    mainCategoryName={mainCategory?.name}
+                  />
+                );
               })}
             </div>
           </div>

@@ -10,6 +10,7 @@ import {
 } from "@material-tailwind/react";
 import ProductDialog from "./product-detail-popup";
 import config from "@/app/config";
+import Link from "next/link";
 
 interface BookCardProps {
   img: string;
@@ -126,19 +127,24 @@ export function BookCard({
             {category} % off
           </Typography>
         )}
-        <a href={`/product-detail/${slug}`}>
+        <Link href={`/product-detail/${slug}`}>
           <Typography
             variant="h2"
             color="blue-gray"
-            className="mb-3 font-bold normal-case text-[1rem]"
+            className="font-bold normal-case text-[1rem]"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
             {title?.replace(/#COMMA#/g, ",")}
           </Typography>
-        </a>
-        <p>subcategoryName = {subcategoryName}</p>
-        <p>mainCategoryName = {mainCategoryName}</p>
-        <Typography
+        </Link>
+          <Typography
+            color="blue"
+            className="text-xs !font-semibold"
+            {...({} as React.ComponentProps<typeof Typography>)}
+          >
+           {subcategoryName ? `${mainCategoryName}/${subcategoryName}`: `${mainCategoryName}`} 
+          </Typography>
+        <Typography 
           className="mb-4 font-normal !text-gray-500"
           dangerouslySetInnerHTML={{ __html: desc?.replace(/#COMMA#/g, ",") }}
           {...({} as React.ComponentProps<typeof Typography>)}

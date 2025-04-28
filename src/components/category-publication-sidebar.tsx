@@ -14,12 +14,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function CategoryPublicationSidebar({
-  categorySlug,
   category_id,
   childCategory,
   products,
+  onCategorySelect,
+  selectedCategoryIds,
 }: any) {
-  console.log("categorySlug",categorySlug)
   const [publications, setPublications] = useState([] as any);
   const [categories, setCategories] = useState([] as any);
   const [filteredPublicationData, setFilteredPublications] = useState(
@@ -65,9 +65,9 @@ export default function CategoryPublicationSidebar({
   }, []);
 
   useEffect(() => {
-    const publicationIds = products.map((p: any) => p.production_id);
+    const publicationIds = products?.map((p: any) => p.production_id);
     const filteredPublications = publications.filter((pub: any) =>
-      publicationIds.includes(pub.id)
+      publicationIds?.includes(pub.id)
     );
     setFilteredPublications(filteredPublications);
   }, [publications, categories, products]);
@@ -82,7 +82,7 @@ export default function CategoryPublicationSidebar({
       : publications;
 
   return (
-    <div className="columns-[20vw] p-4 mt-4">
+    <div className="md:columns-[20vw] p-4 mt-4">
       <Card {...({} as React.ComponentProps<typeof Card>)}>
         <Typography
           variant="h6"
@@ -96,7 +96,10 @@ export default function CategoryPublicationSidebar({
           {...({} as React.ComponentProps<typeof List>)}
           className="h-[30rem] overflow-y-auto overflow-x-hidden"
         >
-          <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
+          <ListItem
+            {...({} as React.ComponentProps<typeof ListItem>)}
+            onClick={() => onCategorySelect("clear")}
+          >
             Show All
           </ListItem>
           {displayedCategories?.length === 0 ? (
@@ -121,53 +124,61 @@ export default function CategoryPublicationSidebar({
               <span className="sr-only">Loading...</span>
             </div>
           ) : (
-            displayedCategories?.map((category: any) => (
-              <div key={category?.id}>
-                {category ? (
-                  <ListItem
-                    {...({} as React.ComponentProps<typeof ListItem>)}
-                    key={category?.id}
-                  >
-                    <Link href={`category/${category?.slug}`}>
-                      {" "}
-                      {category.name}
-                    </Link>
-                    <ListItemSuffix
-                      {...({} as React.ComponentProps<typeof ListItemSuffix>)}
-                    >
-                      <Chip
-                        value="0"
-                        variant="ghost"
-                        size="sm"
-                        className="rounded-full"
-                      />
-                    </ListItemSuffix>
-                  </ListItem>
-                ) : (
-                  category?.child?.map((childCategory: any) => (
+            displayedCategories?.map((category: any) => {
+              const isChecked = selectedCategoryIds.includes(category.id);
+              return (
+                <div key={category?.id}>
+                  {category ? (
                     <ListItem
                       {...({} as React.ComponentProps<typeof ListItem>)}
-                      key={childCategory?.id}
+                      key={category?.id}
+                      onClick={() => onCategorySelect(category?.id)}
                     >
-                      <Link href={`category/${childCategory?.slug}`}>
-                        {" "}
-                        {childCategory.name}
-                      </Link>
+                      {" "}
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={isChecked}
+                      />{" "}
+                      {category.name}
                       <ListItemSuffix
                         {...({} as React.ComponentProps<typeof ListItemSuffix>)}
                       >
                         <Chip
-                          value="0"
+                          value={category?.subproducts?.length}
                           variant="ghost"
                           size="sm"
                           className="rounded-full"
                         />
                       </ListItemSuffix>
                     </ListItem>
-                  ))
-                )}
-              </div>
-            ))
+                  ) : (
+                    category?.child?.map((childCategory: any) => (
+                      <ListItem
+                        {...({} as React.ComponentProps<typeof ListItem>)}
+                        key={childCategory?.id}
+                      >
+                        {/* <Link href={`category/${childCategory?.slug}`}> */}{" "}
+                        {childCategory.name}
+                        {/* </Link> */}
+                        <ListItemSuffix
+                          {...({} as React.ComponentProps<
+                            typeof ListItemSuffix
+                          >)}
+                        >
+                          <Chip
+                            value="0"
+                            variant="ghost"
+                            size="sm"
+                            className="rounded-full"
+                          />
+                        </ListItemSuffix>
+                      </ListItem>
+                    ))
+                  )}
+                </div>
+              );
+            })
           )}
         </List>
       </Card>
@@ -185,8 +196,9 @@ export default function CategoryPublicationSidebar({
           {...({} as React.ComponentProps<typeof List>)}
           className="h-[30rem] overflow-y-auto"
         >
-          <ListItem {...({} as React.ComponentProps<typeof ListItem>)}>
-            <Link href={`category/${categorySlug}`}>Show All</Link>
+          <ListItem {...({} as React.ComponentProps<typeof ListItem>)}
+             onClick={() => onCategorySelect("clear")}>
+            Show All
           </ListItem>
           {displayedPublications?.length === 0 ? (
             <div
@@ -211,36 +223,34 @@ export default function CategoryPublicationSidebar({
             </div>
           ) : (
             displayedPublications.map((publication: any) => {
-              // const filteredCount =
-              //   category_id !== undefined &&
-              //   category_id !== null &&
-              //   category_id !== ""
-              //     ? (publication.products || []).filter(
-              //         (product: any) =>
-              //           String(product?.category_id) === String(category_id)
-              //       ).length
-              //     : 0;
-
+              const filteredCount =
+                category_id !== undefined &&
+                category_id !== null &&
+                category_id !== ""
+                  ? (publication.products || []).filter(
+                      (product: any) =>
+                        String(product?.category_id) === String(category_id)
+                    ).length
+                  : 0;
+                  const isChecked = selectedCategoryIds.includes(publication.id);
               return (
                 <ListItem
                   {...({} as React.ComponentProps<typeof ListItem>)}
                   key={publication?.id}
+                  onClick={() => onCategorySelect(publication?.id)}
                 >
-                  <Link
-                    href={
-                      categorySlug === "allproducts"
-                        ? `all-products?production_id=${publication?.id}`
-                        : `category/${categorySlug}?production_id=${publication?.id}`
-                    }
-                  >
-                    {publication?.name}
-                  </Link>
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={isChecked}
+                  />{" "}
+                  {publication?.name}
                   <ListItemSuffix
                     {...({} as React.ComponentProps<typeof ListItemSuffix>)}
                   >
                     <Chip
-                      value={publication?.products.length || 0}
-                      // value={filteredCount || 0}
+                      // value={publication?.products.length || 0}
+                      value={filteredCount || 0}
                       variant="ghost"
                       size="sm"
                       className="rounded-full"

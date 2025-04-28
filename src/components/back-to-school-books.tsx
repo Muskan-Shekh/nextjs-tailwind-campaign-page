@@ -29,7 +29,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           url: `${config.apiUrl}api/category/${activeTab}`,
           responseType: "json",
         });
-        setProducts(response.data);
+        setProducts(response.data?.products);
       } catch (error) {
         console.log("error", error);
       } finally {

@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
 import CategoryPublicationSidebar from "@/components/category-publication-sidebar";
-import { useSearchParams } from "next/navigation";
 
 export default function Category() {
   const [itemsCount, setItemsCount] = useState<number>(0);
@@ -18,11 +17,11 @@ export default function Category() {
   const handleItemsCountUpdate = (count: number) => {
     setItemsCount(count);
   };
-  const searchParams = useSearchParams();
   const [products, setProducts] = useState([] as any);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-  const productionId = searchParams.get("production_id");
   const [loading, setLoading] = useState(true);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [selectedPublicationIds, setSelectedPublicationIds] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -48,21 +47,47 @@ export default function Category() {
   useEffect(() => {}, [products]);
 
   useEffect(() => {
-    // Filter products if productionId is available
-    if (productionId) {
-      const filtered = products.filter(
-        (product: any) => product.production_id?.toString() === productionId
-      );
-      setFilteredProducts(filtered);
-      // console.log("filtered", filtered);
-    } else {
-      // If no production_id, show all products
-      setFilteredProducts(products);
-    }
-  }, [products, productionId]);
+    const filtered = products.filter((product: any) => {
+      const categoryMatch =
+        selectedCategoryIds.length === 0 ||
+        selectedCategoryIds.includes(product.category_id);
 
-  const displayedProducts =
-    filteredProducts.length > 0 ? filteredProducts : products;
+      const publicationMatch =
+        selectedPublicationIds.length === 0 ||
+        selectedPublicationIds.includes(product.production_id);
+
+      return categoryMatch && publicationMatch;
+    });
+
+    setFilteredProducts(filtered);
+  }, [products, selectedCategoryIds, selectedPublicationIds]);
+
+  const handleCategorySelect = (categoryId: number | "clear") => {
+    if (categoryId === "clear") {
+      setSelectedCategoryIds([]); // Clear all filters
+    } else {
+      setSelectedCategoryIds(
+        (prev) =>
+          prev.includes(categoryId)
+            ? prev.filter((id) => id !== categoryId) // uncheck
+            : [...prev, categoryId] // check
+      );
+    }
+  };
+
+  const handlePublicationSelect = (publicationId: number | "clear") => {
+    if (publicationId === "clear") {
+      setSelectedPublicationIds([]);
+    } else {
+      setSelectedPublicationIds((prev) =>
+        prev.includes(publicationId)
+          ? prev.filter((id) => id !== publicationId)
+          : [...prev, publicationId]
+      );
+    }
+  };
+  const displayedProducts = filteredProducts
+    // filteredProducts.length > 0 ? filteredProducts : products;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = displayedProducts.slice(
@@ -81,16 +106,20 @@ export default function Category() {
       <Navbar items_count={itemsCount} />
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex shadow-lg border border-1">
-        <CategoryPublicationSidebar
-        categorySlug={"all-products"}
+        {/* <CategoryPublicationSidebar
           category_id={
             filteredProducts
               ? filteredProducts && filteredProducts[0]?.category_id
               : products[0]?.category_id
           }
-        />
+          onCategorySelect={handleCategorySelect}
+          onPublicationSelect={handlePublicationSelect}
+          selectedCategoryIds={selectedCategoryIds}
+          selectedPublicationIds={selectedPublicationIds}
+          products={products}
+        /> */}
         {loading ? (
-          [1, 2, 3].map((_i) => (
+          [1, 2].map((_i) => (
             <div
               key={_i}
               className="grid grid-cols-1 w-full p-4 text-center text-6xl font-extrabold"

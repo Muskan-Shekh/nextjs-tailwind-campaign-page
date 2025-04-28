@@ -9,6 +9,8 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
+  List,
+  ListItem,
 } from "@material-tailwind/react";
 import { XMarkIcon, Bars3Icon } from "@heroicons/react/24/solid";
 import Image from "next/image";
@@ -182,6 +184,30 @@ export function Navbar(items_count?: any) {
     const pub = publications.find((p: any) => p.id === id);
     return pub ? pub.name : "Unknown Publication";
   };
+  const [headerMenu, setHeaderMenu] = React.useState([] as any);
+
+  React.useEffect(() => {
+    const fetchHeaderMenu = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/menus/header_menu`,
+          responseType: "json",
+        });
+        setHeaderMenu(response.data?.data);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        // console.log("An error occured");
+      }
+    };
+
+    fetchHeaderMenu();
+  }, []);
+
+  React.useEffect(() => {
+    // console.log("headerMenu", headerMenu);
+  }, [headerMenu]);
 
   return (
     <MTNavbar
@@ -234,8 +260,8 @@ export function Navbar(items_count?: any) {
                     <li
                       className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
                       onClick={() => {
-                        handleOptionClick("All Publications"); 
-                        setSearchTerm(""); 
+                        handleOptionClick("All Publications");
+                        setSearchTerm("");
                       }}
                     >
                       All Publications
@@ -403,81 +429,6 @@ export function Navbar(items_count?: any) {
 
       <Collapse open={open}>
         <div className="container mx-auto mt-3 border-t border-gray-200 px-2 pt-4">
-          <ul className="flex flex-col gap-4">
-            {/* {NAV_MENU.map(({ name, icon: Icon, href }) => (
-              <NavItem key={name} href={href}>
-                <Icon className="h-5 w-5" />
-                {name}
-              </NavItem>
-            ))} */}
-            {/* <div className="w-full max-w-xl min-w-[200px]">
-              <div className="relative mt-2">
-                <div className="absolute top-1 left-1 flex items-center">
-                  <button
-                    ref={dropdownButtonRef}
-                    onClick={handleDropdownButtonClick}
-                    className="rounded border border-transparent py-1 px-1.5 text-center flex items-center text-sm transition-all text-gray-600"
-                  >
-                    <span className="text-black overflow-hidden">
-                      {selectedValue}
-                    </span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="black"
-                      className="h-4 w-4 ml-1"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m19.5 8.25-7.5 7.5-7.5-7.5"
-                      />
-                    </svg>
-                  </button>
-                  <div className="h-6 border-l border-gray-400 ml-1"></div>
-                  {isOpen && (
-                    <div
-                      ref={dropdownMenuRef}
-                      className="min-w-[150px] overflow-hidden absolute z-60 left-0 w-full mt-[32rem] bg-white border border-gray-200 rounded-md shadow-lg"
-                    >
-                      <ul>
-                        {publications.map((publication: any, index: number) => (
-                          <li
-                            className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
-                            key={index}
-                            onClick={() => handleOptionClick(publication.name)}
-                          >
-                            {publication.name}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  className="w-full bg-transparent placeholder:text-gray-600 text-gray-800 text-sm border border-gray-200 rounded-md pr-12 pl-[20rem] py-2 transition duration-300 ease focus:outline-none focus:border-gray-400 hover:border-gray-300 shadow-sm focus:shadow"
-                  placeholder="Search for products..."
-                />
-                <button className="absolute right-1 top-1 rounded bg-black p-1.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-gray-700 focus:shadow-none active:bg-gray-700 hover:bg-gray-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="white"
-                    className="w-4 h-4"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                      clipRule="evenodd"
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-            </div> */}
-          </ul>
           <div className="mt-6 mb-4 flex items-center gap-2">
             <Link href={"/view-cart"} className="relative">
               <svg
@@ -514,38 +465,80 @@ export function Navbar(items_count?: any) {
             >
               Register
             </Button>
-            {/* <Menu allowHover>
-              <MenuHandler>
-                <Typography
-                  as="a"
-                  href="/my-account"
-                  variant="small"
-                  color="blue-gray"
-                  className="font-medium flex items-center gap-1 whitespace-nowrap"
-                  {...({} as React.ComponentProps<typeof Typography>)}
-                >
-                  Muskan
-                  <ChevronDownIcon
-                    strokeWidth={2}
-                    className="h-3 w-3 transition-transform"
-                  />
-                </Typography>
-              </MenuHandler>
-              <MenuList {...({} as React.ComponentProps<typeof MenuList>)}>
-                <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-medium"
-                    // onClick={closeNav}
-                    {...({} as React.ComponentProps<typeof Typography>)}
-                  >
-                    Logout
-                  </Typography>
-                </MenuItem>
-              </MenuList>
-            </Menu> */}
+           
           </div>
+          <List
+              className="flex flex-col gap-2 mt-2"
+              {...({} as React.ComponentProps<typeof List>)}
+            >
+              {headerMenu.map((item: any, index: number) => (
+                <div key={item?.id} className="relative">
+                  <ListItem
+                    className="p-1 flex items-center justify-between"
+                    {...({} as React.ComponentProps<typeof ListItem>)}
+                  >
+                    {/* Main item link */}
+                    <Typography
+                      as="a"
+                      href={
+                        item.url === "#"
+                          ? "#"
+                          : index === 6
+                          ? "/current-affairs"
+                          : `/category/${item.url}`
+                      }
+                      variant="small"
+                      color="blue-gray"
+                      className="font-medium flex-1"
+                      onClick={() => setOpen(false)}
+                      {...({} as React.ComponentProps<typeof Typography>)}
+                    >
+                      {item.name || item.label}
+                    </Typography>
+
+                    {/* If item has children, show dropdown toggle */}
+                    {item.children && (
+                      <Menu allowHover>
+                        <MenuHandler>
+                          <ChevronDownIcon
+                            strokeWidth={2}
+                            className="h-4 w-4 ml-2 cursor-pointer"
+                          />
+                        </MenuHandler>
+                        <MenuList
+                          {...({} as React.ComponentProps<typeof MenuList>)}
+                        >
+                          {item.children.map(
+                            (child: any, childIndex: number) => (
+                              <MenuItem
+                                key={childIndex}
+                                {...({} as React.ComponentProps<
+                                  typeof MenuItem
+                                >)}
+                              >
+                                <Typography
+                                  as="a"
+                                  href={`/category/${child.url}`}
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-medium"
+                                  onClick={() => setOpen(false)}
+                                  {...({} as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                >
+                                  {child.name}
+                                </Typography>
+                              </MenuItem>
+                            )
+                          )}
+                        </MenuList>
+                      </Menu>
+                    )}
+                  </ListItem>
+                </div>
+              ))}
+            </List>
         </div>
       </Collapse>
     </MTNavbar>

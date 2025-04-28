@@ -142,7 +142,7 @@ export function BookCard({
             className="text-xs !font-semibold"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-           {subcategoryName ? `${mainCategoryName}/${subcategoryName}`: `${mainCategoryName}`} 
+           {subcategoryName ? `${mainCategoryName}/${subcategoryName}`: `${mainCategoryName || ''}`} 
           </Typography>
         <Typography 
           className="mb-4 font-normal !text-gray-500"

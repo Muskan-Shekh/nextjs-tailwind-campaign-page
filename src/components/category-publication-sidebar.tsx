@@ -10,8 +10,8 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import axios from "axios";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function CategoryPublicationSidebar({
   category_id,
@@ -19,12 +19,18 @@ export default function CategoryPublicationSidebar({
   products,
   onCategorySelect,
   selectedCategoryIds,
+  selectedPublicationIds,
+  onPublicationSelect,
 }: any) {
   const [publications, setPublications] = useState([] as any);
   const [categories, setCategories] = useState([] as any);
   const [filteredPublicationData, setFilteredPublications] = useState(
     [] as any
   );
+  const [loading, setLoading] = useState(true);
+
+  const pathname = usePathname(); // e.g. "/all-products"
+  const lastSegment = pathname.split("/").filter(Boolean).pop(); // "all-products"
 
   useEffect(() => {
     const fetchProductsByCategoryAndPublication = async () => {
@@ -37,8 +43,6 @@ export default function CategoryPublicationSidebar({
         setPublications(response.data?.data?.production);
       } catch (error) {
         console.log("error", error);
-      } finally {
-        // console.log("An error occured");
       }
     };
 
@@ -47,6 +51,7 @@ export default function CategoryPublicationSidebar({
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoading(true);
       try {
         const response = await axios({
           method: "get",
@@ -57,7 +62,7 @@ export default function CategoryPublicationSidebar({
       } catch (error) {
         console.log("error", error);
       } finally {
-        // console.log("An error occured");
+        setLoading(false);
       }
     };
 
@@ -74,8 +79,8 @@ export default function CategoryPublicationSidebar({
 
   useEffect(() => {}, [filteredPublicationData]);
 
-  const displayedCategories =
-    childCategory?.length > 0 ? childCategory : categories;
+  const displayedCategories = childCategory;
+  // childCategory?.length > 0 ? childCategory : categories;
   const displayedPublications =
     filteredPublicationData?.length > 0
       ? filteredPublicationData
@@ -98,11 +103,13 @@ export default function CategoryPublicationSidebar({
         >
           <ListItem
             {...({} as React.ComponentProps<typeof ListItem>)}
-            onClick={() => onCategorySelect("clear")}
+            onClick={() => {
+              onCategorySelect("clear"), onPublicationSelect("clear");
+            }}
           >
             Show All
           </ListItem>
-          {displayedCategories?.length === 0 ? (
+          {loading ? (
             <div
               role="status"
               className="max-w-md p-4 space-y-4 border border-gray-200 divide-y divide-gray-200 rounded-sm shadow-sm animate-pulse dark:divide-gray-700 md:p-6 dark:border-gray-700"
@@ -123,7 +130,7 @@ export default function CategoryPublicationSidebar({
               ))}
               <span className="sr-only">Loading...</span>
             </div>
-          ) : (
+          ) : displayedCategories?.length > 0 ? (
             displayedCategories?.map((category: any) => {
               const isChecked = selectedCategoryIds.includes(category.id);
               return (
@@ -132,13 +139,14 @@ export default function CategoryPublicationSidebar({
                     <ListItem
                       {...({} as React.ComponentProps<typeof ListItem>)}
                       key={category?.id}
-                      onClick={() => onCategorySelect(category?.id)}
+                      // onClick={() => onCategorySelect(category?.id)}
                     >
                       {" "}
                       <input
                         type="checkbox"
                         className="mr-2"
                         checked={isChecked}
+                        onChange={() => onCategorySelect(category.id)}
                       />{" "}
                       {category.name}
                       <ListItemSuffix
@@ -158,16 +166,14 @@ export default function CategoryPublicationSidebar({
                         {...({} as React.ComponentProps<typeof ListItem>)}
                         key={childCategory?.id}
                       >
-                        {/* <Link href={`category/${childCategory?.slug}`}> */}{" "}
                         {childCategory.name}
-                        {/* </Link> */}
                         <ListItemSuffix
                           {...({} as React.ComponentProps<
                             typeof ListItemSuffix
                           >)}
                         >
                           <Chip
-                            value="0"
+                            value={category?.subproducts?.length || 0}
                             variant="ghost"
                             size="sm"
                             className="rounded-full"
@@ -179,11 +185,15 @@ export default function CategoryPublicationSidebar({
                 </div>
               );
             })
+          ) : (
+            <div className="p-4 text-center text-gray-500">
+              No Sub Category found!!
+            </div>
           )}
         </List>
       </Card>
 
-      {/* <Card className="mt-4" {...({} as React.ComponentProps<typeof Card>)}>
+      <Card className="mt-4" {...({} as React.ComponentProps<typeof Card>)}>
         <Typography
           variant="h6"
           color="white"
@@ -196,8 +206,12 @@ export default function CategoryPublicationSidebar({
           {...({} as React.ComponentProps<typeof List>)}
           className="h-[30rem] overflow-y-auto"
         >
-          <ListItem {...({} as React.ComponentProps<typeof ListItem>)}
-             onClick={() => onCategorySelect("clear")}>
+          <ListItem
+            {...({} as React.ComponentProps<typeof ListItem>)}
+            onClick={() => {
+              onPublicationSelect("clear"), onCategorySelect("clear");
+            }}
+          >
             Show All
           </ListItem>
           {displayedPublications?.length === 0 ? (
@@ -232,24 +246,21 @@ export default function CategoryPublicationSidebar({
                         String(product?.category_id) === String(category_id)
                     ).length
                   : 0;
-                  const isChecked = selectedCategoryIds.includes(publication.id);
+              const isChecked = selectedPublicationIds.includes(
+                publication?.id
+              );
               return (
                 <ListItem
                   {...({} as React.ComponentProps<typeof ListItem>)}
                   key={publication?.id}
-                  onClick={() => onCategorySelect(publication?.id)}
+                  // onClick={() => onPublicationSelect(publication?.id)}
                 >
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={isChecked}
-                  />{" "}
+                  <input type="checkbox" className="mr-2" checked={isChecked} onChange={() =>onPublicationSelect(publication?.id)} />{" "}
                   {publication?.name}
                   <ListItemSuffix
                     {...({} as React.ComponentProps<typeof ListItemSuffix>)}
                   >
                     <Chip
-                      // value={publication?.products.length || 0}
                       value={filteredCount || 0}
                       variant="ghost"
                       size="sm"
@@ -261,7 +272,7 @@ export default function CategoryPublicationSidebar({
             })
           )}
         </List>
-      </Card> */}
+      </Card>
     </div>
   );
 }

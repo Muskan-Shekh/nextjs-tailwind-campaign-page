@@ -11,6 +11,7 @@ import {
   MenuItem,
   IconButton,
   Collapse,
+  typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import {
@@ -199,7 +200,7 @@ const MainNavbar: React.FC = () => {
             ))}
           </List>
         </div>
-        <IconButton
+        {/* <IconButton
           variant="text"
           color="blue-gray"
           className="lg:hidden"
@@ -211,7 +212,7 @@ const MainNavbar: React.FC = () => {
           ) : (
             <Bars3Icon className="h-6 w-6" strokeWidth={2} />
           )}
-        </IconButton>
+        </IconButton> */}
       </div>
 
       {/* mobile menu */}
@@ -221,42 +222,43 @@ const MainNavbar: React.FC = () => {
           {...({} as React.ComponentProps<typeof List>)}
         >
           {headerMenu.map((item: any, index: number) => (
-            <ListItem
-              key={item?.id}
-              className="p-1"
-              {...({} as React.ComponentProps<typeof ListItem>)}
-            >
-              {item.children ? (
-                <Menu allowHover>
-                  <MenuHandler>
-                    <Typography
-                      as="a"
-                      href={
-                        item.url === "#"
-                          ? "#"
-                          : index === 6
-                          ? "current-affairs"
-                          : `/category/${item.url}`
-                      }
-                      variant="small"
-                      color="blue-gray"
-                      className="font-medium flex items-center gap-1"
-                      {...({} as React.ComponentProps<typeof Typography>)}
-                    >
-                      {item.name}
-                      {[0, 1, 2, 3].includes(index) && (
-                        <ChevronDownIcon
-                          strokeWidth={2}
-                          className="h-3 w-3 transition-transform"
-                        />
-                      )}
-                    </Typography>
-                  </MenuHandler>
-                  {[0, 1, 2, 3].includes(index) && (
+            <div key={item?.id} className="relative">
+              <ListItem
+                className="p-1 flex items-center justify-between"
+                {...({} as React.ComponentProps<typeof ListItem>)}
+              >
+                
+                <Typography
+                  as="a"
+                  href={
+                    item.url === "#"
+                      ? "#"
+                      : index === 6
+                      ? "/current-affairs"
+                      : `/category/${item.url}`
+                  }
+                  variant="small"
+                  color="blue-gray"
+                  className="font-medium flex-1"
+                  onClick={closeNav}
+                  {...({} as React.ComponentProps<typeof Typography>)}
+                >
+                  {item.name || item.label}
+                </Typography>
+
+               
+                {item.children && (
+                  <Menu allowHover>
+                    <MenuHandler>
+                      <ChevronDownIcon
+                        strokeWidth={2}
+                        className="h-4 w-4 ml-2 cursor-pointer"
+                      />
+                    </MenuHandler>
                     <MenuList
                       {...({} as React.ComponentProps<typeof MenuList>)}
                     >
-                      {item.children?.map((child: any, childIndex: number) => (
+                      {item.children.map((child: any, childIndex: number) => (
                         <MenuItem
                           key={childIndex}
                           {...({} as React.ComponentProps<typeof MenuItem>)}
@@ -267,7 +269,7 @@ const MainNavbar: React.FC = () => {
                             variant="small"
                             color="blue-gray"
                             className="font-medium"
-                            onClick={closeNav} // Close menu on item click
+                            onClick={closeNav}
                             {...({} as React.ComponentProps<typeof Typography>)}
                           >
                             {child.name}
@@ -275,22 +277,10 @@ const MainNavbar: React.FC = () => {
                         </MenuItem>
                       ))}
                     </MenuList>
-                  )}
-                </Menu>
-              ) : (
-                <Typography
-                  as="a"
-                  href={`/category/${item.url}`}
-                  variant="small"
-                  color="blue-gray"
-                  className="font-medium"
-                  onClick={closeNav} // Close menu on item click
-                  {...({} as React.ComponentProps<typeof Typography>)}
-                >
-                  {item.label}
-                </Typography>
-              )}
-            </ListItem>
+                  </Menu>
+                )}
+              </ListItem>
+            </div>
           ))}
         </List>
       </Collapse>

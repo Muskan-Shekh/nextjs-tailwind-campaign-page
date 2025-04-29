@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
 import CategoryPublicationSidebar from "@/components/category-publication-sidebar";
+import AllProductSidebar from "@/components/all-products-sidebar";
 
 export default function Category() {
   const [itemsCount, setItemsCount] = useState<number>(0);
@@ -50,7 +51,7 @@ export default function Category() {
     const filtered = products.filter((product: any) => {
       const categoryMatch =
         selectedCategoryIds.length === 0 ||
-        selectedCategoryIds.includes(product.category_id);
+        selectedCategoryIds.includes(product.sub_category_id);
 
       const publicationMatch =
         selectedPublicationIds.length === 0 ||
@@ -106,18 +107,13 @@ export default function Category() {
       <Navbar items_count={itemsCount} />
       <MainNavbar />
       <section className="container mx-auto mb-10 mt-10 md:flex shadow-lg border border-1">
-        {/* <CategoryPublicationSidebar
-          category_id={
-            filteredProducts
-              ? filteredProducts && filteredProducts[0]?.category_id
-              : products[0]?.category_id
-          }
+        <AllProductSidebar
           onCategorySelect={handleCategorySelect}
           onPublicationSelect={handlePublicationSelect}
           selectedCategoryIds={selectedCategoryIds}
           selectedPublicationIds={selectedPublicationIds}
           products={products}
-        /> */}
+        />
         {loading ? (
           [1, 2].map((_i) => (
             <div

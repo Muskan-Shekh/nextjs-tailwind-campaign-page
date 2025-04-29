@@ -11,10 +11,9 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
-export default function CategoryPublicationSidebar({
-  category_id,
-  childCategory,
+export default function AllProductSidebar({
   products,
   onCategorySelect,
   selectedCategoryIds,
@@ -27,6 +26,9 @@ export default function CategoryPublicationSidebar({
     [] as any
   );
   const [loading, setLoading] = useState(true);
+
+  const pathname = usePathname(); // e.g. "/all-products"
+  const lastSegment = pathname.split("/").filter(Boolean).pop(); // "all-products"
 
   useEffect(() => {
     const fetchProductsByCategoryAndPublication = async () => {
@@ -75,8 +77,7 @@ export default function CategoryPublicationSidebar({
 
   useEffect(() => {}, [filteredPublicationData]);
 
-  const displayedCategories = childCategory;
-  // childCategory?.length > 0 ? childCategory : categories;
+  const displayedCategories = categories;
   const displayedPublications =
     filteredPublicationData?.length > 0
       ? filteredPublicationData
@@ -126,42 +127,31 @@ export default function CategoryPublicationSidebar({
               ))}
               <span className="sr-only">Loading...</span>
             </div>
-          ) : displayedCategories?.length > 0 ? (
-            displayedCategories?.map((category: any) => {
-              const isChecked = selectedCategoryIds.includes(category.id);
-              return (
-                <div key={category?.id}>
-                  {category ? (
-                    <ListItem
-                      {...({} as React.ComponentProps<typeof ListItem>)}
-                      key={category?.id}
-                      // onClick={() => onCategorySelect(category?.id)}
-                    >
-                      {" "}
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={isChecked}
-                        onChange={() => onCategorySelect(category.id)}
-                      />{" "}
-                      {category.name}
-                      <ListItemSuffix
-                        {...({} as React.ComponentProps<typeof ListItemSuffix>)}
-                      >
-                        <Chip
-                          value={category?.subproducts?.length}
-                          variant="ghost"
-                          size="sm"
-                          className="rounded-full"
-                        />
-                      </ListItemSuffix>
-                    </ListItem>
-                  ) : (
-                    category?.child?.map((childCategory: any) => (
+          ) : (
+            displayedCategories?.map((category: any) => (
+              <div key={category?.id}>
+                {category &&
+                  category?.child?.map((childCategory: any) => {
+                    const isChecked = selectedCategoryIds.includes(
+                      childCategory.id
+                    );
+                    const filteredCount = childCategory.id
+                    ? (products || []).filter(
+                        (product: any) =>
+                          String(product?.sub_category_id) === String(childCategory.id)
+                      ).length
+                    : 0;
+                    return (
                       <ListItem
                         {...({} as React.ComponentProps<typeof ListItem>)}
                         key={childCategory?.id}
                       >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={isChecked}
+                          onChange={() => onCategorySelect(childCategory.id)}
+                        />{" "}
                         {childCategory.name}
                         <ListItemSuffix
                           {...({} as React.ComponentProps<
@@ -169,22 +159,17 @@ export default function CategoryPublicationSidebar({
                           >)}
                         >
                           <Chip
-                            value={category?.subproducts?.length || 0}
+                            value={filteredCount}
                             variant="ghost"
                             size="sm"
                             className="rounded-full"
                           />
                         </ListItemSuffix>
                       </ListItem>
-                    ))
-                  )}
-                </div>
-              );
-            })
-          ) : (
-            <div className="p-4 text-center text-gray-500">
-              No Sub Category found!!
-            </div>
+                    );
+                  })}
+              </div>
+            ))
           )}
         </List>
       </Card>
@@ -233,12 +218,6 @@ export default function CategoryPublicationSidebar({
             </div>
           ) : (
             displayedPublications.map((publication: any) => {
-              const filteredCount = category_id
-                ? (publication?.products || []).filter(
-                    (product: any) =>
-                      String(product?.category_id) === String(category_id)
-                  ).length
-                : 0;
               const isChecked = selectedPublicationIds.includes(
                 publication?.id
               );
@@ -246,7 +225,6 @@ export default function CategoryPublicationSidebar({
                 <ListItem
                   {...({} as React.ComponentProps<typeof ListItem>)}
                   key={publication?.id}
-                  // onClick={() => onPublicationSelect(publication?.id)}
                 >
                   <input
                     type="checkbox"
@@ -259,8 +237,8 @@ export default function CategoryPublicationSidebar({
                     {...({} as React.ComponentProps<typeof ListItemSuffix>)}
                   >
                     <Chip
-                      value={filteredCount}
-                      // value={publication?.products?.length}
+                      //   value={filteredCount || 0}
+                      value={publication?.products?.length}
                       variant="ghost"
                       size="sm"
                       className="rounded-full"

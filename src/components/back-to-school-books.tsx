@@ -92,7 +92,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           {...({} as React.ComponentProps<typeof Typography>)}
         >
           {/* up to 40% OFF */}
-          {category_tabs?.cat_tab_subtitle}
+          {category_tabs?.cat_tab_subtitle || " "}
         </Typography>
         <Typography
           variant="h1"
@@ -101,7 +101,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           {...({} as React.ComponentProps<typeof Typography>)}
         >
           {/* Back-to-School Books */}
-          {category_tabs?.cat_tab_title}
+          {category_tabs?.cat_tab_title || " "}
         </Typography>
         <Typography
           variant="lead"
@@ -111,7 +111,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           {/* We offer a wide range of study guides, test prep materials, and
           reference books. Whether you&apos;re tackling calculus or diving into
           Shakespeare, we&apos;ve got you covered. */}
-          {category_tabs?.cat_tab_description}
+          {category_tabs?.cat_tab_description || " "}
         </Typography>
         <div className="mt-20 flex items-center justify-center">
           <Tabs value={activeTab} className="w-full lg:w-8/12">

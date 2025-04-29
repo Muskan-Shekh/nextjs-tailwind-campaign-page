@@ -54,7 +54,7 @@ export default function SignIn() {
     if (response.ok) {
       const data = await response.json();
       setCustomerData(data);
-      router.push("/");
+      router.push("/my-account");
     } else {
       const data = await response.json();
       // console.log("Login failed", data);

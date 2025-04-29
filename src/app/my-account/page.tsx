@@ -7,6 +7,7 @@ import Navbar from "@/components/navbar";
 import axios from "axios";
 import { FormEvent, useEffect, useState } from "react";
 import config from "../config";
+import { useRouter } from "next/navigation";
 // types/account.ts
 type AccountTab =
   | "dashboard"
@@ -39,16 +40,19 @@ export default function AccountPage() {
   const [access_token, setAccessToken] = useState<string | null>(null);
   const [customer, setCustomer] = useState<any>(null);
   const [userOrders, setUserOrders] = useState([] as any);
-
+  const router = useRouter();
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("access_token");
       const customerData = localStorage.getItem("customer");
-
-      setAccessToken(token);
-      setCustomer(customerData ? JSON.parse(customerData) : null);
+      if (customerData && token) {
+        setAccessToken(token);
+        setCustomer(customerData ? JSON.parse(customerData) : null);
+      } else {
+        router.push("/");
+      }
     }
-  }, []);
+  }, [router]);
 
   const logout = () => {
     if (typeof window !== "undefined") {

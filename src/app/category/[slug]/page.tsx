@@ -128,9 +128,7 @@ export default function Category({ params }: any) {
           childCategory={childCategory}
           products={products}
           category_id={
-            filteredProducts
-              ? filteredProducts && filteredProducts[0]?.category_id
-              : products[0]?.category_id
+            childCategory[0]?.parent_id
           }
         />
         {loading ? (

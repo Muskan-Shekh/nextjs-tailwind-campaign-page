@@ -44,7 +44,7 @@ export function CarouselFeatures({ onButtonClick, testimonial_sections }: any) {
                   >
                     {/* Ace your exam with our expertly curated selection of
                   competitve exam books.To get all RAS class and books - */}
-                    {data?.testimonial_content}
+                    {data?.testimonial_content || ''}
                   </Typography>
                   <div className="flex items-center gap-2">
                     <Button
@@ -54,7 +54,7 @@ export function CarouselFeatures({ onButtonClick, testimonial_sections }: any) {
                       onClick={onButtonClick}
                     >
                       {/* 🛍️ Buy Now  */}
-                      🛍️ {data?.testimonial_button_title}
+                      🛍️ {data?.testimonial_button_title || ''}
                     </Button>
                   </div>
                 </div>
@@ -83,7 +83,7 @@ export function CarouselFeatures({ onButtonClick, testimonial_sections }: any) {
                     >
                       {/* Ace your exam with our expertly curated selection of
                   competitve exam books.To get all RAS class and books - */}
-                      {data?.testimonial_content}
+                      {data?.testimonial_content || ''}
                     </Typography>
                     <div className="flex items-center gap-2">
                       <Button
@@ -93,7 +93,7 @@ export function CarouselFeatures({ onButtonClick, testimonial_sections }: any) {
                         onClick={onButtonClick}
                       >
                         {/* 🛍️ Buy Now  */}
-                        🛍️ {data?.testimonial_button_title}
+                        🛍️ {data?.testimonial_button_title || ''}
                       </Button>
                     </div>
                   </div>

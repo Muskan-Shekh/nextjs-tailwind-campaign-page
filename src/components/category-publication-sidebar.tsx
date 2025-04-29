@@ -243,6 +243,7 @@ export default function CategoryPublicationSidebar({
                 publication?.id
               );
               return (
+                <div key={publication?.id}>
                 <ListItem
                   {...({} as React.ComponentProps<typeof ListItem>)}
                   key={publication?.id}
@@ -267,6 +268,7 @@ export default function CategoryPublicationSidebar({
                     />
                   </ListItemSuffix>
                 </ListItem>
+                </div>
               );
             })
           )}

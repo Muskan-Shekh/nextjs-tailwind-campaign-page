@@ -399,15 +399,15 @@ export function Navbar(items_count?: any) {
                 onClick={() => router.push("/sign-in")}
                 {...({} as React.ComponentProps<typeof Button>)}
               >
-                Log in
+                Log in / Register
               </Button>
-              <Button
+              {/* <Button
                 variant="text"
                 onClick={() => router.push("/registration")}
                 {...({} as React.ComponentProps<typeof Button>)}
               >
                 Register
-              </Button>
+              </Button> */}
             </>
           )}
         </div>
@@ -456,15 +456,15 @@ export function Navbar(items_count?: any) {
               onClick={() => router.push("/sign-in")}
               {...({} as React.ComponentProps<typeof Button>)}
             >
-              Log in
+              Log in / Register
             </Button>
-            <Button
+            {/* <Button
               variant="text"
               onClick={() => router.push("/registration")}
               {...({} as React.ComponentProps<typeof Button>)}
             >
               Register
-            </Button>
+            </Button> */}
            
           </div>
           <List

@@ -254,7 +254,7 @@ export default function ShoppingCart() {
         ) : (
           <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
             <h2 className="text-xl font-semibold text-gray-900  sm:text-2xl">
-              Shopping Cart
+              My Cart - 
             </h2>
 
             <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
@@ -263,7 +263,7 @@ export default function ShoppingCart() {
                   {cartItems?.map((item) => (
                     <div
                       key={item.product_id}
-                      className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm  md:p-6"
+                      className="rounded-lg border border-gray-600 p-4 shadow-sm  md:p-6 bg-gray-300"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-6">
                         <img
@@ -331,8 +331,8 @@ export default function ShoppingCart() {
               </div>
 
               {/* Order Summary */}
-              <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
-                <div className="space-y-4 border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+              <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full ">
+                <div className="space-y-4 border border-gray-600  p-4 shadow-sm sm:p-6 bg-gray-300 rounded-xl">
                   <p className="text-xl font-semibold text-gray-900">
                     Order Summary
                   </p>

@@ -154,13 +154,10 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
                   <Tab
                     key={tab.id}
                     value={tab.name}
-                    className={`!font-medium capitalize transition-all duration-300 rounded-xl
-                    ${
-                      activeTab === tab?.slug
-                        ? "text-white bg-black"
-                        : "capitalize"
-                    }
-                  `}
+                    className={`!font-medium capitalize transition-all duration-300 rounded-xl px-4
+                      ${activeTab === tab?.slug ? "text-white bg-black" : "capitalize"}
+                      whitespace-nowrap
+                    `}
                     onClick={() => setActiveTab(tab?.slug)}
                     {...({} as any)}
                   >

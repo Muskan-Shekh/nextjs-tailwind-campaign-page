@@ -86,6 +86,7 @@ const MainNavbar: React.FC = () => {
             {...({} as React.ComponentProps<typeof List>)}
           >
             {headerMenu?.map((item: any, index: number) => (
+              <div key={item?.id}>
               <ListItem
                 key={item?.id}
                 className="p-1"
@@ -197,6 +198,7 @@ const MainNavbar: React.FC = () => {
                   </Typography>
                 )}
               </ListItem>
+              </div>
             ))}
           </List>
         </div>

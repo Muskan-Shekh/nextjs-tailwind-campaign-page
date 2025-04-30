@@ -23,7 +23,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export function Navbar(items_count?: any) {
   const [session, setSession] = useState("");
-  const [itemsCount, setItemsCount] = useState(items_count?.items_count);
+  const [itemsCount, setItemsCount] = useState(items_count?.items_count || 0);
 
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
@@ -43,7 +43,7 @@ export function Navbar(items_count?: any) {
           responseType: "json",
         });
         const data = response?.data;
-        setItemsCount(data?.items_count);
+        setItemsCount(data?.items_count || 0);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -57,8 +57,9 @@ export function Navbar(items_count?: any) {
     checkSession();
   }, []);
 
-  // console.log("itemsCount", itemsCount);
-  useEffect(() => {}, [itemsCount, session]);
+  useEffect(() => {
+    // console.log("itemsCount1", itemsCount);
+  }, [itemsCount, session]);
 
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
@@ -465,80 +466,75 @@ export function Navbar(items_count?: any) {
             >
               Register
             </Button> */}
-           
           </div>
           <List
-              className="flex flex-col gap-2 mt-2"
-              {...({} as React.ComponentProps<typeof List>)}
-            >
-              {headerMenu.map((item: any, index: number) => (
-                <div key={item?.id} className="relative">
-                  <ListItem
-                    className="p-1 flex items-center justify-between"
-                    {...({} as React.ComponentProps<typeof ListItem>)}
+            className="flex flex-col gap-2 mt-2"
+            {...({} as React.ComponentProps<typeof List>)}
+          >
+            {headerMenu.map((item: any, index: number) => (
+              <div key={item?.id} className="relative">
+                <ListItem
+                  className="p-1 flex items-center justify-between"
+                  {...({} as React.ComponentProps<typeof ListItem>)}
+                >
+                  {/* Main item link */}
+                  <Typography
+                    as="a"
+                    href={
+                      item.url === "#"
+                        ? "#"
+                        : index === 6
+                        ? "/current-affairs"
+                        : `/category/${item.url}`
+                    }
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium flex-1"
+                    onClick={() => setOpen(false)}
+                    {...({} as React.ComponentProps<typeof Typography>)}
                   >
-                    {/* Main item link */}
-                    <Typography
-                      as="a"
-                      href={
-                        item.url === "#"
-                          ? "#"
-                          : index === 6
-                          ? "/current-affairs"
-                          : `/category/${item.url}`
-                      }
-                      variant="small"
-                      color="blue-gray"
-                      className="font-medium flex-1"
-                      onClick={() => setOpen(false)}
-                      {...({} as React.ComponentProps<typeof Typography>)}
-                    >
-                      {item.name || item.label}
-                    </Typography>
+                    {item.name || item.label}
+                  </Typography>
 
-                    {/* If item has children, show dropdown toggle */}
-                    {item.children && (
-                      <Menu allowHover>
-                        <MenuHandler>
-                          <ChevronDownIcon
-                            strokeWidth={2}
-                            className="h-4 w-4 ml-2 cursor-pointer"
-                          />
-                        </MenuHandler>
-                        <MenuList
-                          {...({} as React.ComponentProps<typeof MenuList>)}
-                        >
-                          {item.children.map(
-                            (child: any, childIndex: number) => (
-                              <MenuItem
-                                key={childIndex}
-                                {...({} as React.ComponentProps<
-                                  typeof MenuItem
-                                >)}
-                              >
-                                <Typography
-                                  as="a"
-                                  href={`/category/${child.url}`}
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-medium"
-                                  onClick={() => setOpen(false)}
-                                  {...({} as React.ComponentProps<
-                                    typeof Typography
-                                  >)}
-                                >
-                                  {child.name}
-                                </Typography>
-                              </MenuItem>
-                            )
-                          )}
-                        </MenuList>
-                      </Menu>
-                    )}
-                  </ListItem>
-                </div>
-              ))}
-            </List>
+                  {/* If item has children, show dropdown toggle */}
+                  {item.children && (
+                    <Menu allowHover>
+                      <MenuHandler>
+                        <ChevronDownIcon
+                          strokeWidth={2}
+                          className="h-4 w-4 ml-2 cursor-pointer"
+                        />
+                      </MenuHandler>
+                      <MenuList
+                        {...({} as React.ComponentProps<typeof MenuList>)}
+                      >
+                        {item.children.map((child: any, childIndex: number) => (
+                          <MenuItem
+                            key={childIndex}
+                            {...({} as React.ComponentProps<typeof MenuItem>)}
+                          >
+                            <Typography
+                              as="a"
+                              href={`/category/${child.url}`}
+                              variant="small"
+                              color="blue-gray"
+                              className="font-medium"
+                              onClick={() => setOpen(false)}
+                              {...({} as React.ComponentProps<
+                                typeof Typography
+                              >)}
+                            >
+                              {child.name}
+                            </Typography>
+                          </MenuItem>
+                        ))}
+                      </MenuList>
+                    </Menu>
+                  )}
+                </ListItem>
+              </div>
+            ))}
+          </List>
         </div>
       </Collapse>
     </MTNavbar>

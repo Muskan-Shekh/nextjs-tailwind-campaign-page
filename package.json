@@ -12,7 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@heroicons/react": "2.0.18",
+    "@heroicons/react": "^2.0.18",
     "@material-tailwind/react": "2.1.2",
     "axios": "^1.8.4",
     "iron-session": "^8.0.4",

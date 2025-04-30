@@ -34,6 +34,7 @@ export default function SignIn() {
   const [alertType, setAlertType] = useState<"error" | "success" | "">("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
+  
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // const form = event.currentTarget;
@@ -269,7 +270,7 @@ export default function SignIn() {
             {alertMessage}
           </Alert>
         )}
-        <div className="flex items-center justify-center border  w-96 ring-2 ring-gray-500/50 rounded-xl">
+        <div className="flex items-center justify-center border w-96 ring-2 ring-gray-500/50 rounded-xl">
           <Tabs className="w-full" value={activeTab}>
             <TabsHeader
               className="h-12 bg-transparent"

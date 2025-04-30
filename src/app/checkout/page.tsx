@@ -10,8 +10,10 @@ import config from "../config";
 import axios from "axios";
 import React from "react";
 import { ThankYouDialog } from "@/components/thank-you-popup";
-
-export default function Checkout() {
+type CheckoutProps = {
+  setActiveTab: (tab: string) => void;
+};
+export default function Checkout({ setActiveTab }: CheckoutProps) {
   interface CartItem {
     product_id: number;
     product_name: string;
@@ -21,6 +23,7 @@ export default function Checkout() {
     subtotal?: number;
     product_weight?: number | any;
   }
+  
   const [deliveryType, setDeliveryType] = useState("free");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [session, setSession] = useState("");
@@ -237,12 +240,13 @@ export default function Checkout() {
 
   return (
     <>
-      <Navbar items_count={items_count}/>
-      <MainNavbar />
+      {/* <Navbar items_count={items_count}/>
+      <MainNavbar /> */}
       {/* Shipping Details */}
       <form
-        className="container mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 mt-4"
-        onSubmit={handlePlaceOrder}
+        // className="container mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 mt-4"
+        className="container mx-auto p-6 grid grid-cols-1 gap-8 mb-8 mt-4 max-w-screen-md"
+        // onSubmit={handlePlaceOrder}
       >
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
@@ -403,160 +407,16 @@ export default function Checkout() {
               <option defaultValue="India">India</option>
             </select>
           </div>
-        </div>
-
-        {/* Order Summary */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Your Order</h2>
-          <div className="border-b pb-4 mb-4 border-gray-400">
-            <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl mb-4">
-              <div className="space-y-6">
-                {cartItems?.map((item) => (
-                  <div
-                    key={item.product_id}
-                    className="rounded-lg border border-gray-200 bg-white p-2 shadow-sm md:p-2"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-6">
-                      <img
-                        className="h-20 w-20"
-                        src={`${config.apiUrl}storage/${item.image}`}
-                        alt={item.product_name}
-                        width={40}
-                        height={40}
-                      />
-
-                      <div className="w-full min-w-0 flex-1 space-y-4">
-                        <a
-                          href="#"
-                          className="text-base font-medium text-gray-900 hover:underline"
-                        >
-                          {item.product_name} × {item.quantity}
-                        </a>
-                      </div>
-
-                      {/* Quantity & Price */}
-                      <div className="text-end w-32">
-                        <p className="text-base font-bold text-gray-900">
-                          {/* ₹{item.price * item.quantity} */}₹{item.subtotal}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-between border-b pb-4 border-gray-400">
-              <span>Subtotal</span>
-              <span>₹{subtotal}</span>
-            </div>
-            {/* <div className="flex justify-between border-b pb-4 border-gray-400">
-              <span>Items weight</span>
-              <span>
-                {cartItems?.reduce(
-                  (acc, item) => item.product_weight * items_count,
-                  0
-                )}
-                gm
-              </span>
-            </div> */}
-            <div className="flex justify-between border-b pb-4 border-gray-400">
-              <span>Shipping</span>
-              <span>{calculateShipping(totalWeight)}</span>
-              {/* if weight <=500 then shipping = ₹49 , if weight is going 200 more i.e. 700 then shipping = shipping+25, if weight is going 200 more i.e. 900 then shipping = shipping+25 and so on...*/}
-            </div>
-
-            {/* <div className="flex justify-between border-b pb-4 border-gray-400">
-              <span>COD Charge</span>
-              <span>₹49</span>
-            </div> */}
-            <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
-              <span>
-                ₹
-                {deliveryType === "free"
-                  ? subtotal
-                  : subtotal + calculateShippingValue(totalWeight)}
-              </span>
-            </div>
-          </div>
-
-          {/* Delivery Type */}
-          <div className="mb-4">
-            <h3 className="font-semibold">Delivery Type</h3>
-            <div>
-              <label className="block">
-                <input
-                  type="radio"
-                  name="delivery"
-                  checked={deliveryType === "free"}
-                  onChange={() => setDeliveryType("free")}
-                />{" "}
-                Free Delivery
-              </label>
-              <label className="block">
-                <input
-                  type="radio"
-                  name="delivery"
-                  checked={deliveryType === "standard"}
-                  onChange={() => setDeliveryType("standard")}
-                />{" "}
-                Standard Delivery
-              </label>
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div className="mb-4">
-            <h3 className="font-semibold">Payment Method</h3>
-            <div>
-              <label className="block">
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "cod"}
-                  onChange={() => setPaymentMethod("cod")}
-                />{" "}
-                Cash On Delivery
-              </label>
-              <label className="block">
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "online"}
-                  onChange={() => setPaymentMethod("online")}
-                />{" "}
-                Pay using UPI/Card/Wallet/Netbanking
-              </label>
-            </div>
-          </div>
-
           <button
-            // type="submit"
-            onClick={() => {
-              open ? errorPopup() : thankYouPopup();
-              handlePlaceOrder;
-              // thankYouPopup();
-            }}
-            className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+            onClick={() => setActiveTab("order")}
+            className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
           >
-            Place Order
+            Next
           </button>
-          {open && (
-            <NotificationDialog
-              open={open}
-              handleOpen={errorPopup}
-            ></NotificationDialog>
-          )}
-          {isOpen && (
-            <ThankYouDialog
-              open={isOpen}
-              handleOpen={thankYouPopup}
-              orderNumber={orderNumber}
-            ></ThankYouDialog>
-          )}
-        </div>
+        </div> 
+        {/* order summary section was here */}
       </form>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

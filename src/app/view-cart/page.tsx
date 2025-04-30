@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import config from "@/app/config";
 import axios from "axios";
 import { Button, Tab, Tabs, TabsHeader } from "@material-tailwind/react";
-import Checkout from "../checkout/page";
+import Checkout from "@/components/Checkout";
 import { ThankYouDialog } from "@/components/thank-you-popup";
 import { NotificationDialog } from "@/components/notification";
 import { CheckIcon } from "@heroicons/react/24/solid";

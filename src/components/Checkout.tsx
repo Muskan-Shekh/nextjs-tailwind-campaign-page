@@ -6,14 +6,14 @@ import Image from "next/image";
 import { Navbar, Footer } from "@/components";
 import MainNavbar from "@/components/main-navbar";
 import { NotificationDialog } from "@/components/notification";
-import config from "../config";
+import config from "@/app/config";
 import axios from "axios";
 import React from "react";
 import { ThankYouDialog } from "@/components/thank-you-popup";
-// type CheckoutProps = {
-//   setActiveTab: (tab: string) => void;
-// };
-export default function Checkout() {
+type CheckoutProps = {
+  setActiveTab: (tab: string) => void;
+};
+export default function Checkout({ setActiveTab }: CheckoutProps) {
   interface CartItem {
     product_id: number;
     product_name: string;
@@ -407,12 +407,12 @@ export default function Checkout() {
               <option defaultValue="India">India</option>
             </select>
           </div>
-          {/* <button
+          <button
             onClick={() => setActiveTab("order")}
             className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
           >
             Next
-          </button> */}
+          </button>
         </div> 
         {/* order summary section was here */}
       </form>

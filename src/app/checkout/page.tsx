@@ -10,9 +10,7 @@ import config from "../config";
 import axios from "axios";
 import React from "react";
 import { ThankYouDialog } from "@/components/thank-you-popup";
-// type CheckoutProps = {
-//   setActiveTab: (tab: string) => void;
-// };
+
 export default function Checkout() {
   interface CartItem {
     product_id: number;

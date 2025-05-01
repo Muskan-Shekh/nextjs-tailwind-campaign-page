@@ -1,19 +1,16 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
-// components
-import { Navbar, Footer } from "@/components";
-import MainNavbar from "@/components/main-navbar";
-import { NotificationDialog } from "@/components/notification";
 import config from "@/app/config";
 import axios from "axios";
 import React from "react";
-import { ThankYouDialog } from "@/components/thank-you-popup";
+
 type CheckoutProps = {
-  setActiveTab: (tab: string) => void;
+  onBack: () => void;
+  onNext: (data: any) => void; // <-- accept data here
 };
-export default function Checkout({ setActiveTab }: CheckoutProps) {
+
+export default function Checkout({ onNext, onBack }: CheckoutProps) {
   interface CartItem {
     product_id: number;
     product_name: string;
@@ -23,7 +20,7 @@ export default function Checkout({ setActiveTab }: CheckoutProps) {
     subtotal?: number;
     product_weight?: number | any;
   }
-  
+
   const [deliveryType, setDeliveryType] = useState("free");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [session, setSession] = useState("");
@@ -106,7 +103,7 @@ export default function Checkout({ setActiveTab }: CheckoutProps) {
   const checkUser = async (emailToCheck: string) => {
     try {
       const response = await axios.post(
-        "https://admin.bookwindow.in/api/v1/checkuser",
+        `${config.apiUrl}api/v1/checkuser`,
         {
           email: emailToCheck,
         }
@@ -152,101 +149,106 @@ export default function Checkout({ setActiveTab }: CheckoutProps) {
     }
   }
 
-  const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
+  // const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   try {
+  //     const form = event.currentTarget;
+  //     const formData = new FormData(event.currentTarget);
+  //     const first_name = formData.get("first_name")?.toString().trim() || "";
+  //     const last_name = formData.get("last_name")?.toString().trim() || "";
+  //     const phone = formData.get("phone")?.toString().trim() || "";
+  //     const city = formData.get("city")?.toString() || "";
+  //     const state = formData.get("state")?.toString() || "";
+  //     const country = formData.get("country")?.toString() || "";
+  //     const zip_code = formData.get("zip_code")?.toString() || "";
+  //     const address = formData.get("address")?.toString() || "";
+  //     const address_2 = formData.get("address_2")?.toString() || "";
+
+  //     const response = await fetch(`${config.apiUrl}api/cart/checkout`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //       body: JSON.stringify({
+  //         session_id: session,
+  //         shipping_method: deliveryType,
+  //         address: address,
+  //         address_2: address_2,
+  //         email: email,
+  //         password: password ? password : "",
+  //         is_guest: userFound ? false : true,
+  //         phone: phone,
+  //         first_name: first_name,
+  //         last_name: last_name,
+  //         city: city,
+  //         state: state,
+  //         zip_code: zip_code,
+  //         country: country,
+  //       }),
+  //     });
+  //     const result = await response.json();
+  //     if (response.ok) {
+  //       console.log("Place order", result);
+  //       setOrderNumber(result?.order_number);
+  //       form.reset();
+  //     }
+  //     if (result.message == "Your cart is empty") {
+  //       setOpen(true);
+  //       // errorPopup();
+  //     }
+  //   } catch (error) {
+  //     setOpen(true);
+  //     // errorPopup();
+  //     console.log("Error in :", error);
+  //   }
+  // };
+
+  const handleNext = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      const form = event.currentTarget;
-      const formData = new FormData(event.currentTarget);
-      const first_name = formData.get("first_name")?.toString().trim() || "";
-      const last_name = formData.get("last_name")?.toString().trim() || "";
-      const phone = formData.get("phone")?.toString().trim() || "";
-      // const password = formData.get("password")?.toString().trim() || "";
-      const city = formData.get("city")?.toString() || "";
-      const state = formData.get("state")?.toString() || "";
-      const country = formData.get("country")?.toString() || "";
-      const zip_code = formData.get("zip_code")?.toString() || "";
-      const address = formData.get("address")?.toString() || "";
-      const address_2 = formData.get("address_2")?.toString() || "";
 
-      const response = await fetch(`${config.apiUrl}api/cart/checkout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          session_id: session,
-          shipping_method: deliveryType,
-          address: address,
-          address_2: address_2,
-          email: email,
-          password: password ? password : "",
-          is_guest: userFound ? false : true,
-          phone: phone,
-          first_name: first_name,
-          last_name: last_name,
-          city: city,
-          state: state,
-          zip_code: zip_code,
-          country: country,
-        }),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        console.log("Place order", result);
-        setOrderNumber(result?.order_number);
-        form.reset();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "phone",
+      "address",
+      "zip_code",
+    ];
+    for (const field of requiredFields) {
+      if (!formData.get(field)?.toString().trim()) {
+        alert(`${field} is required`);
+        return;
       }
-      if (result.message == "Your cart is empty") {
-        setOpen(true);
-        // errorPopup();
-      }
-    } catch (error) {
-      setOpen(true);
-      // errorPopup();
-      console.log("Error in :", error);
     }
+
+    const data = {
+      first_name: formData.get("first_name")?.toString().trim(),
+      last_name: formData.get("last_name")?.toString().trim(),
+      phone: formData.get("phone")?.toString().trim(),
+      address: formData.get("address")?.toString().trim(),
+      address_2: formData.get("address_2")?.toString().trim(),
+      zip_code: formData.get("zip_code")?.toString().trim(),
+      city: formData.get("city"),
+      state: formData.get("state"),
+      country: formData.get("country"),
+      email: email,
+      password: password ? password : "",
+      is_guest: !password ? true : false,
+    };
+
+    onNext(data); // pass to parent
+    // console.log("data", data);
   };
-
-  // Function to return shipping cost as a number
-  const calculateShippingValue = (weightInGrams: number): number => {
-    if (deliveryType === "free") return 0;
-
-    let shipping = 49;
-    if (weightInGrams <= 500) return shipping;
-
-    const extraWeight = weightInGrams - 500;
-    const increments = Math.ceil(extraWeight / 200);
-    shipping += increments * 25;
-
-    return shipping;
-  };
-
-  // Function to return shipping as a formatted string
-  const calculateShipping = (weightInGrams: number): string => {
-    const value = calculateShippingValue(weightInGrams);
-    return deliveryType === "free" ? "Free" : `₹${value}`;
-  };
-
-  const totalWeight = cartItems?.reduce(
-    (acc, item) => acc + item.product_weight * items_count,
-    0
-  );
-
-  const subtotal = cartItems?.reduce(
-    (acc, item) => acc + item.product_price * item.quantity,
-    0
-  );
 
   return (
     <>
-      {/* <Navbar items_count={items_count}/>
-      <MainNavbar /> */}
-      {/* Shipping Details */}
       <form
-        // className="container mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 mt-4"
         className="container mx-auto p-6 grid grid-cols-1 gap-8 mb-8 mt-4 max-w-screen-md"
         // onSubmit={handlePlaceOrder}
+        onSubmit={handleNext}
       >
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
@@ -329,7 +331,7 @@ export default function Checkout({ setActiveTab }: CheckoutProps) {
                     Login
                   </button>
                   <button
-                    onClick={() => setUserFound(false)}
+                    type="button"
                     className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
                   >
                     Continue as guest
@@ -408,15 +410,20 @@ export default function Checkout({ setActiveTab }: CheckoutProps) {
             </select>
           </div>
           <button
-            onClick={() => setActiveTab("order")}
+            onClick={onBack}
+            className="bg-gray-300 text-black p-3 rounded hover:bg-gray-400 mt-4 mr-2"
+          >
+            Back
+          </button>
+          <button
+            type="submit"
             className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
           >
             Next
           </button>
-        </div> 
+        </div>
         {/* order summary section was here */}
       </form>
-      {/* <Footer /> */}
     </>
   );
 }

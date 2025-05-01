@@ -8,11 +8,19 @@ import MainNavbar from "@/components/main-navbar";
 import { useRouter } from "next/navigation";
 import config from "@/app/config";
 import axios from "axios";
-import { Button, Tab, Tabs, TabsHeader } from "@material-tailwind/react";
+import {
+  Button,
+  Input,
+  Tab,
+  Tabs,
+  TabsHeader,
+  Typography,
+} from "@material-tailwind/react";
 import Checkout from "@/components/Checkout";
 import { ThankYouDialog } from "@/components/thank-you-popup";
 import { NotificationDialog } from "@/components/notification";
 import { CheckIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 interface CartItem {
   product_id: number;
@@ -22,6 +30,9 @@ interface CartItem {
   image: string;
   product_weight: number;
   subtotal: number;
+  product_slug: string;
+  category_id: number;
+  sub_category_id: number;
 }
 
 // const initialCartItems: CartItem[] = [
@@ -54,9 +65,10 @@ export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([] as CartItem[]);
   const [items_count, setItemsCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showCoupon, setShowCoupon] = useState(true);
+  const [isCouponApplied, setIsCoupnApplied] = useState(false);
 
   //for placeorder
-  const [activeTab, setActiveTab] = useState("cart");
   const [deliveryType, setDeliveryType] = useState("free");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [orderNumber, setOrderNumber] = useState<number>(0);
@@ -64,14 +76,56 @@ export default function ShoppingCart() {
   const errorPopup = () => setOpen(!open);
   const [isOpen, setIsOpen] = useState(false);
   const thankYouPopup = () => setIsOpen(!isOpen);
+  const [activeTab, setActiveTab] = useState("cart");
+  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+  const [shippingData, setShippingData] = useState({});
+  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(
+    null
+  );
+  const [coupon_code, setCouponCode] = useState("");
+  const [couponData, setCouponData] = useState({} as any);
+  const [mainCategories, setMainCategories] = useState([] as any);
+
   const getStepStatus = (step: string) => {
     const index = steps.indexOf(step);
     const activeIndex = steps.indexOf(activeTab);
-
+    if (step === activeTab) return "active";
+    if (completedSteps.includes(step)) return "completed";
     if (index < activeIndex) return "completed";
-    if (index === activeIndex) return "active";
     return "upcoming";
   };
+
+  const goToStep = (step: string) => {
+    const currentIndex = steps.indexOf(activeTab);
+    const targetIndex = steps.indexOf(step);
+
+    // Only allow navigation to current or previous or completed step
+    if (
+      step === activeTab ||
+      completedSteps.includes(step) ||
+      targetIndex < currentIndex
+    ) {
+      setActiveTab(step);
+    }
+  };
+
+  const handleNext = () => {
+    const currentIndex = steps.indexOf(activeTab);
+    const nextStep = steps[currentIndex + 1];
+    if (nextStep) {
+      setCompletedSteps((prev) =>
+        prev.includes(activeTab) ? prev : [...prev, activeTab]
+      );
+      setActiveTab(nextStep);
+    }
+  };
+
+  const handleBack = () => {
+    const currentIndex = steps.indexOf(activeTab);
+    const prevStep = steps[currentIndex - 1];
+    if (prevStep) setActiveTab(prevStep);
+  };
+
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
       method: "GET",
@@ -184,15 +238,38 @@ export default function ShoppingCart() {
     setItemsCount(items_count - 1);
   };
 
+  // const calculateTotal = () => {
+  //   const subtotal = cartItems?.reduce(
+  //     (acc, item) =>
+  //       isCouponApplied && couponData
+  //         ? acc + item.product_price * item.quantity - couponData?.value
+  //         : acc + item.product_price * item.quantity,
+  //     0
+  //   );
+  //   return subtotal;
+  // };
+
   const calculateTotal = () => {
-    const subtotal = cartItems?.reduce(
-      (acc, item) => acc + item.product_price * item.quantity,
-      0
-    );
-    // const savings = 299;
-    // const storePickup = 99;
-    // const tax = 799;
-    // return subtotal - savings + storePickup + tax;
+    const subtotal = cartItems?.reduce((acc, item) => {
+      const itemTotal = item.product_price * item.quantity;
+
+      if (isCouponApplied && couponData) {
+        const couponCategories = couponData.category_id
+          ? JSON.parse(couponData.category_id)
+          : null;
+
+        const isCategoryMatch =
+          !couponCategories ||
+          couponCategories.includes(String(item.category_id));
+
+        if (isCategoryMatch) {
+          return acc + (itemTotal - parseFloat(couponData.value));
+        }
+      }
+
+      return acc + itemTotal;
+    }, 0);
+
     return subtotal;
   };
 
@@ -225,59 +302,88 @@ export default function ShoppingCart() {
     0
   );
 
-  const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      const form = event.currentTarget;
-      const formData = new FormData(event.currentTarget);
-      const first_name = formData.get("first_name")?.toString().trim() || "";
-      const last_name = formData.get("last_name")?.toString().trim() || "";
-      const phone = formData.get("phone")?.toString().trim() || "";
-      // const password = formData.get("password")?.toString().trim() || "";
-      const city = formData.get("city")?.toString() || "";
-      const state = formData.get("state")?.toString() || "";
-      const country = formData.get("country")?.toString() || "";
-      const zip_code = formData.get("zip_code")?.toString() || "";
-      const address = formData.get("address")?.toString() || "";
-      const address_2 = formData.get("address_2")?.toString() || "";
+  const handleCouponChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCouponCode(value);
 
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      checkCoupon(value);
+    }, 500); // 500ms delay after stop typing
+    setDebounceTimeout(timeout);
+  };
+
+  // API call
+  const checkCoupon = async (couponToCheck: string) => {
+    try {
+      const response = await axios.post(
+        `${config.apiUrl}api/cart/coupon/${couponToCheck}`
+      );
+      if (response.data) {
+        setCouponData(response.data);
+      } else if (response.data.error) {
+      }
+    } catch (error) {
+      console.error("API error:", error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    const fetchProductsByCategory = async () => {
+      setLoading(true);
+      try {
+        const response2 = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/category`,
+          responseType: "json",
+        });
+        setMainCategories(response2?.data);
+      } catch (error) {
+        console.error("Error loading products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProductsByCategory();
+  }, []);
+
+  useEffect(() => {
+    console.log("couponData", couponData);
+  }, [couponData, mainCategories]);
+
+  const handlePlaceOrder = async () => {
+    // console.log("shippingData", shippingData);
+    try {
       const response = await fetch(`${config.apiUrl}api/cart/checkout`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
+          ...shippingData,
           session_id: session,
           shipping_method: deliveryType,
-          address: address,
-          address_2: address_2,
-          // email: email,
-          // password: password ? password : "",
-          // is_guest: userFound ? false : true,
-          phone: phone,
-          first_name: first_name,
-          last_name: last_name,
-          city: city,
-          state: state,
-          zip_code: zip_code,
-          country: country,
         }),
       });
       const result = await response.json();
       if (response.ok) {
         console.log("Place order", result);
         setOrderNumber(result?.order_number);
-        form.reset();
-      }
-      if (result.message == "Your cart is empty") {
+        thankYouPopup();
+        setTimeout(() => {
+          setCartItems([]); // Wait a short time to ensure popup renders
+        }, 500);
+      } else if (result.message === "Your cart is empty") {
         setOpen(true);
-        // errorPopup();
+        errorPopup();
       }
     } catch (error) {
       setOpen(true);
-      // errorPopup();
-      console.log("Error in :", error);
+      console.log("Error in:", error);
+      errorPopup();
     }
   };
 
@@ -362,54 +468,6 @@ export default function ShoppingCart() {
           </div>
         ) : (
           <div className="mx-auto container max-w-screen-xl p-4 2xl:px-0 bg-gray-100">
-            {/* <div className="flex items-center justify-center bg-white mx-4 mb-4">
-              <Tabs className="w-full" value={activeTab}>
-                <TabsHeader
-                  className="h-12 bg-transparent"
-                  indicatorProps={{
-                    className: "!bg-gray-900 rounded-lg",
-                  }}
-                  {...({} as React.ComponentProps<typeof TabsHeader>)}
-                >
-                  <Tab
-                    value="cart"
-                    onClick={() => setActiveTab("cart")}
-                    className={`font-medium capitalize transition-all duration-300 rounded-xl px-4 mr-4 whitespace-nowrap ${
-                      activeTab === "cart"
-                        ? "bg-black text-white"
-                        : "bg-transparent text-black"
-                    }`}
-                    {...({} as any)}
-                  >
-                    Cart
-                  </Tab>
-                  <Tab
-                    value="shipping"
-                    onClick={() => setActiveTab("shipping")}
-                    className={`font-medium capitalize transition-all duration-300 rounded-xl px-4 whitespace-nowrap ${
-                      activeTab === "shipping"
-                        ? "bg-black text-white"
-                        : "bg-transparent text-black"
-                    }`}
-                    {...({} as any)}
-                  >
-                    Shipping
-                  </Tab>
-                  <Tab
-                    value="order"
-                    onClick={() => setActiveTab("order")}
-                    className={`font-medium capitalize transition-all duration-300 rounded-xl px-4 whitespace-nowrap ${
-                      activeTab === "order"
-                        ? "bg-black text-white"
-                        : "bg-transparent text-black"
-                    }`}
-                    {...({} as any)}
-                  >
-                    Order
-                  </Tab>
-                </TabsHeader>
-              </Tabs>
-            </div> */}
             <div className="flex items-center justify-center bg-white mx-4 mb-4 py-4">
               <div className="flex items-center w-full max-w-xl justify-between">
                 {steps.map((step, idx) => {
@@ -418,13 +476,16 @@ export default function ShoppingCart() {
 
                   return (
                     <div key={step} className="flex items-center w-full">
-                      {/* Step */}
                       <div
-                        onClick={() => setActiveTab(step)}
-                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={() => goToStep(step)}
+                        className={`flex items-center gap-2 ${
+                          status === "upcoming"
+                            ? "cursor-not-allowed"
+                            : "cursor-pointer"
+                        }`}
                       >
                         <div
-                          className={`w-4 h-4 flex items-center justify-center rounded-full border-2 ${
+                          className={`w-6 h-6 flex items-center justify-center rounded-full border-2 ${
                             status === "active"
                               ? "border-black"
                               : status === "completed"
@@ -436,7 +497,7 @@ export default function ShoppingCart() {
                             <CheckIcon className="w-4 h-4 text-green-600" />
                           ) : (
                             <div
-                              className={`w-[0.5rem] h-[0.5rem] rounded-full ${
+                              className={`w-2.5 h-2.5 rounded-full ${
                                 status === "active" ? "bg-black" : "bg-gray-300"
                               }`}
                             ></div>
@@ -455,7 +516,6 @@ export default function ShoppingCart() {
                         </span>
                       </div>
 
-                      {/* Connector Line */}
                       {!isLast && (
                         <div className="flex-grow h-px border-t border-dotted border-gray-400 mx-2"></div>
                       )}
@@ -480,123 +540,200 @@ export default function ShoppingCart() {
                   </svg>{" "}
                   My Cart - ({items_count} Items)
                 </h2>
-
                 <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
                   <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-2xl p-4">
                     <div className="space-y-6">
-                      {cartItems?.map((item) => (
-                        <div
-                          key={item.product_id}
-                          className="rounded-lg border border-gray-300 shadow-sm bg-white"
-                        >
-                          <div className="flex flex-wrap items-center justify-between p-4 gap-2">
-                            <div>
-                              {" "}
-                              <img
-                                className="h-40 w-40 object-contain rounded-lg"
-                                src={`${config.apiUrl}storage/${item.image}`}
-                                alt={item.product_name}
-                              />
-                              <div className="border border-1 px-4 mt-2">
-                                <p className="text-sm text-gray-900">
-                                  Quantity - {item.quantity}
-                                </p>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() =>
-                                      updateQuantity(
-                                        item.product_id,
-                                        "decrement"
-                                      )
-                                    }
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    <svg
-                                      className="w-4 h-4 text-gray-600 dark:text-white"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M5 12h14"
-                                      />
-                                    </svg>
-                                  </button>
-                                  <span className="w-10 text-center text-sm font-medium text-gray-900">
-                                    {item.quantity}
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      updateQuantity(
-                                        item.product_id,
-                                        "increment"
-                                      )
-                                    }
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    <svg
-                                      className="w-4 h-4 text-gray-600 dark:text-white"
-                                      aria-hidden="true"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M5 12h14m-7 7V5"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="w-full min-w-0 flex-1 space-y-4">
-                              <p className="text-sm font-[400] text-black">
-                                {item.product_name}
-                              </p>
-
-                              <div className="flex items-center justify-between gap-4 w-full border-t border-b py-1">
-                                <p className="text-sm text-gray-900">
-                                  Weight - {item.product_weight}/kg
-                                </p>
-
-                                {/* Price aligned to the end/right */}
-                                <div className="w-32 text-end">
-                                  <p className="text-sm font-bold text-gray-900">
-                                    ₹{item.product_price * item.quantity}
+                      {cartItems?.map((item) => {
+                        const mainCategory = mainCategories?.find(
+                          (main: any) => main.id === item?.category_id
+                        );
+                        const subcategory = mainCategory.child?.find(
+                          (sub: any) => sub.id === item?.sub_category_id
+                        );
+                        return (
+                          <div
+                            key={item.product_id}
+                            className="rounded-lg border border-gray-300 shadow-sm bg-white"
+                          >
+                            <div className="flex flex-wrap items-center justify-between p-4 gap-2">
+                              <div>
+                                {" "}
+                                <img
+                                  className="h-40 w-40 object-contain rounded-lg"
+                                  src={`${config.apiUrl}storage/${item.image}`}
+                                  alt={item.product_name}
+                                />
+                                <div className="border border-1 px-4 mt-2">
+                                  <p className="text-sm text-gray-900">
+                                    Quantity - {item.quantity}
                                   </p>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() =>
+                                        updateQuantity(
+                                          item.product_id,
+                                          "decrement"
+                                        )
+                                      }
+                                      className="text-sm cursor-pointer"
+                                    >
+                                      <svg
+                                        className="w-4 h-4 text-gray-600 dark:text-white"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M5 12h14"
+                                        />
+                                      </svg>
+                                    </button>
+                                    <span className="w-10 text-center text-sm font-medium text-gray-900">
+                                      {item.quantity}
+                                    </span>
+                                    <button
+                                      onClick={() =>
+                                        updateQuantity(
+                                          item.product_id,
+                                          "increment"
+                                        )
+                                      }
+                                      className="text-sm cursor-pointer"
+                                    >
+                                      <svg
+                                        className="w-4 h-4 text-gray-600 dark:text-white"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          stroke="currentColor"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth="2"
+                                          d="M5 12h14m-7 7V5"
+                                        />
+                                      </svg>
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
+
+                              <div className="w-full min-w-0 flex-1">
+                                <Link
+                                  href={`/product-detail/${item.product_slug}`}
+                                  className="text-sm font-[400] text-black"
+                                >
+                                  {item.product_name}
+                                </Link>
+                                <Typography
+                                  color="blue"
+                                  className="text-xs !font-semibold"
+                                  {...({} as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                >
+                                  {subcategory?.name
+                                    ? `${mainCategory?.name}/${subcategory?.name}`
+                                    : `${mainCategory?.name || ""}`}
+                                  {/* {mainCategory?.name}{" "} */}
+                                </Typography>
+
+                                <div className="flex items-center justify-between gap-4 w-full border-t border-b py-1 mt-4">
+                                  <p className="text-sm text-gray-900">
+                                    Weight - {item.product_weight}/kg
+                                  </p>
+
+                                  {/* Price aligned to the end/right */}
+                                  <div className="w-32 text-end">
+                                    <p className="text-sm font-bold text-gray-900">
+                                      {/* {isCouponApplied && couponData
+                                        ? `₹ ${
+                                            item.product_price * item.quantity -
+                                            couponData?.value
+                                          }`
+                                        : `₹${
+                                            item.product_price * item.quantity
+                                          }`} */}
+                                      ₹
+                                      {(() => {
+                                        const itemTotal =
+                                          item.product_price * item.quantity;
+                                        if (isCouponApplied && couponData) {
+                                          const couponCategories =
+                                            couponData.category_id
+                                              ? JSON.parse(
+                                                  couponData.category_id
+                                                )
+                                              : null;
+
+                                          const isCategoryMatch =
+                                            !couponCategories ||
+                                            couponCategories.includes(
+                                              String(item.category_id)
+                                            );
+
+                                          if (isCategoryMatch) {
+                                            return (
+                                              itemTotal -
+                                              parseFloat(couponData.value)
+                                            ).toFixed(2);
+                                          }
+                                        }
+                                        return itemTotal.toFixed(2);
+                                      })()}
+                                    </p>
+                                  </div>
+                                </div>
+                                {isCouponApplied && couponData && (
+                                  <span className="mt-4 bg-pink-50 text-sm">
+                                    {/* Coupon Applied */}
+                                    {(() => {
+                                      const couponCategories =
+                                        couponData.category_id
+                                          ? JSON.parse(couponData.category_id)
+                                          : null;
+
+                                      const isCategoryMatch =
+                                        !couponCategories ||
+                                        couponCategories.includes(
+                                          String(item.category_id)
+                                        );
+
+                                      return isCategoryMatch
+                                        ? "Coupon Applied"
+                                        : "Coupon Not Applicable";
+                                    })()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="border border-top p-4 flex items-center justify-center">
+                              <svg
+                                onClick={() => removeItem(item.product_id)}
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1.5"
+                                stroke="currentColor"
+                                className="size-6 text-gray-600 cursor-pointer"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                                />
+                              </svg>
                             </div>
                           </div>
-                          <div className="border border-top p-4 flex items-center justify-center">
-                            <svg
-                              onClick={() => removeItem(item.product_id)}
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="size-6 text-gray-600 cursor-pointer"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -606,7 +743,47 @@ export default function ShoppingCart() {
                       <p className="text-xl font-semibold text-gray-900 whitespace-nowrap">
                         Order Summary
                       </p>
+                      <div className="flex justify-between">
+                        <p className="font-medium text-gray-900">
+                          Add a coupon
+                        </p>
+                        <svg
+                          onClick={() => setShowCoupon(!showCoupon)}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="size-6 cursor-pointer"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      </div>
+                      {showCoupon && (
+                        <div className="flex justify-between">
+                          <Input
+                            label="Enter code"
+                            value={coupon_code}
+                            onChange={handleCouponChange}
+                            className="w-40"
+                            {...({} as React.ComponentProps<typeof Input>)}
+                          />
+                          <button
+                            onClick={() =>
+                              couponData && setIsCoupnApplied(true)
+                            }
+                            className="rounded-lg bg-gray-800 px-5 py-2 ml-4 text-white hover:bg-gray-900 whitespace-nowrap"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      )}
 
+                      <hr />
                       <div className="space-y-4">
                         <dl className="flex justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500">
@@ -621,7 +798,36 @@ export default function ShoppingCart() {
                             )}
                           </dd>
                         </dl>
-
+                        <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
+                          <dt className="text-sm text-gray-600">
+                            Discount <br></br>
+                            {isCouponApplied && couponData && (
+                              <span className="border border-10 rounded-xl px-2 border-black flex mt-2">
+                                {couponData?.code}
+                                <svg
+                                  onClick={() => setIsCoupnApplied(false)}
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="1.5"
+                                  stroke="currentColor"
+                                  className="size-5 ml-2 cursor-pointer hover:bg-gray-300 rounded-xl"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                  />
+                                </svg>
+                              </span>
+                            )}
+                          </dt>
+                          <dd className="text-base font-bold text-green-600">
+                            {isCouponApplied && couponData
+                              ? -couponData?.value
+                              : 0}
+                          </dd>
+                        </dl>
                         <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                           <dt className="text-base font-bold text-gray-900">
                             Total
@@ -636,7 +842,7 @@ export default function ShoppingCart() {
                       <button
                         className="w-full rounded-lg bg-gray-800 px-5 py-2.5 text-white hover:bg-gray-900 whitespace-nowrap"
                         // onClick={() => router.push("/checkout")}
-                        onClick={() => setActiveTab("shipping")}
+                        onClick={handleNext}
                       >
                         Proceed to Checkout
                       </button>
@@ -654,7 +860,15 @@ export default function ShoppingCart() {
                 </div>
               </>
             )}
-            {activeTab === "shipping" && <Checkout setActiveTab={setActiveTab}/>}
+            {activeTab === "shipping" && (
+              <Checkout
+                onBack={() => setActiveTab("cart")}
+                onNext={(data: any) => {
+                  setShippingData(data); // store validated form data
+                  setActiveTab("order");
+                }}
+              />
+            )}
             {activeTab === "order" && (
               <div className="container mx-auto p-6 grid grid-cols-1 gap-8 mt-4 bg-gray-100">
                 <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl flex ml-4">
@@ -663,29 +877,72 @@ export default function ShoppingCart() {
                 <div className="md:gap-6 lg:flex lg:items-start xl:gap-8 bg-white border border-1 rounded-lg shadow-lg">
                   <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-2xl p-4">
                     <div className="space-y-6">
-                      {cartItems?.map((item) => (
-                        <div key={item.product_id} className=" bg-white">
-                          <div className="flex flex-wrap items-center justify-between p-4 gap-2">
-                            <div>
-                              {" "}
-                              <img
-                                className="h-40 w-40 object-contain rounded-lg"
-                                src={`${config.apiUrl}storage/${item.image}`}
-                                alt={item.product_name}
-                              />
-                            </div>
+                      {cartItems?.map((item) => {
+                        const mainCategory = mainCategories?.find(
+                          (main: any) => main.id === item?.category_id
+                        );
+                        const subcategory = mainCategory.child?.find(
+                          (sub: any) => sub.id === item?.sub_category_id
+                        );
+                        return (
+                          <div key={item.product_id} className=" bg-white">
+                            <div className="flex flex-wrap items-center justify-between p-4 gap-2">
+                              <div>
+                                {" "}
+                                <img
+                                  className="h-40 w-40 object-contain rounded-lg"
+                                  src={`${config.apiUrl}storage/${item.image}`}
+                                  alt={item.product_name}
+                                />
+                              </div>
 
-                            <div className="w-full min-w-0 flex-1 space-y-4">
-                              <p className="text-sm font-[400] text-black">
-                                {item.product_name} × {item.quantity}
-                              </p>
-                              <p className="text-base font-bold text-gray-900">
-                                ₹{item.subtotal}
-                              </p>
+                              <div className="w-full min-w-0 flex-1 space-y-4">
+                                <p className="text-sm font-[400] text-black">
+                                  {item.product_name} × {item.quantity}
+                                </p>
+                                <Typography
+                                  color="blue"
+                                  className="text-xs !font-semibold"
+                                  {...({} as React.ComponentProps<
+                                    typeof Typography
+                                  >)}
+                                >
+                                  {subcategory?.name
+                                    ? `${mainCategory?.name}/${subcategory?.name}`
+                                    : `${mainCategory?.name || ""}`}
+                                  {/* {mainCategory?.name}{" "} */}
+                                </Typography>
+                                <p className="text-base font-bold text-gray-900">
+                                  {/* ₹{item.subtotal} */}₹
+                                  {(() => {
+                                    const itemTotal = subtotal;
+                                    if (isCouponApplied && couponData) {
+                                      const couponCategories =
+                                        couponData.category_id
+                                          ? JSON.parse(couponData.category_id)
+                                          : null;
+
+                                      const isCategoryMatch =
+                                        !couponCategories ||
+                                        couponCategories.includes(
+                                          String(item.category_id)
+                                        );
+
+                                      if (isCategoryMatch) {
+                                        return (
+                                          itemTotal -
+                                          parseFloat(couponData.value)
+                                        ).toFixed(2);
+                                      }
+                                    }
+                                    return itemTotal.toFixed(2);
+                                  })()}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -695,7 +952,47 @@ export default function ShoppingCart() {
                       <p className="text-xl font-semibold text-gray-900 whitespace-nowrap">
                         Order Summary
                       </p>
+                      <div className="flex justify-between">
+                        <p className="font-medium text-gray-900">
+                          Add a coupon
+                        </p>
+                        <svg
+                          onClick={() => setShowCoupon(!showCoupon)}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="size-6 cursor-pointer"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      </div>
+                      {showCoupon && (
+                        <div className="flex justify-between">
+                          <Input
+                            label="Enter code"
+                            value={coupon_code}
+                            onChange={handleCouponChange}
+                            className="w-40"
+                            {...({} as React.ComponentProps<typeof Input>)}
+                          />
+                          <button
+                            onClick={() =>
+                              couponData && setIsCoupnApplied(true)
+                            }
+                            className="rounded-lg bg-gray-800 px-5 py-2 ml-4 text-white hover:bg-gray-900 whitespace-nowrap"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      )}
 
+                      <hr />
                       <div className="space-y-4">
                         <dl className="flex justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500">
@@ -705,7 +1002,36 @@ export default function ShoppingCart() {
                             ₹{subtotal}
                           </dd>
                         </dl>
-
+                        <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
+                          <dt className="text-sm text-gray-600">
+                            Discount <br></br>
+                            {isCouponApplied && couponData && (
+                              <span className="border border-10 rounded-xl px-2 border-black flex mt-2">
+                                {couponData?.code}
+                                <svg
+                                  onClick={() => setIsCoupnApplied(false)}
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="1.5"
+                                  stroke="currentColor"
+                                  className="size-5 ml-2 cursor-pointer hover:bg-gray-300 rounded-xl"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                  />
+                                </svg>
+                              </span>
+                            )}
+                          </dt>
+                          <dd className="text-base font-bold text-green-600">
+                            {isCouponApplied && couponData
+                              ? -couponData?.value
+                              : 0}
+                          </dd>
+                        </dl>
                         <dl className="flex justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500">
                             Shipping
@@ -720,10 +1046,15 @@ export default function ShoppingCart() {
                             Total
                           </dt>
                           <dd className="text-base font-bold text-gray-900">
-                            ₹
+                            {/* ₹
                             {deliveryType === "free"
                               ? subtotal
-                              : subtotal + calculateShippingValue(totalWeight)}
+                              : subtotal + calculateShippingValue(totalWeight)} */}
+                            ₹
+                            {deliveryType === "free"
+                              ? calculateTotal()
+                              : calculateTotal() +
+                                calculateShippingValue(totalWeight)}
                           </dd>
                         </dl>
                       </div>
@@ -776,18 +1107,19 @@ export default function ShoppingCart() {
                           </label>
                         </div>
                       </div>
-
                       <button
-                        // type="submit"
-                        onClick={() => {
-                          open ? errorPopup() : thankYouPopup();
-                          handlePlaceOrder;
-                          // thankYouPopup();
-                        }}
+                        onClick={handleBack}
+                        className="bg-gray-300 text-black p-3 rounded hover:bg-gray-400 mt-4 mr-2"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={handlePlaceOrder}
                         className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
                       >
                         Place Order
                       </button>
+
                       {open && (
                         <NotificationDialog
                           open={open}

@@ -43,7 +43,7 @@ export function OtherBookOffers({ description, similarProducts, onItemsCountUpda
         >
           About this product
         </Typography>
-        {description ? (
+        {description && (
           <Typography
             variant="lead"
             className="w-full text-gray-600"
@@ -51,29 +51,31 @@ export function OtherBookOffers({ description, similarProducts, onItemsCountUpda
             {...({} as React.ComponentProps<typeof Typography>)}
           >
           </Typography>
-        ) : (
-          <>
-            <Typography
-              variant="lead"
-              className="w-full text-gray-600"
-              {...({} as React.ComponentProps<typeof Typography>)}
-            >
-              Escape into{" "}
-              <strong className="text-gray-700">captivating stories</strong>,
-              vibrant characters, and enchanting worlds with our extensive
-              fiction collection. A classic reference book on grammar and
-              writing skills, essential for high school and college students. A
-              valuable resource for high school seniors and college freshmen,
-              offering effective study strategies.A classic reference book on
-              grammar and writing skills, essential for high school and college
-              students. A{" "}
-              <strong className="text-gray-700">valuable resources</strong> for
-              high school seniors and college freshmen, offering effective study
-              strategies.A classic reference book on grammar and writing skills,
-              essential for high school and college students.
-            </Typography>
-          </>
-        )}
+        ) 
+        // : (
+        //   <>
+        //     <Typography
+        //       variant="lead"
+        //       className="w-full text-gray-600"
+        //       {...({} as React.ComponentProps<typeof Typography>)}
+        //     >
+        //       Escape into{" "}
+        //       <strong className="text-gray-700">captivating stories</strong>,
+        //       vibrant characters, and enchanting worlds with our extensive
+        //       fiction collection. A classic reference book on grammar and
+        //       writing skills, essential for high school and college students. A
+        //       valuable resource for high school seniors and college freshmen,
+        //       offering effective study strategies.A classic reference book on
+        //       grammar and writing skills, essential for high school and college
+        //       students. A{" "}
+        //       <strong className="text-gray-700">valuable resources</strong> for
+        //       high school seniors and college freshmen, offering effective study
+        //       strategies.A classic reference book on grammar and writing skills,
+        //       essential for high school and college students.
+        //     </Typography>
+        //   </>
+        // )
+        }
         <Typography
           variant="h2"
           color="blue-gray"

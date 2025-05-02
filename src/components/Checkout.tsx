@@ -8,9 +8,11 @@ import React from "react";
 type CheckoutProps = {
   onBack: () => void;
   onNext: (data: any) => void; // <-- accept data here
+  formData: any;
 };
 
-export default function Checkout({ onNext, onBack }: CheckoutProps) {
+export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
+  // console.log("formData",formData)
   interface CartItem {
     product_id: number;
     product_name: string;
@@ -43,6 +45,19 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const thankYouPopup = () => setIsOpen(!isOpen);
 
+  const [formValues, setFormValues] = useState(formData);
+
+useEffect(() => {
+  setFormValues(formData);
+}, [formData]);
+  
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormValues((prev:any) => ({ ...prev, [name]: value }));
+  };
+  
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
       method: "GET",
@@ -102,12 +117,9 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
   // API call
   const checkUser = async (emailToCheck: string) => {
     try {
-      const response = await axios.post(
-        `${config.apiUrl}api/v1/checkuser`,
-        {
-          email: emailToCheck,
-        }
-      );
+      const response = await axios.post(`${config.apiUrl}api/v1/checkuser`, {
+        email: emailToCheck,
+      });
 
       if (response.data.success) {
         setUserFound(true);
@@ -204,45 +216,65 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
   //   }
   // };
 
+  // const handleNext = (event: FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+
+  //   const form = event.currentTarget;
+  //   const formData = new FormData(form);
+
+  //   const requiredFields = [
+  //     "first_name",
+  //     "last_name",
+  //     "phone",
+  //     "address",
+  //     "zip_code",
+  //   ];
+  //   for (const field of requiredFields) {
+  //     if (!formData.get(field)?.toString().trim()) {
+  //       alert(`${field} is required`);
+  //       return;
+  //     }
+  //   }
+
+  //   const data = {
+  //     first_name: formData.get("first_name")?.toString().trim(),
+  //     last_name: formData.get("last_name")?.toString().trim(),
+  //     phone: formData.get("phone")?.toString().trim(),
+  //     address: formData.get("address")?.toString().trim(),
+  //     address_2: formData.get("address_2")?.toString().trim(),
+  //     zip_code: formData.get("zip_code")?.toString().trim(),
+  //     city: formData.get("city"),
+  //     state: formData.get("state"),
+  //     country: formData.get("country"),
+  //     email: email,
+  //     password: password ? password : "",
+  //     is_guest: !password ? true : false,
+  //   };
+
+  //   onNext(data); // pass to parent
+  //   // console.log("data", data);
+  // };
   const handleNext = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    const requiredFields = [
-      "first_name",
-      "last_name",
-      "phone",
-      "address",
-      "zip_code",
-    ];
+  
+    const requiredFields = ["first_name", "last_name", "phone", "address", "zip_code"];
     for (const field of requiredFields) {
-      if (!formData.get(field)?.toString().trim()) {
+      if (!formValues[field as keyof typeof formValues]?.trim()) {
         alert(`${field} is required`);
         return;
       }
     }
-
+  
     const data = {
-      first_name: formData.get("first_name")?.toString().trim(),
-      last_name: formData.get("last_name")?.toString().trim(),
-      phone: formData.get("phone")?.toString().trim(),
-      address: formData.get("address")?.toString().trim(),
-      address_2: formData.get("address_2")?.toString().trim(),
-      zip_code: formData.get("zip_code")?.toString().trim(),
-      city: formData.get("city"),
-      state: formData.get("state"),
-      country: formData.get("country"),
+      ...formValues,
       email: email,
       password: password ? password : "",
-      is_guest: !password ? true : false,
+      is_guest: !password,
     };
-
-    onNext(data); // pass to parent
-    // console.log("data", data);
+  
+    onNext(data); // Pass data to parent
   };
-
+  
   return (
     <>
       <form
@@ -258,7 +290,7 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
               placeholder="Email Address"
               className="w-full border p-2 rounded border-gray-400 mb-2"
               required
-              value={email}
+              value={email || formData?.email}
               onChange={handleEmailChange}
             />
 
@@ -331,7 +363,7 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
                     Login
                   </button>
                   <button
-                    type="button"
+                    onClick={() => setUserFound(false)}
                     className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
                   >
                     Continue as guest
@@ -344,7 +376,8 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
                 type="text"
                 placeholder="First Name"
                 name="first_name"
-                // value={customerData ? customerData.first_name : ''}
+                value={formValues.first_name}
+                onChange={handleInputChange}
                 className="border p-2 rounded border-gray-400"
                 required
               />
@@ -352,6 +385,8 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
                 type="text"
                 placeholder="Last Name"
                 name="last_name"
+                value={formValues.last_name}
+                onChange={handleInputChange}
                 className="border p-2 rounded border-gray-400"
                 required
               />
@@ -360,6 +395,8 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
               type="tel"
               placeholder="Phone Number"
               name="phone"
+              value={formValues.phone}
+              onChange={handleInputChange}
               className="w-full border p-2 rounded border-gray-400"
               required
             />
@@ -367,7 +404,8 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
               type="text"
               placeholder="Address 1"
               name="address"
-              // value={customerData && customerData.address || ''}
+              value={formValues.address}
+              onChange={handleInputChange}
               className="w-full border p-2 rounded border-gray-400"
               required
             />
@@ -375,20 +413,26 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
               type="text"
               placeholder="Address 2 (Optional)"
               name="address_2"
+              value={formValues.address_2}
+              onChange={handleInputChange}
               className="w-full border p-2 rounded border-gray-400"
             />
             <div className="grid grid-cols-3 gap-4">
               <select
                 className="border p-2 rounded w-full border-gray-400"
                 name="state"
+                value={formValues.state}
+                onChange={handleInputChange}
               >
                 <option>State</option>
-                <option>Andaman & Nicobar</option>
-                <option>Delhi</option>
+                <option value="Andaman & Nicobar">Andaman & Nicobar</option>
+                <option value="Delhi">Delhi</option>
               </select>
               <select
                 className="border p-2 rounded w-full border-gray-400"
                 name="city"
+                value={formValues.city}
+                onChange={handleInputChange}
               >
                 <option>City</option>
                 <option value="Adilabad">Adilabad</option>
@@ -398,6 +442,8 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
                 type="text"
                 placeholder="Postcode"
                 name="zip_code"
+                value={formValues.zip_code}
+                onChange={handleInputChange}
                 className="border p-2 rounded border-gray-400"
                 required
               />
@@ -405,22 +451,26 @@ export default function Checkout({ onNext, onBack }: CheckoutProps) {
             <select
               className="border p-2 rounded w-full border-gray-400"
               name="country"
+              value={formValues.country}
+              onChange={handleInputChange}
             >
               <option defaultValue="India">India</option>
             </select>
           </div>
-          <button
-            onClick={onBack}
-            className="bg-gray-300 text-black p-3 rounded hover:bg-gray-400 mt-4 mr-2"
-          >
-            Back
-          </button>
-          <button
-            type="submit"
-            className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
-          >
-            Next
-          </button>
+          <div className="flex justify-between">
+            <button
+              onClick={onBack}
+              className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
+            >
+              Next
+            </button>
+          </div>
         </div>
         {/* order summary section was here */}
       </form>

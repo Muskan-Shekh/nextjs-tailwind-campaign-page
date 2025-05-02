@@ -33,7 +33,7 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
   }, [slug]);
 
   React.useEffect(() => {
-    console.log("productData", productData);
+    // console.log("productData", productData);
   }, [productData]);
   return (
     <>
@@ -62,7 +62,7 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
               {/* Product Images */}
               <div className="w-full md:w-1/2 px-4">
                 <img
-                  src="https://i.ytimg.com/vi/SBeaVx1hJwM/maxresdefault.jpg"
+                  src={`${config.apiUrl}storage/${productData?.image}`}
                   alt="Product"
                   className="w-full h-full rounded-lg shadow-md mb-4"
                 />
@@ -129,6 +129,8 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
                       popupRef={popupRef}
                       setShowPopup={setShowPopup}
                       showPopup={showPopup}
+                      productName ={productData?.name}
+                      productImage ={`${config.apiUrl}storage/${productData?.image}`}
                     ></CartPopup>
                   )}
                   <button

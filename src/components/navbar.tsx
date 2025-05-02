@@ -297,7 +297,7 @@ export function Navbar(items_count?: any) {
                 {filteredProducts?.map((product: any) => (
                   <a
                     key={product?.id}
-                    href={`/product/${product?.slug}`} // your route
+                    href={`/product-detail/${product?.slug}`} // your route
                     className="flex gap-3 items-start px-4 py-3 hover:bg-gray-100 border-b"
                   >
                     <img

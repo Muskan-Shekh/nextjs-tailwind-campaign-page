@@ -9,7 +9,8 @@ export function CartPopup({
   popupRef,
   setShowPopup,
   showPopup,
-  cartData,
+  productName,
+  productImage,
 }: any) {
   // console.log("cartData", cartData);
   const router = useRouter();
@@ -39,15 +40,14 @@ export function CartPopup({
     >
       <div className="flex gap-3">
         <img
-          // src="https://bookwindow.in/assets/images/image/product/1.webp"
-          src={`${config.apiUrl}storage/${cartData?.cart?.items[0]?.product?.image}`}
+          src={productImage}
           alt="Book"
           className="object-contain rounded-md h-20 w-30"
         />
         <div>
           <h2 className="font-semibold text-sm">
             {/* Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication x 1 */}
-            {cartData?.cart?.items[0]?.product?.name}
+            {productName}
           </h2>
           <p className="text-gray-600 text-sm mt-1">Added to cart</p>
           <button

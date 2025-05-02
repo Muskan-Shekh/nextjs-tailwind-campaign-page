@@ -67,6 +67,8 @@ export default function ShoppingCart() {
   const [loading, setLoading] = useState(true);
   const [showCoupon, setShowCoupon] = useState(true);
   const [isCouponApplied, setIsCoupnApplied] = useState(false);
+  const [couponSuccess, setCouponSuccess] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   //for placeorder
   const [deliveryType, setDeliveryType] = useState("free");
@@ -238,22 +240,11 @@ export default function ShoppingCart() {
     setItemsCount(items_count - 1);
   };
 
-  // const calculateTotal = () => {
-  //   const subtotal = cartItems?.reduce(
-  //     (acc, item) =>
-  //       isCouponApplied && couponData
-  //         ? acc + item.product_price * item.quantity - couponData?.value
-  //         : acc + item.product_price * item.quantity,
-  //     0
-  //   );
-  //   return subtotal;
-  // };
-
   const calculateTotal = () => {
     const subtotal = cartItems?.reduce((acc, item) => {
       const itemTotal = item.product_price * item.quantity;
 
-      if (isCouponApplied && couponData) {
+      if (isCouponApplied && couponData && couponSuccess) {
         const couponCategories = couponData.category_id
           ? JSON.parse(couponData.category_id)
           : null;
@@ -263,7 +254,9 @@ export default function ShoppingCart() {
           couponCategories.includes(String(item.category_id));
 
         if (isCategoryMatch) {
-          return acc + (itemTotal - parseFloat(couponData.value));
+          return acc + (couponData.type ==="fixed" ? 
+            itemTotal - parseFloat(couponData.value) : 
+            itemTotal - (itemTotal * parseFloat(couponData.value)) /100);
         }
       }
 
@@ -305,7 +298,8 @@ export default function ShoppingCart() {
   const handleCouponChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCouponCode(value);
-
+    setCouponSuccess('');
+    setCouponError('');
     if (debounceTimeout) {
       clearTimeout(debounceTimeout);
     }
@@ -331,6 +325,20 @@ export default function ShoppingCart() {
     } finally {
     }
   };
+  
+  const couponValidation = (max_cart_amount:number, min_cart_amount:number, totalAmount:number)=>{
+  if(totalAmount <= max_cart_amount && totalAmount >=min_cart_amount ||
+     ( min_cart_amount === null && max_cart_amount===null) ||
+      (totalAmount > min_cart_amount && max_cart_amount===null) ||
+       (totalAmount < max_cart_amount && min_cart_amount===null)){
+    setCouponSuccess('coupon is valid');
+  }else if(totalAmount > max_cart_amount && max_cart_amount !==null){
+    setCouponError(`Maximum cart amount should be ${max_cart_amount}`)
+  }
+  else if(totalAmount < min_cart_amount && min_cart_amount !==null){
+    setCouponError(`Minimum cart amount should be ${min_cart_amount}`)
+  }
+  }
 
   useEffect(() => {
     const fetchProductsByCategory = async () => {
@@ -352,7 +360,7 @@ export default function ShoppingCart() {
   }, []);
 
   useEffect(() => {
-    console.log("couponData", couponData);
+    // console.log("couponData", couponData);
   }, [couponData, mainCategories]);
 
   const handlePlaceOrder = async () => {
@@ -366,11 +374,18 @@ export default function ShoppingCart() {
           ...shippingData,
           session_id: session,
           shipping_method: deliveryType,
+          coupon_code: isCouponApplied && couponData && couponSuccess ? couponData?.code : '',
+          discount_amount : isCouponApplied && couponData && couponSuccess
+          ?  (cartItems?.reduce(
+            (acc, item) => acc + item.product_price * item.quantity,
+            0
+          )) - calculateTotal()
+          : 0,
         }),
       });
       const result = await response.json();
       if (response.ok) {
-        console.log("Place order", result);
+        // console.log("Place order", result);
         setOrderNumber(result?.order_number);
         thankYouPopup();
         setTimeout(() => {
@@ -420,7 +435,7 @@ export default function ShoppingCart() {
 
             <span className="sr-only">Loading...</span>
           </div>
-        ) : !cartItems || cartItems?.length === 0 ? (
+        ) : !loading && !cartItems ? (
           <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white p-6 shadow-md rounded-xl">
             <div className="mb-6">
               <Image
@@ -550,6 +565,16 @@ export default function ShoppingCart() {
                         const subcategory = mainCategory.child?.find(
                           (sub: any) => sub.id === item?.sub_category_id
                         );
+                        const couponCategories =
+                                        couponData.category_id
+                                          ? JSON.parse(couponData.category_id)
+                                          : null;
+
+                                      const isCategoryMatched =
+                                        !couponCategories ||
+                                        couponCategories.includes(
+                                          String(item.category_id)
+                                        );
                         return (
                           <div
                             key={item.product_id}
@@ -563,11 +588,11 @@ export default function ShoppingCart() {
                                   src={`${config.apiUrl}storage/${item.image}`}
                                   alt={item.product_name}
                                 />
-                                <div className="border border-1 px-4 mt-2">
+                                <div className="border border-1 px-4 mt-2 text-center">
                                   <p className="text-sm text-gray-900">
                                     Quantity - {item.quantity}
                                   </p>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 ml-4">
                                     <button
                                       onClick={() =>
                                         updateQuantity(
@@ -642,7 +667,6 @@ export default function ShoppingCart() {
                                   {subcategory?.name
                                     ? `${mainCategory?.name}/${subcategory?.name}`
                                     : `${mainCategory?.name || ""}`}
-                                  {/* {mainCategory?.name}{" "} */}
                                 </Typography>
 
                                 <div className="flex items-center justify-between gap-4 w-full border-t border-b py-1 mt-4">
@@ -652,20 +676,18 @@ export default function ShoppingCart() {
 
                                   {/* Price aligned to the end/right */}
                                   <div className="w-32 text-end">
-                                    <p className="text-sm font-bold text-gray-900">
-                                      {/* {isCouponApplied && couponData
-                                        ? `₹ ${
-                                            item.product_price * item.quantity -
-                                            couponData?.value
-                                          }`
-                                        : `₹${
-                                            item.product_price * item.quantity
-                                          }`} */}
+                                  {isCategoryMatched && isCouponApplied && couponSuccess && (
+                                  <p className={`text-sm font-bold text-gray-900 line ${isCategoryMatched ? "line-through text-red-700" : ""}`}>
+                                      ₹
+                                      {item.product_price * item.quantity}
+                                    </p>
+                                  )}
+                                    <p className="text-base font-bold text-green-600">
                                       ₹
                                       {(() => {
                                         const itemTotal =
                                           item.product_price * item.quantity;
-                                        if (isCouponApplied && couponData) {
+                                        if (isCouponApplied && couponData && couponSuccess) {
                                           const couponCategories =
                                             couponData.category_id
                                               ? JSON.parse(
@@ -680,9 +702,10 @@ export default function ShoppingCart() {
                                             );
 
                                           if (isCategoryMatch) {
-                                            return (
-                                              itemTotal -
-                                              parseFloat(couponData.value)
+                                            return ( 
+                                              couponData.type ==="fixed" ? 
+                                              itemTotal - parseFloat(couponData.value) : 
+                                              itemTotal - (itemTotal * parseFloat(couponData.value)) /100
                                             ).toFixed(2);
                                           }
                                         }
@@ -691,9 +714,8 @@ export default function ShoppingCart() {
                                     </p>
                                   </div>
                                 </div>
-                                {isCouponApplied && couponData && (
+                                {isCouponApplied && couponData && couponSuccess &&  (
                                   <span className="mt-4 bg-pink-50 text-sm">
-                                    {/* Coupon Applied */}
                                     {(() => {
                                       const couponCategories =
                                         couponData.category_id
@@ -764,6 +786,7 @@ export default function ShoppingCart() {
                         </svg>
                       </div>
                       {showCoupon && (
+                        <>
                         <div className="flex justify-between">
                           <Input
                             label="Enter code"
@@ -773,16 +796,24 @@ export default function ShoppingCart() {
                             {...({} as React.ComponentProps<typeof Input>)}
                           />
                           <button
-                            onClick={() =>
-                              couponData && setIsCoupnApplied(true)
+                            onClick={() => {
+                              couponValidation(couponData&& couponData.max_cart_amount,couponData&& 
+                                couponData.min_cart_amount,cartItems?.reduce(
+                              (acc, item) =>
+                                acc + item.product_price * item.quantity,
+                              0
+                            ) ),
+                              couponData && setIsCoupnApplied(true)}
                             }
                             className="rounded-lg bg-gray-800 px-5 py-2 ml-4 text-white hover:bg-gray-900 whitespace-nowrap"
                           >
                             Apply
                           </button>
                         </div>
+                        <small>{couponSuccess? <span className="text-green-400">{couponSuccess}</span> :
+                         <span className="text-red-400">{couponError}</span>}</small>
+                        </>
                       )}
-
                       <hr />
                       <div className="space-y-4">
                         <dl className="flex justify-between gap-4">
@@ -801,7 +832,7 @@ export default function ShoppingCart() {
                         <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                           <dt className="text-sm text-gray-600">
                             Discount <br></br>
-                            {isCouponApplied && couponData && (
+                            {isCouponApplied && couponData && couponSuccess && (
                               <span className="border border-10 rounded-xl px-2 border-black flex mt-2">
                                 {couponData?.code}
                                 <svg
@@ -823,8 +854,11 @@ export default function ShoppingCart() {
                             )}
                           </dt>
                           <dd className="text-base font-bold text-green-600">
-                            {isCouponApplied && couponData
-                              ? -couponData?.value
+                            {isCouponApplied && couponData && couponSuccess
+                              ?  (cartItems?.reduce(
+                                (acc, item) => acc + item.product_price * item.quantity,
+                                0
+                              )) - calculateTotal()
                               : 0}
                           </dd>
                         </dl>
@@ -867,6 +901,7 @@ export default function ShoppingCart() {
                   setShippingData(data); // store validated form data
                   setActiveTab("order");
                 }}
+                formData={shippingData}
               />
             )}
             {activeTab === "order" && (
@@ -874,7 +909,8 @@ export default function ShoppingCart() {
                 <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl flex ml-4">
                   Your Order
                 </h2>
-                <div className="md:gap-6 lg:flex lg:items-start xl:gap-8 bg-white border border-1 rounded-lg shadow-lg">
+                <div className="bg-white border border-1 rounded-lg shadow-lg">
+                <div className="md:gap-6 lg:flex lg:items-start xl:gap-8 ">
                   <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-2xl p-4">
                     <div className="space-y-6">
                       {cartItems?.map((item) => {
@@ -883,6 +919,16 @@ export default function ShoppingCart() {
                         );
                         const subcategory = mainCategory.child?.find(
                           (sub: any) => sub.id === item?.sub_category_id
+                        );
+                        const couponCategories =
+                        couponData.category_id
+                          ? JSON.parse(couponData.category_id)
+                          : null;
+
+                      const isCategoryMatched =
+                        !couponCategories ||
+                        couponCategories.includes(
+                          String(item.category_id)
                         );
                         return (
                           <div key={item.product_id} className=" bg-white">
@@ -897,9 +943,11 @@ export default function ShoppingCart() {
                               </div>
 
                               <div className="w-full min-w-0 flex-1 space-y-4">
-                                <p className="text-sm font-[400] text-black">
-                                  {item.product_name} × {item.quantity}
-                                </p>
+                                  <Link
+                                  href={`/product-detail/${item.product_slug}`} className="text-sm font-[400] text-black">
+                                  {item.product_name} 
+                                  </Link>
+                                 <small>Quantity- {item.quantity}</small>
                                 <Typography
                                   color="blue"
                                   className="text-xs !font-semibold"
@@ -910,13 +958,18 @@ export default function ShoppingCart() {
                                   {subcategory?.name
                                     ? `${mainCategory?.name}/${subcategory?.name}`
                                     : `${mainCategory?.name || ""}`}
-                                  {/* {mainCategory?.name}{" "} */}
                                 </Typography>
-                                <p className="text-base font-bold text-gray-900">
+                                {isCategoryMatched && isCouponApplied && couponSuccess && (
+                                  <p className={`text-sm font-bold text-gray-900 line ${isCategoryMatched ? "line-through text-red-700" : ""}`}>
+                                      ₹
+                                      {item.subtotal}
+                                    </p>
+                                  )}
+                                <p className="text-base font-bold text-green-600">
                                   {/* ₹{item.subtotal} */}₹
                                   {(() => {
-                                    const itemTotal = subtotal;
-                                    if (isCouponApplied && couponData) {
+                                    const itemTotal = item.subtotal;
+                                    if (isCouponApplied && couponData && couponSuccess) {
                                       const couponCategories =
                                         couponData.category_id
                                           ? JSON.parse(couponData.category_id)
@@ -930,16 +983,38 @@ export default function ShoppingCart() {
 
                                       if (isCategoryMatch) {
                                         return (
-                                          itemTotal -
-                                          parseFloat(couponData.value)
+                                          couponData.type ==="fixed" ? 
+                                              itemTotal - parseFloat(couponData.value) : 
+                                              itemTotal - (itemTotal * parseFloat(couponData.value)) /100
                                         ).toFixed(2);
                                       }
                                     }
-                                    return itemTotal.toFixed(2);
+                                    return itemTotal;
                                   })()}
                                 </p>
+                                {isCouponApplied && couponData && couponSuccess && (
+                                  <span className="mt-4 bg-pink-50 text-sm">
+                                    {(() => {
+                                      const couponCategories =
+                                        couponData.category_id
+                                          ? JSON.parse(couponData.category_id)
+                                          : null;
+
+                                      const isCategoryMatch =
+                                        !couponCategories ||
+                                        couponCategories.includes(
+                                          String(item.category_id)
+                                        );
+
+                                      return isCategoryMatch
+                                        ? "Coupon Applied"
+                                        : "Coupon Not Applicable";
+                                    })()}
+                                  </span>
+                                )}
                               </div>
                             </div>
+                            
                           </div>
                         );
                       })}
@@ -947,7 +1022,7 @@ export default function ShoppingCart() {
                   </div>
 
                   {/* Order Summary */}
-                  <div className="min-w-4xl flex-1 p-4 ">
+                  <div className="w-full flex-1 p-4 ">
                     <div className="space-y-4 ">
                       <p className="text-xl font-semibold text-gray-900 whitespace-nowrap">
                         Order Summary
@@ -972,7 +1047,7 @@ export default function ShoppingCart() {
                           />
                         </svg>
                       </div>
-                      {showCoupon && (
+                      {showCoupon && (<>
                         <div className="flex justify-between">
                           <Input
                             label="Enter code"
@@ -982,14 +1057,19 @@ export default function ShoppingCart() {
                             {...({} as React.ComponentProps<typeof Input>)}
                           />
                           <button
-                            onClick={() =>
-                              couponData && setIsCoupnApplied(true)
+                            onClick={() => {
+                              couponValidation(couponData&& couponData.max_cart_amount,couponData&& 
+                                couponData.min_cart_amount,subtotal ),
+                              couponData && setIsCoupnApplied(true)}
                             }
                             className="rounded-lg bg-gray-800 px-5 py-2 ml-4 text-white hover:bg-gray-900 whitespace-nowrap"
                           >
                             Apply
                           </button>
                         </div>
+                        <small>{couponSuccess? <span className="text-green-400">{couponSuccess}</span> :
+                         <span className="text-red-400">{couponError}</span>}</small>
+                        </>
                       )}
 
                       <hr />
@@ -1005,7 +1085,7 @@ export default function ShoppingCart() {
                         <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                           <dt className="text-sm text-gray-600">
                             Discount <br></br>
-                            {isCouponApplied && couponData && (
+                            {isCouponApplied && couponData && couponSuccess && (
                               <span className="border border-10 rounded-xl px-2 border-black flex mt-2">
                                 {couponData?.code}
                                 <svg
@@ -1027,8 +1107,11 @@ export default function ShoppingCart() {
                             )}
                           </dt>
                           <dd className="text-base font-bold text-green-600">
-                            {isCouponApplied && couponData
-                              ? -couponData?.value
+                          {isCouponApplied && couponData && couponSuccess
+                              ?  (cartItems?.reduce(
+                                (acc, item) => acc + item.product_price * item.quantity,
+                                0
+                              )) - calculateTotal()
                               : 0}
                           </dd>
                         </dl>
@@ -1107,19 +1190,6 @@ export default function ShoppingCart() {
                           </label>
                         </div>
                       </div>
-                      <button
-                        onClick={handleBack}
-                        className="bg-gray-300 text-black p-3 rounded hover:bg-gray-400 mt-4 mr-2"
-                      >
-                        Back
-                      </button>
-                      <button
-                        onClick={handlePlaceOrder}
-                        className="w-full bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
-                      >
-                        Place Order
-                      </button>
-
                       {open && (
                         <NotificationDialog
                           open={open}
@@ -1135,6 +1205,22 @@ export default function ShoppingCart() {
                       )}
                     </div>
                   </div>
+                 
+                </div>
+                <div className="flex justify-between p-4">
+                <button
+                        onClick={handleBack}
+                        className="w-80 bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={handlePlaceOrder}
+                        className="w-80 bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+                      >
+                        Place Order
+                      </button>
+                </div>
                 </div>
               </div>
             )}

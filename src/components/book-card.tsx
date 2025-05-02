@@ -197,7 +197,8 @@ export function BookCard({
                 popupRef={popupRef}
                 setShowPopup={setShowPopup}
                 showPopup={showPopup}
-                cartData={cartData}
+                productName={title?.replace(/#COMMA#/g, ",")}
+                productImage={img}
               ></CartPopup>
             )}
             <svg

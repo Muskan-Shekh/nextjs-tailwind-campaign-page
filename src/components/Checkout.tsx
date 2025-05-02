@@ -267,7 +267,7 @@ useEffect(() => {
   
     const data = {
       ...formValues,
-      email: email,
+      email: email || formData?.email,
       password: password ? password : "",
       is_guest: !password,
     };
@@ -460,13 +460,13 @@ useEffect(() => {
           <div className="flex justify-between">
             <button
               onClick={onBack}
-              className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
+              className="w-60 bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
             >
               Back
             </button>
             <button
               type="submit"
-              className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
+              className="w-60 bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"
             >
               Next
             </button>

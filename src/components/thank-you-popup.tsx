@@ -73,7 +73,7 @@ export function ThankYouDialog({ open, handleOpen, orderNumber }: any) {
           </Button>
           <Typography
             as="a"
-            href={`/view-orders?orderNumber=${orderNumber}`}
+            href={`/view-orders?order_number=${orderNumber}`}
             variant="h6"
             className="bg-green-800 text-white p-3 rounded hover:bg-green-900"
             {...({} as React.ComponentProps<typeof Typography>)}

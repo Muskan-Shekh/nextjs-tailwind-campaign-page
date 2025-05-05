@@ -44,7 +44,7 @@ const ResetPassword: React.FC = () => {
 
       if (response.ok) {
         setAlertType("success");
-        setAlertMessage("Reset link sent to your email");
+        setAlertMessage("Your password is changed successfully");
         form.reset();
       } else {
         if (data?.error) {

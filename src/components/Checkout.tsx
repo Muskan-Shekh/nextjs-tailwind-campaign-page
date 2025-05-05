@@ -29,6 +29,8 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
   const [cartItems, setCartItems] = useState([] as CartItem[]);
   const [items_count, setItemsCount] = useState(0);
   const [customerData, setCustomerData] = useState({} as any);
+  const [customer, setCustomer] = useState<any>(null);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,17 +49,17 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
 
   const [formValues, setFormValues] = useState(formData);
 
-useEffect(() => {
-  setFormValues(formData);
-}, [formData]);
-  
+  useEffect(() => {
+    setFormValues(formData);
+  }, [formData]);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormValues((prev:any) => ({ ...prev, [name]: value }));
+    setFormValues((prev: any) => ({ ...prev, [name]: value }));
   };
-  
+
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
       method: "GET",
@@ -161,6 +163,33 @@ useEffect(() => {
     }
   }
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      const customerData = localStorage.getItem("customer");
+      if (customerData && token) {
+        // setAccessToken(token);
+        setCustomer(customerData ? JSON.parse(customerData) : null);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (customer) {
+      setFormValues((prev:any) => ({
+        ...prev,
+        first_name: customer.first_name || "",
+        last_name: customer.last_name || "",
+        phone: customer.phone || "",
+        address: customer.address || "",
+        address_2: customer.address_2 || "",
+        zip_code: customer.zip_code || "",
+        state: customer.state || "",
+        city: customer.city || "",
+      }));
+    }
+  }, [customer]);
+
   // const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
   //   event.preventDefault();
   //   try {
@@ -219,62 +248,57 @@ useEffect(() => {
   // const handleNext = (event: FormEvent<HTMLFormElement>) => {
   //   event.preventDefault();
 
-  //   const form = event.currentTarget;
-  //   const formData = new FormData(form);
-
-  //   const requiredFields = [
-  //     "first_name",
-  //     "last_name",
-  //     "phone",
-  //     "address",
-  //     "zip_code",
-  //   ];
+  //   const requiredFields = ["first_name", "last_name", "phone", "address", "zip_code"];
   //   for (const field of requiredFields) {
-  //     if (!formData.get(field)?.toString().trim()) {
+  //     if (!formValues[field as keyof typeof formValues]?.trim()) {
   //       alert(`${field} is required`);
   //       return;
   //     }
   //   }
 
   //   const data = {
-  //     first_name: formData.get("first_name")?.toString().trim(),
-  //     last_name: formData.get("last_name")?.toString().trim(),
-  //     phone: formData.get("phone")?.toString().trim(),
-  //     address: formData.get("address")?.toString().trim(),
-  //     address_2: formData.get("address_2")?.toString().trim(),
-  //     zip_code: formData.get("zip_code")?.toString().trim(),
-  //     city: formData.get("city"),
-  //     state: formData.get("state"),
-  //     country: formData.get("country"),
-  //     email: email,
+  //     ...formValues,
+  //     email: email || formData?.email,
   //     password: password ? password : "",
-  //     is_guest: !password ? true : false,
+  //     is_guest: !password,
   //   };
 
-  //   onNext(data); // pass to parent
-  //   // console.log("data", data);
+  //   onNext(data); // Pass data to parent
   // };
   const handleNext = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
-    const requiredFields = ["first_name", "last_name", "phone", "address", "zip_code"];
+
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "phone",
+      "address",
+      "zip_code",
+    ];
+
     for (const field of requiredFields) {
-      if (!formValues[field as keyof typeof formValues]?.trim()) {
-        alert(`${field} is required`);
+      const value =
+        formValues[field as keyof typeof formValues] ||
+        customer?.[field as keyof typeof customer];
+      if (!value?.toString().trim()) {
+        alert(`${field.replace(/_/g, " ")} is required`);
         return;
       }
     }
-  
+
+    const source =
+      formValues && Object.keys(formValues).length > 0 ? formValues : customer;
+
     const data = {
-      ...formValues,
-      email: email || formData?.email,
-      password: password ? password : "",
+      ...source,
+      email: email || formData?.email || customer?.email || "",
+      password: password || "",
       is_guest: !password,
     };
-  
-    onNext(data); // Pass data to parent
+
+    onNext(data);
   };
-  
+
   return (
     <>
       <form
@@ -283,180 +307,225 @@ useEffect(() => {
         onSubmit={handleNext}
       >
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Shipping Details</h2>
-          <div className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="w-full border p-2 rounded border-gray-400 mb-2"
-              required
-              value={email || formData?.email}
-              onChange={handleEmailChange}
-            />
-
-            {/* Buffering Spinner */}
-            {isBuffering && (
-              <p className="text-blue-500 text-sm mb-2">Checking email...</p>
-            )}
-
-            {/* Error Message */}
-            {userFound === false && !isBuffering && (
-              <>
-                <p className="text-gray-600 text-sm mb-2">{errorMessage}</p>
-                {errorMessage && (
-                  <>
-                    <input
-                      type="password"
-                      placeholder="Password"
-                      name="password"
-                      value={password}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setPassword(e.target.value)
-                      }
-                      className="w-full border p-2 rounded border-gray-400"
-                      required
-                    />
-                    {!password && (
-                      <div className="flex gap-2 p-2 mt-2">
-                        <button
-                          onClick={() => setErrorMessage("")}
-                          className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
-                        >
-                          Continue as guest
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-
-            {/* Password Input */}
-            {userFound === true && !isBuffering && (
-              <>
+        <div className="flex gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6 cursor-pointer"
+              onClick={() => setIsEdit(!isEdit)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+              />
+            </svg>
+            <h1 className="text-2xl font-bold mb-4">Shipping Details</h1>
+          </div>
+          {!isEdit && customer ? (
+            
+            <div className="text-sm space-y-1 leading-relaxed p-4 border border-1 border-yellow-900">
+            <p>
+              {customer?.first_name} {customer?.last_name}
+            </p>
+            <p>{customer?.address}</p>
+            <p>{customer?.city}</p>
+            <p>{customer?.zip_code}</p>
+            <p>{customer?.state}</p>
+            <p>{customer?.phone}</p>
+            <div className="text-end">
+              <button
+                onClick={() => setIsEdit(true)}
+                className="bg-transparent text-black p-2 rounded hover:border-yellow-900 mt-4 border border-1 border-gray-500"
+              >
+                Edit 🖊️
+              </button>
+            </div>
+          </div>
+          ) : (
+            <div className="space-y-4">
+              {!customer && (
                 <input
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  value={password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPassword(e.target.value)
-                  }
-                  className="w-full border p-2 rounded border-gray-400"
+                  type="email"
+                  placeholder="Email Address"
+                  className="w-full border p-2 rounded border-gray-400 mb-2"
+                  required
+                  value={email || formData?.email}
+                  onChange={handleEmailChange}
+                />
+              )}
+
+              {/* Buffering Spinner */}
+              {isBuffering && (
+                <p className="text-blue-500 text-sm mb-2">Checking email...</p>
+              )}
+
+              {/* Error Message */}
+              {userFound === false && !isBuffering && (
+                <>
+                  <p className="text-gray-600 text-sm mb-2">{errorMessage}</p>
+                  {errorMessage && (
+                    <>
+                      <input
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        value={password}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setPassword(e.target.value)
+                        }
+                        className="w-full border p-2 rounded border-gray-400"
+                        required
+                      />
+                      {!password && (
+                        <div className="flex gap-2 p-2 mt-2">
+                          <button
+                            onClick={() => setErrorMessage("")}
+                            className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+                          >
+                            Continue as guest
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Password Input */}
+              {userFound === true && !isBuffering && (
+                <>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    value={password}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setPassword(e.target.value)
+                    }
+                    className="w-full border p-2 rounded border-gray-400"
+                    required
+                  />
+                  <div className="flex gap-2 p-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const fakeFormEvent = {
+                          preventDefault: () => {},
+                          currentTarget: document.querySelector(
+                            "form"
+                          ) as HTMLFormElement,
+                        } as unknown as FormEvent<HTMLFormElement>;
+
+                        handleLogin(fakeFormEvent);
+                      }}
+                      className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => setUserFound(false)}
+                      className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
+                    >
+                      Continue as guest
+                    </button>
+                  </div>
+                </>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  name="first_name"
+                  value={formValues.first_name}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded border-gray-400"
                   required
                 />
-                <div className="flex gap-2 p-2 mt-2">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      const fakeFormEvent = {
-                        preventDefault: () => {},
-                        currentTarget: document.querySelector(
-                          "form"
-                        ) as HTMLFormElement,
-                      } as unknown as FormEvent<HTMLFormElement>;
-
-                      handleLogin(fakeFormEvent);
-                    }}
-                    className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={() => setUserFound(false)}
-                    className="bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
-                  >
-                    Continue as guest
-                  </button>
-                </div>
-              </>
-            )}
-            <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  name="last_name"
+                  value={formValues.last_name}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded border-gray-400"
+                  required
+                />
+              </div>
               <input
-                type="text"
-                placeholder="First Name"
-                name="first_name"
-                value={formValues.first_name}
+                type="tel"
+                placeholder="Phone Number"
+                name="phone"
+                value={formValues.phone}
                 onChange={handleInputChange}
-                className="border p-2 rounded border-gray-400"
+                className="w-full border p-2 rounded border-gray-400"
                 required
               />
               <input
                 type="text"
-                placeholder="Last Name"
-                name="last_name"
-                value={formValues.last_name}
+                placeholder="Address 1"
+                name="address"
+                value={formValues.address}
                 onChange={handleInputChange}
-                className="border p-2 rounded border-gray-400"
+                className="w-full border p-2 rounded border-gray-400"
                 required
               />
-            </div>
-            <input
-              type="tel"
-              placeholder="Phone Number"
-              name="phone"
-              value={formValues.phone}
-              onChange={handleInputChange}
-              className="w-full border p-2 rounded border-gray-400"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Address 1"
-              name="address"
-              value={formValues.address}
-              onChange={handleInputChange}
-              className="w-full border p-2 rounded border-gray-400"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Address 2 (Optional)"
-              name="address_2"
-              value={formValues.address_2}
-              onChange={handleInputChange}
-              className="w-full border p-2 rounded border-gray-400"
-            />
-            <div className="grid grid-cols-3 gap-4">
+              <input
+                type="text"
+                placeholder="Address 2 (Optional)"
+                name="address_2"
+                value={formValues.address_2}
+                onChange={handleInputChange}
+                className="w-full border p-2 rounded border-gray-400"
+              />
+              <div className="grid grid-cols-3 gap-4">
+                <select
+                  className="border p-2 rounded w-full border-gray-400"
+                  name="state"
+                  value={formValues.state}
+                  onChange={handleInputChange}
+                >
+                  <option defaultValue={customer?.state || ""}>
+                    {customer?.state || "State" }
+                  </option>
+                  <option value="Andaman & Nicobar">Andaman & Nicobar</option>
+                  <option value="Delhi">Delhi</option>
+                </select>
+                <select
+                  className="border p-2 rounded w-full border-gray-400"
+                  name="city"
+                  value={formValues.city}
+                  onChange={handleInputChange}
+                >
+                  <option defaultValue={customer?.city || ""}>
+                    {customer?.city || "City"}
+                  </option>
+                  <option value="Adilabad">Adilabad</option>
+                  <option value="Delhi">Delhi</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Postcode"
+                  name="zip_code"
+                  value={formValues.zip_code}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded border-gray-400"
+                  required
+                />
+              </div>
               <select
                 className="border p-2 rounded w-full border-gray-400"
-                name="state"
-                value={formValues.state}
+                name="country"
+                value={formValues.country}
                 onChange={handleInputChange}
               >
-                <option>State</option>
-                <option value="Andaman & Nicobar">Andaman & Nicobar</option>
-                <option value="Delhi">Delhi</option>
+                <option defaultValue="India">India</option>
               </select>
-              <select
-                className="border p-2 rounded w-full border-gray-400"
-                name="city"
-                value={formValues.city}
-                onChange={handleInputChange}
-              >
-                <option>City</option>
-                <option value="Adilabad">Adilabad</option>
-                <option value="Delhi">Delhi</option>
-              </select>
-              <input
-                type="text"
-                placeholder="Postcode"
-                name="zip_code"
-                value={formValues.zip_code}
-                onChange={handleInputChange}
-                className="border p-2 rounded border-gray-400"
-                required
-              />
             </div>
-            <select
-              className="border p-2 rounded w-full border-gray-400"
-              name="country"
-              value={formValues.country}
-              onChange={handleInputChange}
-            >
-              <option defaultValue="India">India</option>
-            </select>
-          </div>
+          )}
           <div className="flex justify-between">
             <button
               onClick={onBack}

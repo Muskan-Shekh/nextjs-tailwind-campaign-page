@@ -21,7 +21,7 @@ export default function ShoppingCart() {
   const searchParams = useSearchParams();
   // const [session, setSession] = useState("");
   const [orderItems, setOrderItems] = useState([] as CartItem[]);
-  const orderNumber = searchParams.get("orderNumber");
+  const orderNumber = searchParams.get("order_number");
   const [orderData, setOrderData] = useState({} as any);
 
   // const checkSession = async () => {
@@ -35,7 +35,7 @@ export default function ShoppingCart() {
   // };
 
   useEffect(() => {
-    const viewCart = async () => {
+    const viewOrder = async () => {
       try {
         const response = await axios({
           method: "get",
@@ -43,7 +43,7 @@ export default function ShoppingCart() {
           responseType: "json",
         });
         const data = response?.data?.data;
-        console.log("data?.order", data?.order);
+        // console.log("data?.order", data?.order);
         setOrderItems(data?.items);
         setOrderData(data?.order)
       } catch (error) {
@@ -53,7 +53,7 @@ export default function ShoppingCart() {
       }
     };
 
-    viewCart();
+    viewOrder();
   }, [orderNumber]);
 
   // useEffect(() => {
@@ -146,12 +146,23 @@ export default function ShoppingCart() {
                      {orderData?.order_number}
                     </dd>
                   </dl>
-
+                  <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
+                    <dt className="text-base font-normal text-gray-900">
+                      Subtotal
+                    </dt>
+                    <dd className="text-base font-bold text-gray-500">₹{orderData?.subtotal}</dd>
+                  </dl>
+                  <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
+                    <dt className="text-base font-normal text-green-400">
+                      Discount
+                    </dt>
+                    <dd className="text-base font-bold text-green-400">-₹{orderData?.discount_amount}</dd>
+                  </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-gray-900">
                       Total
                     </dt>
-                    <dd className="text-base font-bold text-gray-500">₹{orderData?.subtotal}</dd>
+                    <dd className="text-base font-bold text-gray-500">₹{orderData?.total_amount}</dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-gray-900">

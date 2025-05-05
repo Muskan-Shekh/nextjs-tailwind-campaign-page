@@ -22,8 +22,6 @@ interface TabItem {
   key: AccountTab;
   label: string;
 }
-// import { AccountTab, TabItem } from '../types/account';
-// import { DashboardTab, OrdersTab, PasswordTab, AddressesTab, PaymentMethodsTab, AccountDetailsTab } from './tabs';
 
 const tabs: TabItem[] = [
   { key: "dashboard", label: "Dashboard" },
@@ -72,7 +70,6 @@ export default function AccountPage() {
           responseType: "json",
         });
         const orders = response?.data;
-        console.log("orders", orders?.data);
         setUserOrders(orders?.data);
       } catch (error) {
         // setError(error.message);
@@ -111,7 +108,7 @@ export default function AccountPage() {
     <>
       <Navbar />
       <MainNavbar />
-      <div className="container mx-auto flex  min-h-screen max-w-screen-xl px-2 pt-8 2xl:px-0 shadow-xl">
+      <div className="container mx-auto md:flex  min-h-screen max-w-screen-xl px-2 pt-8 2xl:px-0 shadow-xl">
         <aside className="w-64 border-r p-4">
           <nav className="space-y-2">
             {tabs.map((tab) => (
@@ -173,43 +170,146 @@ function DashboardTab({ customer, logout }: any) {
 
 // components/tabs/OrdersTab.tsx
 function OrdersTab({ userOrders }: any) {
+  const [isOrderShow, setIsOrderShow] = useState<boolean>(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null); // New state
+
+  const handleViewOrder = (order: any) => {
+    setSelectedOrder(order);
+    setIsOrderShow(true);
+  };
+  
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      <table className="w-full text-left border">
-        <thead>
-          <tr>
-            <th className="p-2 border">Order</th>
-            <th className="p-2 border">Date</th>
-            <th className="p-2 border">Status</th>
-            <th className="p-2 border">Total</th>
-            <th className="p-2 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userOrders?.orders?.map((order: any) => (
-            <tr key={order.id}>
-              <td className="p-2 border">
-                #{order?.order_details?.order_number}
-              </td>
-              <td className="p-2 border">{order?.order_details?.created_at}</td>
-              <td className="p-2 border">{order?.order_details?.status}</td>
-              <td className="p-2 border">
-                {order?.order_details?.total_amount} for {order?.items.length}{" "}
-                items
-              </td>
-              <td className="p-2 border">
-                <a
-                  href={`/view-orders?order_number=${order?.order_details?.order_number}`}
-                  className="bg-black text-white px-3 py-1 rounded"
-                >
-                  View
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {!isOrderShow && (
+        <>
+          <h1 className="text-2xl font-bold mb-4">Orders</h1>
+          <table className="w-full text-left border">
+            <thead>
+              <tr>
+                <th className="p-2 border">Order</th>
+                <th className="p-2 border">Date</th>
+                <th className="p-2 border">Status</th>
+                <th className="p-2 border">Total</th>
+                <th className="p-2 border hidden md:block">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userOrders?.orders?.map((order: any) => (
+                <tr key={order?.id}>
+                  <td
+                    className="p-2 border cursor-pointer hover:underline"
+                    onClick={() => handleViewOrder(order)}
+                  >
+                    #{order?.order_details?.order_number}
+                  </td>
+                  <td className="p-2 border">
+                    {order?.order_details?.created_at}
+                  </td>
+                  <td className="p-2 border">{order?.order_details?.status}</td>
+                  <td className="p-2 border">
+                  ₹{order?.order_details?.total_amount} for{" "}
+                    {order?.items.length} items
+                  </td>
+                  <td className="p-2 border hidden md:block">
+                    <p
+                      onClick={() => handleViewOrder(order)}
+                      // href={`/view-orders?order_number=${order?.order_details?.order_number}`}
+                      className="bg-black text-white px-3 py-1 rounded cursor-pointer text-center"
+                    >
+                      View
+                    </p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {isOrderShow && selectedOrder && (
+        <div className="max-w-4xl mx-auto px-4  text-gray-900">
+          {/* Order Header */}
+          <div className="flex gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6 cursor-pointer"
+              onClick={() => setIsOrderShow(false)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+              />
+            </svg>
+            <h1 className="text-2xl font-bold mb-4">Order Details</h1>
+          </div>
+          <div className="bg-gray-100 border border-gray-300 p-4 mb-8 text-sm">
+            Order <span className="bg-yellow-300 font-medium"># {selectedOrder?.order_details?.order_number}</span> was
+            placed on <span className="bg-yellow-300 font-medium">{selectedOrder?.order_details?.created_at}</span> and
+            is currently <span className="bg-yellow-300 font-medium">{selectedOrder?.order_details?.status}</span>.
+          </div>
+
+          {/* Order Details Section */}
+          <h2 className="text-2xl font-semibold mb-4">Order details</h2>
+          <div className="border border-gray-300">
+            <div className="grid grid-cols-2 bg-gray-100 font-semibold p-4 border-b border-gray-300">
+              <span>Product</span>
+              <span className="text-right">Total</span>
+            </div>
+
+            {selectedOrder?.items?.map((item: any) => (
+              <div key={item?.id} className="p-4 border-b border-gray-200">
+                <div className="flex justify-between">
+                  <div>
+                    {item.product_name} × <strong>{item.quantity || 1}</strong>
+                    {item.size && <div className="text-sm mt-1">Size: {item.size}</div>}
+                  </div>
+                  <div className="text-right font-medium">₹{item.price}</div>
+                </div>
+              </div>
+            ))}
+
+            {/* Summary */}
+            <div className="p-4 border-b border-gray-200 flex justify-between">
+              <span>Subtotal:</span>
+              <span>₹{selectedOrder?.order_details?.subtotal}</span>
+            </div>
+            <div className="p-4 border-b border-gray-200 flex justify-between">
+              <span>Discount:</span>
+              <span className="text-red-500">-₹{selectedOrder?.order_details?.discount_amount}</span>
+            </div>
+            <div className="p-4 border-b border-gray-200 flex justify-between">
+              <span>Payment method:</span>
+              <span>{selectedOrder?.order_details?.payment_method}</span>
+            </div>
+            <div className="p-4 border-b border-gray-200 flex justify-between">
+              <span>Shipping:</span>
+              <span>{selectedOrder?.order_details?.shipping_method? selectedOrder?.order_details?.shipping_method :`₹${selectedOrder?.order_details?.shipping_amount}`}</span>
+            </div>
+            <div className="p-4 font-bold text-lg flex justify-between">
+              <span>Total:</span>
+              <span>₹{selectedOrder?.order_details?.total_amount}</span>
+            </div>
+          </div>
+
+          {/* Billing Info */}
+          <h2 className="text-2xl font-semibold mt-12 mb-4">Billing address</h2>
+          <div className="text-sm space-y-1 leading-relaxed">
+            <p>{selectedOrder?.order_details?.billing_name}</p>
+            <p>{selectedOrder?.order_details?.address}</p>
+            <p>{selectedOrder?.order_details?.billing_city}</p>
+            <p>{selectedOrder?.order_details?.billing_state}</p>
+            <p>{selectedOrder?.order_details?.billing_zip}</p>
+            <p>{selectedOrder?.order_details?.billing_country}</p>
+            <p>{selectedOrder?.order_details?.customer_phone}</p>
+            <p>{selectedOrder?.order_details?.email}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

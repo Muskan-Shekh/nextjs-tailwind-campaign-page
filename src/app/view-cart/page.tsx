@@ -62,10 +62,10 @@ const steps = ["cart", "shipping", "order"];
 export default function ShoppingCart() {
   const router = useRouter();
   const [session, setSession] = useState("");
-  const [cartItems, setCartItems] = useState([] as CartItem[]);
+  const [cartItems, setCartItems] = useState([] as CartItem[] | any[]);
   const [items_count, setItemsCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [showCoupon, setShowCoupon] = useState(true);
+  const [showCoupon, setShowCoupon] = useState(false);
   const [isCouponApplied, setIsCoupnApplied] = useState(false);
   const [couponSuccess, setCouponSuccess] = useState("");
   const [couponError, setCouponError] = useState("");
@@ -84,9 +84,11 @@ export default function ShoppingCart() {
   const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(
     null
   );
+  const [customerData, setCustomerData] = useState({} as any);
   const [coupon_code, setCouponCode] = useState("");
   const [couponData, setCouponData] = useState({} as any);
   const [mainCategories, setMainCategories] = useState([] as any);
+  // console.log("viewcart customer",customerData);
 
   const getStepStatus = (step: string) => {
     const index = steps.indexOf(step);
@@ -404,7 +406,7 @@ export default function ShoppingCart() {
         thankYouPopup();
         setTimeout(() => {
           setCartItems([]); // Wait a short time to ensure popup renders
-        }, 500);
+        }, 600);
       } else if (result.message === "Your cart is empty") {
         setOpen(true);
         errorPopup();
@@ -418,7 +420,7 @@ export default function ShoppingCart() {
 
   return (
     <>
-      <Navbar items_count={items_count} />
+      <Navbar items_count={items_count} customerData={customerData || {}} />
       <MainNavbar />
       <section className="bg-white py-8 md:py-16 mb-4 min-h-screen">
         {loading ? (
@@ -449,7 +451,7 @@ export default function ShoppingCart() {
 
             <span className="sr-only">Loading...</span>
           </div>
-        ) : !loading && !cartItems ? (
+        ) : !loading && !cartItems || items_count ===0 ? (
           <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white p-6 shadow-md rounded-xl">
             <div className="mb-6">
               <Image
@@ -955,10 +957,18 @@ export default function ShoppingCart() {
             )}
             {activeTab === "shipping" && (
               <Checkout
-                onBack={() => setActiveTab("cart")}
+                shippingData={shippingData}
+                onBack={() => {
+                  // Just navigating back — formValues should already be in state
+                  setActiveTab("cart");
+                }}
                 onNext={(data: any) => {
                   setShippingData(data); // store validated form data
+                  // console.log("data on next", data)
                   setActiveTab("order");
+                }}
+                onCustomerData={(customerData: any) => {
+                  setCustomerData(customerData); // Capture data from child
                 }}
                 formData={shippingData}
               />
@@ -1150,52 +1160,55 @@ export default function ShoppingCart() {
                               </button>
                             </div>
                             <small>
-                            {couponSuccess && isCouponApplied && couponData ? (
-                              (() => {
-                                const couponCategories = couponData.category_id
-                                  ? JSON.parse(couponData.category_id)
-                                  : null;
+                              {couponSuccess &&
+                              isCouponApplied &&
+                              couponData ? (
+                                (() => {
+                                  const couponCategories =
+                                    couponData.category_id
+                                      ? JSON.parse(couponData.category_id)
+                                      : null;
 
-                                const isCategoryMatch =
-                                  !couponCategories ||
-                                  cartItems?.some((item) =>
-                                    couponCategories.includes(
-                                      String(item.category_id)
+                                  const isCategoryMatch =
+                                    !couponCategories ||
+                                    cartItems?.some((item) =>
+                                      couponCategories.includes(
+                                        String(item.category_id)
+                                      )
+                                    );
+                                  return (
+                                    isCategoryMatch && (
+                                      <span className="border border-10 rounded-xl px-2 border-black flex mt-2 text-green-400 w-20">
+                                        {couponData?.code}
+                                        <svg
+                                          onClick={() => {
+                                            setIsCoupnApplied(false),
+                                              setCouponError(""),
+                                              setCouponSuccess("");
+                                          }}
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          strokeWidth="1.5"
+                                          stroke="currentColor"
+                                          className="size-5 cursor-pointer hover:bg-gray-300 rounded-xl"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                          />
+                                        </svg>
+                                      </span>
                                     )
                                   );
-                                return (
-                                  isCategoryMatch && (
-                                    <span className="border border-10 rounded-xl px-2 border-black flex mt-2 text-green-400 w-20">
-                                      {couponData?.code}
-                                      <svg
-                                        onClick={() => {
-                                          setIsCoupnApplied(false),
-                                            setCouponError(""),
-                                            setCouponSuccess("");
-                                        }}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                        stroke="currentColor"
-                                        className="size-5 cursor-pointer hover:bg-gray-300 rounded-xl"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                        />
-                                      </svg>
-                                    </span>
-                                  )
-                                );
-                              })()
-                            ) : (
-                              <span className="text-red-400">
-                                {couponError}
-                              </span>
-                            )}
-                          </small>
+                                })()
+                              ) : (
+                                <span className="text-red-400">
+                                  {couponError}
+                                </span>
+                              )}
+                            </small>
                           </>
                         )}
 

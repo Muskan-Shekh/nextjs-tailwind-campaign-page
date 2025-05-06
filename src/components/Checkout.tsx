@@ -9,10 +9,18 @@ type CheckoutProps = {
   onBack: () => void;
   onNext: (data: any) => void; // <-- accept data here
   formData: any;
+  onCustomerData: (data: any) => void;
+  shippingData?: any;
 };
 
-export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
-  // console.log("formData",formData)
+export default function Checkout({
+  onNext,
+  onBack,
+  formData,
+  onCustomerData,
+  shippingData,
+}: CheckoutProps) {
+  // console.log("shippingData",shippingData)
   interface CartItem {
     product_id: number;
     product_name: string;
@@ -151,9 +159,9 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
     if (response.ok) {
       const data = await response.json();
       setUserFound(false);
-      // console.log("login data", data?.customer);
-      setCustomerData(data?.customer);
-      setPassword("");
+      setCustomerData(data);
+      onCustomerData(data);
+      // setPassword("");
       // setEmail("");
       setItemsCount(0);
     } else {
@@ -163,32 +171,70 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
     }
   }
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
-      const customerData = localStorage.getItem("customer");
-      if (customerData && token) {
-        // setAccessToken(token);
-        setCustomer(customerData ? JSON.parse(customerData) : null);
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (
+  //     typeof window !== "undefined" &&
+  //     customerData?.access_token &&
+  //     customerData?.customer
+  //   ) {
+  //     localStorage.setItem("access_token", customerData.access_token);
+  //     localStorage.setItem("customer", JSON.stringify(customerData.customer));
+  //   }
+  // }, [customerData]);
+
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const token = localStorage.getItem("access_token");
+  //     const customerData = localStorage.getItem("customer");
+  //     if (customerData && token) {
+  //       // setAccessToken(token);
+  //       setCustomer(customerData ? JSON.parse(customerData) : null);
+  //     }
+  //   }
+  // }, []);
 
   useEffect(() => {
-    if (customer) {
-      setFormValues((prev:any) => ({
-        ...prev,
-        first_name: customer.first_name || "",
-        last_name: customer.last_name || "",
-        phone: customer.phone || "",
-        address: customer.address || "",
-        address_2: customer.address_2 || "",
-        zip_code: customer.zip_code || "",
-        state: customer.state || "",
-        city: customer.city || "",
-      }));
+    if (typeof window === "undefined") return;
+
+    if (customerData?.access_token && customerData?.customer) {
+      localStorage.setItem("access_token", customerData.access_token);
+      localStorage.setItem("customer", JSON.stringify(customerData.customer));
+      setCustomer(customerData.customer); // Optionally update state immediately
+    } else {
+      const token = localStorage.getItem("access_token");
+      const storedCustomer = localStorage.getItem("customer");
+
+      if (token && storedCustomer) {
+        setCustomer(JSON.parse(storedCustomer));
+      }
     }
-  }, [customer]);
+  }, [customerData]);
+
+  useEffect(() => {
+    const source =
+      shippingData && Object.keys(shippingData).length > 0
+        ? shippingData
+        : customer;
+    // console.log("source",source)
+    if (!source) return; // nothing to set
+
+    // Optional: Prevent overwriting form if already populated
+    setFormValues((prev: any) => {
+      const alreadyFilled = Object.keys(prev).some((key) => prev[key]);
+      if (alreadyFilled) return prev; // do not overwrite
+      return {
+        ...prev,
+        first_name: source.first_name || "",
+        last_name: source.last_name || "",
+        phone: source.phone || "",
+        address: source.address || "",
+        address_2: source.address_2 || "",
+        zip_code: source.zip_code || "",
+        state: source.state || "",
+        city: source.city || "",
+      };
+    });
+  }, [shippingData, customer]);
 
   // const handlePlaceOrder = async (event: FormEvent<HTMLFormElement>) => {
   //   event.preventDefault();
@@ -307,7 +353,7 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
         onSubmit={handleNext}
       >
         <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="flex gap-2">
+          <div className="flex gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -326,25 +372,25 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
             <h1 className="text-2xl font-bold mb-4">Shipping Details</h1>
           </div>
           {!isEdit && customer ? (
-            
             <div className="text-sm space-y-1 leading-relaxed p-4 border border-1 border-yellow-900">
-            <p>
-              {customer?.first_name} {customer?.last_name}
-            </p>
-            <p>{customer?.address}</p>
-            <p>{customer?.city}</p>
-            <p>{customer?.zip_code}</p>
-            <p>{customer?.state}</p>
-            <p>{customer?.phone}</p>
-            <div className="text-end">
-              <button
-                onClick={() => setIsEdit(true)}
-                className="bg-transparent text-black p-2 rounded hover:border-yellow-900 mt-4 border border-1 border-gray-500"
-              >
-                Edit 🖊️
-              </button>
+              <p>
+                {shippingData?.first_name || customer?.first_name}{" "}
+                {shippingData?.last_name || customer?.last_name}
+              </p>
+              <p>{shippingData?.address || customer?.address}</p>
+              <p>{shippingData?.city || customer?.city}</p>
+              <p>{shippingData?.zip_code || customer?.zip_code}</p>
+              <p>{shippingData?.state || customer?.state}</p>
+              <p>{shippingData?.phone || customer?.phone}</p>
+              <div className="text-end">
+                <button
+                  onClick={() => setIsEdit(true)}
+                  className="bg-transparent text-black p-2 rounded hover:border-yellow-900 mt-4 border border-1 border-gray-500"
+                >
+                  Edit 🖊️
+                </button>
+              </div>
             </div>
-          </div>
           ) : (
             <div className="space-y-4">
               {!customer && (
@@ -489,7 +535,7 @@ export default function Checkout({ onNext, onBack, formData }: CheckoutProps) {
                   onChange={handleInputChange}
                 >
                   <option defaultValue={customer?.state || ""}>
-                    {customer?.state || "State" }
+                    {customer?.state || "State"}
                   </option>
                   <option value="Andaman & Nicobar">Andaman & Nicobar</option>
                   <option value="Delhi">Delhi</option>

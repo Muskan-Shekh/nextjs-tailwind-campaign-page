@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { act } from "react";
 import {
   Button,
   Typography,
@@ -15,11 +15,16 @@ import { useRouter } from "next/navigation";
 
 export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
   const categoryTabs = category_tabs?.cat_tabs;
-
   const router = useRouter();
   // const [category, setCategory] = React.useState([] as any);
   const [products, setProducts] = React.useState([] as any);
-  const [activeTab, setActiveTab] = React.useState("ncert-school-books");
+  const [activeTab, setActiveTab] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+  if (categoryTabs && categoryTabs[0]?.slug) {
+    setActiveTab(categoryTabs[0].slug);
+  }
+  }, [categoryTabs]);
 
   React.useEffect(() => {
     const fetchProductsByCategory = async () => {
@@ -80,7 +85,10 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
     // Compare sub_category_id of the book to the matching subcategory's id
     return book.category_id === matchingSubcategory?.id;
   });
-  const shuffledBooks = [...filteredBooks].sort(() => Math.random() - 0.5);
+  const shuffledBooks = [...filteredBooks]
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 8);
+  // console.log("shuffledBooks",shuffledBooks);
 
   return (
     <section className="px-8 pt-20">
@@ -114,7 +122,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           {category_tabs?.cat_tab_description || " "}
         </Typography>
         <div className="mt-20 flex items-center justify-center">
-          <Tabs value={activeTab} className="w-full lg:w-8/12">
+          <Tabs value={activeTab} className="w-full ">
             {/* {Array.isArray(category?.child) && category.child.length > 0 && (
             <TabsHeader
               className="h-12 bg-transparent"
@@ -169,7 +177,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           </Tabs>
         </div>
       </div>
-      <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-3">
+      <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-4">
         {shuffledBooks.map((product: any) => (
           <BookCard
             key={product.id}

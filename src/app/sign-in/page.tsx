@@ -34,7 +34,7 @@ export default function SignIn() {
   const [alertType, setAlertType] = useState<"error" | "success" | "">("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
-  
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // const form = event.currentTarget;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Navbar as MTNavbar,
   Collapse,
@@ -21,7 +21,28 @@ import axios from "axios";
 import config from "@/app/config";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-export function Navbar(items_count?: any) {
+export function Navbar({ items_count, customerData }: any) {
+  // console.log("prop count", items_count)
+  const [access_token, setAccessToken] = useState<string | null>(null);
+  const [customer, setCustomer] = useState<any>(null); // You can type this better
+
+  useEffect(() => {
+    if (customerData) {
+      // console.log("Navbar got customerData", customerData);
+      setCustomer(customerData.customer);
+      setAccessToken(customerData.access_token);
+    }
+  }, [customerData]);
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      const customerData = localStorage.getItem("customer");
+      setAccessToken(token);
+      setCustomer(customerData ? JSON.parse(customerData) : null);
+    }
+  }, []);
+
   const [session, setSession] = useState("");
   const [itemsCount, setItemsCount] = useState(items_count?.items_count || 0);
 
@@ -35,6 +56,7 @@ export function Navbar(items_count?: any) {
     // console.log("Session info:", data);
   };
   useEffect(() => {
+    if(session){
     const viewCart = async () => {
       try {
         const response = await axios({
@@ -50,7 +72,7 @@ export function Navbar(items_count?: any) {
         // console.log("An error occured");
       }
     };
-    viewCart();
+    viewCart();}
   }, [session]);
 
   useEffect(() => {
@@ -58,13 +80,12 @@ export function Navbar(items_count?: any) {
   }, []);
 
   useEffect(() => {
-    // console.log("itemsCount1", itemsCount);
+    // console.log("itemsCount res", itemsCount);
   }, [itemsCount, session]);
 
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [access_token, setAccessToken] = useState<string | null>(null);
-  const [customer, setCustomer] = useState<any>(null); // You can type this better
+
   const [searchTerm, setSearchTerm] = useState("");
 
   function handleOpen() {
@@ -161,15 +182,7 @@ export function Navbar(items_count?: any) {
     setFilteredProducts(results);
   }, [searchTerm, selectedValue, publications]);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
-      const customerData = localStorage.getItem("customer");
-
-      setAccessToken(token);
-      setCustomer(customerData ? JSON.parse(customerData) : null);
-    }
-  }, []);
+  
 
   const logout = () => {
     if (typeof window !== "undefined") {
@@ -355,9 +368,10 @@ export function Navbar(items_count?: any) {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              {items_count?.items_count
+              {/* {items_count?.items_count
                 ? items_count?.items_count
-                : itemsCount || 0}
+                : itemsCount || items_count} */}
+              {items_count ? items_count: itemsCount}
             </div>
           </Link>
           {access_token && customer ? (
@@ -379,6 +393,18 @@ export function Navbar(items_count?: any) {
                 </Typography>
               </MenuHandler>
               <MenuList {...({} as React.ComponentProps<typeof MenuList>)}>
+              <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
+                  <Typography
+                    as="a"
+                    href="/my-account"
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    My account
+                  </Typography>
+                </MenuItem>
                 <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
                   <Typography
                     variant="small"

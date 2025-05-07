@@ -35,6 +35,7 @@ export function OtherBookOffers({ description, similarProducts, onItemsCountUpda
   return (
     <section className="px-8 pt-28 pb-28">
       <div className="container mx-auto mb-10">
+      {description && (<>
         <Typography
           variant="h2"
           color="blue-gray"
@@ -43,7 +44,7 @@ export function OtherBookOffers({ description, similarProducts, onItemsCountUpda
         >
           About this product
         </Typography>
-        {description && (
+       
           <Typography
             variant="lead"
             className="w-full text-gray-600"
@@ -51,7 +52,7 @@ export function OtherBookOffers({ description, similarProducts, onItemsCountUpda
             {...({} as React.ComponentProps<typeof Typography>)}
           >
           </Typography>
-        ) 
+          </>) 
         // : (
         //   <>
         //     <Typography
@@ -76,16 +77,17 @@ export function OtherBookOffers({ description, similarProducts, onItemsCountUpda
         //   </>
         // )
         }
-        <Typography
+        {similarProducts && similarProducts.length &&( <Typography
           variant="h2"
           color="blue-gray"
           className="mt-8"
           {...({} as React.ComponentProps<typeof Typography>)}
         >
           Similar Products of This Category
-        </Typography>
+        </Typography>)}
+       
       </div>
-      <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-3">
+      <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-4">
         {similarProducts && similarProducts.length > 0
           && similarProducts.map((product: any) => (
               <BookCard

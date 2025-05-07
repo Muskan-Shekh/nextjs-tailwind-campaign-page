@@ -21,8 +21,7 @@ import axios from "axios";
 import config from "@/app/config";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
-export function Navbar({ items_count, customerData }: any) {
-  // console.log("prop count", items_count)
+export function Navbar({ items_count, customerData, isCartEmpty }: any) {
   const [access_token, setAccessToken] = useState<string | null>(null);
   const [customer, setCustomer] = useState<any>(null); // You can type this better
 
@@ -44,7 +43,7 @@ export function Navbar({ items_count, customerData }: any) {
   }, []);
 
   const [session, setSession] = useState("");
-  const [itemsCount, setItemsCount] = useState(items_count?.items_count || 0);
+  const [itemsCount, setItemsCount] = useState(items_count || 0);
 
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
@@ -65,7 +64,7 @@ export function Navbar({ items_count, customerData }: any) {
           responseType: "json",
         });
         const data = response?.data;
-        setItemsCount(data?.items_count || 0);
+        setItemsCount(data?.items_count);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -81,7 +80,7 @@ export function Navbar({ items_count, customerData }: any) {
 
   useEffect(() => {
     // console.log("itemsCount res", itemsCount);
-  }, [itemsCount, session]);
+  }, [itemsCount, items_count, session]);
 
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
@@ -182,8 +181,6 @@ export function Navbar({ items_count, customerData }: any) {
     setFilteredProducts(results);
   }, [searchTerm, selectedValue, publications]);
 
-  
-
   const logout = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("access_token");
@@ -230,7 +227,7 @@ export function Navbar({ items_count, customerData }: any) {
       className="border-0 sticky top-0 z-50"
       {...({} as React.ComponentProps<typeof MTNavbar>)}
     >
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto flex items-center text-black justify-between">
         <a href="/">
           <Image
             src={logo}
@@ -322,7 +319,7 @@ export function Navbar({ items_count, customerData }: any) {
                       <h4 className="font-medium text-sm text-gray-900">
                         {product?.name}
                       </h4>
-                      <p className="text-xs text-gray-500">{product?.author}</p>
+                      {/* <p className="text-xs text-gray-500">{product?.author}</p> */}
                       <p className="text-xs text-gray-500">
                         {getPublicationName(product?.production_id)}
                       </p>
@@ -368,10 +365,7 @@ export function Navbar({ items_count, customerData }: any) {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              {/* {items_count?.items_count
-                ? items_count?.items_count
-                : itemsCount || items_count} */}
-              {items_count ? items_count: itemsCount}
+              {items_count || isCartEmpty ? items_count: itemsCount}
             </div>
           </Link>
           {access_token && customer ? (

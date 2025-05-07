@@ -74,7 +74,7 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
                   {productData?.name}
                 </h2>
                 <p className="text-gray-600">Model: {productData?.model}</p>
-                <p className="text-gray-600">Author: {productData?.author}</p>
+                {/* <p className="text-gray-600">Author: {productData?.author}</p> */}
                 <p className="text-gray-600 mb-4">
                   Publication: {productData?.production?.name}
                 </p>

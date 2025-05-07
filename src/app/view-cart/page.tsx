@@ -21,6 +21,7 @@ import { ThankYouDialog } from "@/components/thank-you-popup";
 import { NotificationDialog } from "@/components/notification";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import FadeLoaderOverlay from "@/components/loader";
 
 interface CartItem {
   product_id: number;
@@ -61,6 +62,7 @@ interface CartItem {
 const steps = ["cart", "shipping", "order"];
 export default function ShoppingCart() {
   const router = useRouter();
+  const [cartFetched, setCartFetched] = useState(false);
   const [session, setSession] = useState("");
   const [cartItems, setCartItems] = useState([] as CartItem[] | any[]);
   const [items_count, setItemsCount] = useState(0);
@@ -88,6 +90,7 @@ export default function ShoppingCart() {
   const [coupon_code, setCouponCode] = useState("");
   const [couponData, setCouponData] = useState({} as any);
   const [mainCategories, setMainCategories] = useState([] as any);
+  const [isCartEmpty, setIsCartEmpty] = useState(false);
   // console.log("viewcart customer",customerData);
 
   const getStepStatus = (step: string) => {
@@ -145,6 +148,21 @@ export default function ShoppingCart() {
   useEffect(() => {
     const viewCart = async () => {
       setLoading(true);
+      // try {
+      //   const response = await axios({
+      //     method: "get",
+      //     url: `${config.apiUrl}api/cart/viewcart?session_id=${session}`,
+      //     responseType: "json",
+      //   });
+      //   const data = response?.data;
+      //   setCartItems(data?.items);
+      //   setItemsCount(data?.items_count);
+      // } catch (error) {
+      //   console.error("Error loading cart:", error);
+      //   setCartItems([]); // fallback to empty array
+      // } finally {
+      //   setLoading(false); // stop loader
+      // }
       try {
         const response = await axios({
           method: "get",
@@ -152,13 +170,16 @@ export default function ShoppingCart() {
           responseType: "json",
         });
         const data = response?.data;
-        setCartItems(data?.items);
-        setItemsCount(data?.items_count);
+        setCartItems(data?.items || []);
+        setItemsCount(data?.items_count || 0);
+        setCartFetched(true); // ✅ mark cart as ready
       } catch (error) {
         console.error("Error loading cart:", error);
-        setCartItems([]); // fallback to empty array
+        setCartItems([]);
+        setItemsCount(0);
+        setCartFetched(true); // ✅ mark cart as ready even on failure
       } finally {
-        setLoading(false); // stop loader
+        setLoading(false);
       }
     };
     if (session) {
@@ -209,7 +230,7 @@ export default function ShoppingCart() {
       });
       const result = await response.json();
       if (result?.success) {
-        setItemsCount(items_count - 1);
+        // setItemsCount(items_count - 1);
       }
       // setCartData(result);
       // console.log("remove:", result);
@@ -238,12 +259,27 @@ export default function ShoppingCart() {
     );
   };
 
+  // const removeItem = (id: number) => {
+  //   removeCartItem(id);
+  //   setCartItems(cartItems?.filter((item) => item.product_id !== id));
+  //   setItemsCount(items_count - 1);
+  // };
   const removeItem = (id: number) => {
+    const itemToRemove = cartItems?.find((item) => item.product_id === id);
+    if (!itemToRemove) return;
+  
+    const quantity = itemToRemove.quantity || 1;
+    const newItemsCount = items_count - quantity;
+  
     removeCartItem(id);
     setCartItems(cartItems?.filter((item) => item.product_id !== id));
-    setItemsCount(items_count - 1);
+    setItemsCount(newItemsCount);
+  
+    if (newItemsCount <= 0) {
+      setIsCartEmpty(true);
+    }
   };
-
+  
   const calculateTotal = () => {
     const subtotal = cartItems?.reduce((acc, item) => {
       const itemTotal = item.product_price * item.quantity;
@@ -420,84 +456,12 @@ export default function ShoppingCart() {
 
   return (
     <>
-      <Navbar items_count={items_count} customerData={customerData || {}} />
+      <Navbar items_count={items_count} customerData={customerData || {}} isCartEmpty={isCartEmpty} />
       <MainNavbar />
       <section className="bg-white py-8 md:py-16 mb-4 min-h-screen">
-        {loading ? (
-          <div
-            role="status"
-            className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
-          >
-            <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded-sm sm:w-96 dark:bg-gray-700">
-              <svg
-                className="w-10 h-10 text-gray-200 dark:text-gray-600"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 18"
-              >
-                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-              </svg>
-            </div>
-
-            <div className="w-full">
-              <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
-              <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-            </div>
-
-            <span className="sr-only">Loading...</span>
-          </div>
-        ) : !loading && !cartItems || items_count ===0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white p-6 shadow-md rounded-xl">
-            <div className="mb-6">
-              <Image
-                src="/image/bag.png"
-                alt="Empty Cart"
-                width={150}
-                height={150}
-                className="h-80 w-80"
-              />
-            </div>
-
-            <h2 className="text-2xl font-semibold text-gray-700">
-              Your Cart is{" "}
-              <span className="text-red-800 font-bold">Empty!</span>
-            </h2>
-
-            <p className="text-gray-500 mt-2">
-              Must add items on the cart before you proceed to check out.
-            </p>
-
-            <Button
-              className="mt-6 px-6 py-3 rounded-full shadow-lg flex bg-red-800"
-              onClick={() => router.push("/all-products")}
-              {...({} as React.ComponentProps<typeof Button>)}
-            >
-              <svg
-                className="w-6 h-6 text-white "
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
-                />
-              </svg>
-              <p className="mt-1"> Return to Shop</p>
-            </Button>
-          </div>
-        ) : (
+        {!cartFetched? (
+          <FadeLoaderOverlay />
+        ) : cartItems?.length > 0 && items_count > 0? (
           <div className="mx-auto container max-w-screen-xl p-4 2xl:px-0 bg-gray-100">
             <div className="flex items-center justify-center bg-white mx-4 mb-4 py-4">
               <div className="flex items-center w-full max-w-xl justify-between">
@@ -578,7 +542,7 @@ export default function ShoppingCart() {
                         const mainCategory = mainCategories?.find(
                           (main: any) => main.id === item?.category_id
                         );
-                        const subcategory = mainCategory.child?.find(
+                        const subcategory = mainCategory?.child?.find(
                           (sub: any) => sub.id === item?.sub_category_id
                         );
                         const couponCategories = couponData.category_id
@@ -1273,9 +1237,9 @@ export default function ShoppingCart() {
                             </dt>
                             <dd className="text-base font-bold text-gray-900">
                               {/* ₹
-                            {deliveryType === "free"
-                              ? subtotal
-                              : subtotal + calculateShippingValue(totalWeight)} */}
+                          {deliveryType === "free"
+                            ? subtotal
+                            : subtotal + calculateShippingValue(totalWeight)} */}
                               ₹
                               {deliveryType === "free"
                                 ? calculateTotal()
@@ -1366,6 +1330,52 @@ export default function ShoppingCart() {
                 </div>
               </div>
             )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white p-6 shadow-md rounded-xl">
+            <div className="mb-6">
+              <Image
+                src="/image/bag.png"
+                alt="Empty Cart"
+                width={150}
+                height={150}
+                className="h-80 w-80"
+              />
+            </div>
+
+            <h2 className="text-2xl font-semibold text-gray-700">
+              Your Cart is{" "}
+              <span className="text-red-800 font-bold">Empty!</span>
+            </h2>
+
+            <p className="text-gray-500 mt-2">
+              Must add items on the cart before you proceed to check out.
+            </p>
+
+            <Button
+              className="mt-6 px-6 py-3 rounded-full shadow-lg flex bg-red-800"
+              onClick={() => router.push("/all-products")}
+              {...({} as React.ComponentProps<typeof Button>)}
+            >
+              <svg
+                className="w-6 h-6 text-white "
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
+                />
+              </svg>
+              <p className="mt-1"> Return to Shop</p>
+            </Button>
           </div>
         )}
       </section>

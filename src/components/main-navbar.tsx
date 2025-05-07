@@ -182,11 +182,7 @@ const MainNavbar: React.FC = () => {
                   <Typography
                     as="a"
                     href={
-                      item.url === "#"
-                        ? "#"
-                        : index === 6
-                        ? "current-affairs"
-                        : `/category/${item.url}`
+                      index === 6 ? "/current-affairs": `/category/${item.url}`
                     }
                     variant="small"
                     color="blue-gray"

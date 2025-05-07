@@ -57,6 +57,7 @@ export default function Category({ params }: any) {
     }
   }, [slug]);
 
+
   useEffect(() => {}, [products, childCategory, mainCategories]);
 
   useEffect(() => {

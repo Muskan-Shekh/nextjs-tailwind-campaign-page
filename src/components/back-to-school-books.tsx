@@ -12,18 +12,21 @@ import BookCard from "@/components/book-card";
 import axios from "axios";
 import config from "@/app/config";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
   const categoryTabs = category_tabs?.cat_tabs;
   const router = useRouter();
   // const [category, setCategory] = React.useState([] as any);
   const [products, setProducts] = React.useState([] as any);
-  const [activeTab, setActiveTab] = React.useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = React.useState<string | undefined>(
+    undefined
+  );
 
   React.useEffect(() => {
-  if (categoryTabs && categoryTabs[0]?.slug) {
-    setActiveTab(categoryTabs[0].slug);
-  }
+    if (categoryTabs && categoryTabs[0]?.slug) {
+      setActiveTab(categoryTabs[0].slug);
+    }
   }, [categoryTabs]);
 
   React.useEffect(() => {
@@ -86,8 +89,8 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
     return book.category_id === matchingSubcategory?.id;
   });
   const shuffledBooks = [...filteredBooks]
-  .sort(() => Math.random() - 0.5)
-  .slice(0, 8);
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 8);
   // console.log("shuffledBooks",shuffledBooks);
 
   return (
@@ -122,7 +125,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           {category_tabs?.cat_tab_description || " "}
         </Typography>
         <div className="mt-20 flex items-center justify-center">
-          <Tabs value={activeTab} className="w-full ">
+          <Tabs value={activeTab} className="w-full">
             {/* {Array.isArray(category?.child) && category.child.length > 0 && (
             <TabsHeader
               className="h-12 bg-transparent"
@@ -152,7 +155,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           )} */}
             {Array.isArray(categoryTabs) && categoryTabs?.length > 0 && (
               <TabsHeader
-                className="h-12 bg-transparent"
+                className="bg-transparent flex flex-col lg:flex-row"
                 indicatorProps={{
                   className: "!bg-gray-900 rounded-lg",
                 }}
@@ -162,10 +165,13 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
                   <Tab
                     key={tab.id}
                     value={tab.name}
-                    className={`!font-medium capitalize transition-all duration-300 rounded-xl px-4
-                      ${activeTab === tab?.slug ? "text-white bg-black" : "capitalize"}
-                      whitespace-nowrap
-                    `}
+                    className={`!font-medium capitalize transition-all duration-300 rounded-xl px-4 py-2
+                    ${
+                      activeTab === tab?.slug
+                        ? "text-white bg-black"
+                        : "capitalize"
+                    }
+                    whitespace-nowrap`}
                     onClick={() => setActiveTab(tab?.slug)}
                     {...({} as any)}
                   >
@@ -177,7 +183,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           </Tabs>
         </div>
       </div>
-      <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-20 md:grid-cols-2 xl:grid-cols-4">
+      <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-4">
         {shuffledBooks.map((product: any) => (
           <BookCard
             key={product.id}
@@ -201,10 +207,9 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
         <Button
           className="mt-8"
           variant="outlined"
-          onClick={() => router.push(`/category/${activeTab}`)}
           {...({} as React.ComponentProps<typeof Button>)}
         >
-          Show more
+          <Link href={`/category/${activeTab}`}>Show more</Link>
         </Button>
       </div>
     </section>

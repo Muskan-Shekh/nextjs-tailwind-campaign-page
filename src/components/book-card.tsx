@@ -23,7 +23,7 @@ interface BookCardProps {
   id?: string | any;
   quantity: number;
   subcategoryName?: string;
-  mainCategoryName?:string;
+  mainCategoryName?: string;
   onItemsCountUpdate?: (count: number) => void;
 }
 
@@ -93,6 +93,14 @@ export function BookCard({
     }
   };
 
+  const maxLength = 50; // Change this to your desired limit
+  const formattedTitle = title?.replace(/#COMMA#/g, ",");
+
+  const limitedTitle =
+    formattedTitle?.length > maxLength
+      ? formattedTitle.substring(0, maxLength) + "..."
+      : formattedTitle;
+
   return (
     <Card
       color="transparent"
@@ -118,15 +126,13 @@ export function BookCard({
         className="p-0 px-4"
         {...({} as React.ComponentProps<typeof CardBody>)}
       >
-        {price !== offPrice && (
-          <Typography
-            color="blue"
-            className="mb-2 text-xs !font-semibold"
-            {...({} as React.ComponentProps<typeof Typography>)}
-          >
-            {category} % off
-          </Typography>
-        )}
+        <Typography
+          color="blue"
+          className="mb-2 text-xs !font-semibold"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
+          {price !== offPrice ? `${category} % off` : "0 % off"}
+        </Typography>
         <Link href={`/product-detail/${slug}`}>
           <Typography
             variant="h2"
@@ -134,23 +140,24 @@ export function BookCard({
             className="font-bold normal-case text-[1rem]"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
-            {title?.replace(/#COMMA#/g, ",")}
+            {limitedTitle}
           </Typography>
         </Link>
-          <Typography
-            color="blue"
-            className="text-xs !font-semibold"
-            {...({} as React.ComponentProps<typeof Typography>)}
-          >
-           {subcategoryName ? `${mainCategoryName}/${subcategoryName}`: `${mainCategoryName || ''}`} 
-          </Typography>
-        <Typography 
+        <Typography
+          color="blue"
+          className="text-xs !font-semibold"
+          {...({} as React.ComponentProps<typeof Typography>)}
+        >
+          {subcategoryName
+            ? `${mainCategoryName}/${subcategoryName}`
+            : `${mainCategoryName || ""}`}
+        </Typography>
+        {/* <Typography 
           className="mb-4 font-normal !text-gray-500"
           dangerouslySetInnerHTML={{ __html: desc?.replace(/#COMMA#/g, ",") }}
           {...({} as React.ComponentProps<typeof Typography>)}
         >
-          {/* {desc} */}
-        </Typography>
+        </Typography> */}
         <div className="flex justify-between">
           <div className="flex gap-2">
             {" "}

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { CartPopup } from "@/components/cart-popup";
 import axios from "axios";
 import config from "@/app/config";
+import Image from "next/image";
 
 export default function ProductDialog({ open, handleOpen, slug }: any) {
   const router = useRouter();
@@ -61,25 +62,28 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
             <div className="flex flex-wrap">
               {/* Product Images */}
               <div className="w-full md:w-1/2 px-4">
-                <img
+                <Image
                   src={`${config.apiUrl}storage/${productData?.image}`}
                   alt="Product"
-                  className="w-full h-full rounded-lg shadow-md mb-4"
+                  className="w-full h-80 rounded-lg shadow-md mb-4 scale-[1.1] object-contain"
+                  width={768}
+                  height={768}
                 />
               </div>
 
               {/* Product Details */}
               <div className="w-full md:w-1/2 px-4">
-                <h2 className="text-3xl font-bold mb-2">
-                  {productData?.name}
-                </h2>
+                <h2 className="text-3xl font-bold mb-2">{productData?.name}</h2>
                 <p className="text-gray-600">Model: {productData?.model}</p>
                 {/* <p className="text-gray-600">Author: {productData?.author}</p> */}
                 <p className="text-gray-600 mb-4">
                   Publication: {productData?.production?.name}
                 </p>
                 <div className="mb-4">
-                  <span className="text-2xl font-bold mr-2"> ₹{productData.price}</span>
+                  <span className="text-2xl font-bold mr-2">
+                    {" "}
+                    ₹{productData.price}
+                  </span>
                 </div>
 
                 <div className="flex items-center mb-4">
@@ -129,8 +133,8 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
                       popupRef={popupRef}
                       setShowPopup={setShowPopup}
                       showPopup={showPopup}
-                      productName ={productData?.name}
-                      productImage ={`${config.apiUrl}storage/${productData?.image}`}
+                      productName={productData?.name}
+                      productImage={`${config.apiUrl}storage/${productData?.image}`}
                     ></CartPopup>
                   )}
                   <button
@@ -159,13 +163,16 @@ export default function ProductDialog({ open, handleOpen, slug }: any) {
                   <h3 className="text-lg font-semibold mb-2">Key Features:</h3>
                   <ul className="list-disc list-inside text-gray-700">
                     <li>Stock Quantity: {productData?.quantity}</li>
-                    <li>Discount: {(productData?.mrp && productData?.price
-                    ? ((productData?.mrp - productData?.price) /
-                        productData?.mrp) *
-                      100
-                    : 0
-                  ).toFixed(2)}{" "}
-                  %</li>
+                    <li>
+                      Discount:{" "}
+                      {(productData?.mrp && productData?.price
+                        ? ((productData?.mrp - productData?.price) /
+                            productData?.mrp) *
+                          100
+                        : 0
+                      ).toFixed(2)}{" "}
+                      %
+                    </li>
                     <li>Book Language: {productData?.book_language}</li>
                     <li>Number of Pages: {productData?.number_of_pages}</li>
                     <li>Publication Year: {productData?.published_at}</li>

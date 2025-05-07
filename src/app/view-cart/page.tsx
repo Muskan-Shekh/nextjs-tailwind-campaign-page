@@ -67,7 +67,7 @@ export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([] as CartItem[] | any[]);
   const [items_count, setItemsCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [showCoupon, setShowCoupon] = useState(false);
+  const [showCoupon, setShowCoupon] = useState(true);
   const [isCouponApplied, setIsCoupnApplied] = useState(false);
   const [couponSuccess, setCouponSuccess] = useState("");
   const [couponError, setCouponError] = useState("");
@@ -120,7 +120,7 @@ export default function ShoppingCart() {
     const currentIndex = steps.indexOf(activeTab);
     const nextStep = steps[currentIndex + 1];
     if (nextStep) {
-      nextStep === "order" ? setShowCoupon(false) : setShowCoupon(true);
+      // nextStep === "order" ? setShowCoupon(false) : setShowCoupon(true);
       setCompletedSteps((prev) =>
         prev.includes(activeTab) ? prev : [...prev, activeTab]
       );
@@ -131,7 +131,7 @@ export default function ShoppingCart() {
   const handleBack = () => {
     const currentIndex = steps.indexOf(activeTab);
     const prevStep = steps[currentIndex - 1];
-    prevStep === "cart" ? setShowCoupon(true) : setShowCoupon(false);
+    // prevStep === "cart" ? setShowCoupon(true) : setShowCoupon(false);
     if (prevStep) setActiveTab(prevStep);
   };
 
@@ -782,15 +782,18 @@ export default function ShoppingCart() {
                         </svg>
                       </div>
                       {showCoupon && (
-                        <>
+                        <> 
                           <div className="flex justify-between">
+                          <div className="max-w-[160px]">
                             <Input
                               label="Enter code"
+                              size="md"
                               value={coupon_code}
+                              className="max-w-[160px]"
                               onChange={handleCouponChange}
-                              className="w-40"
                               {...({} as React.ComponentProps<typeof Input>)}
                             />
+                            </div>
                             <button
                               onClick={() => {
                                 couponValidation(
@@ -943,7 +946,7 @@ export default function ShoppingCart() {
                   Your Order
                 </h2>
                 <div className="bg-white border border-1 rounded-lg shadow-lg">
-                  <div className="md:gap-6 lg:flex lg:items-start xl:gap-8 ">
+                  <div className="lg:flex lg:items-start xl:gap-8 ">
                     <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-2xl p-4">
                       <div className="space-y-6">
                         {cartItems?.map((item) => {
@@ -1074,7 +1077,7 @@ export default function ShoppingCart() {
                     </div>
 
                     {/* Order Summary */}
-                    <div className="w-full flex-1 p-4 ">
+                    <div className="w-full flex-1 p-4 max-w-4xl">
                       <div className="space-y-4 ">
                         <p className="text-xl font-semibold text-gray-900 whitespace-nowrap">
                           Order Summary
@@ -1102,13 +1105,15 @@ export default function ShoppingCart() {
                         {showCoupon && (
                           <>
                             <div className="flex justify-between">
+                            <div className="max-w-[160px]">
                               <Input
                                 label="Enter code"
                                 value={coupon_code}
                                 onChange={handleCouponChange}
-                                className="w-40"
+                                className="max-w-[160px]"
                                 {...({} as React.ComponentProps<typeof Input>)}
                               />
+                              </div>
                               <button
                                 onClick={() => {
                                   couponValidation(

@@ -56,6 +56,7 @@ export default function Checkout({
   const thankYouPopup = () => setIsOpen(!isOpen);
   const [selectedState, setSelectedState] = useState<string>("");
   const [states, setStates] = useState([] as any);
+  const [statesFeteched, setStatesFatched] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
   const [showCityError, setShowCityError] = useState(false);
   const [formValues, setFormValues] = useState(formData);
@@ -110,7 +111,6 @@ export default function Checkout({
 
   useEffect(() => {}, [session, cartItems, items_count]);
 
-  // Handle option click
   useEffect(() => {
     const fetchStatesAndCities = async () => {
       try {
@@ -120,8 +120,9 @@ export default function Checkout({
           responseType: "json",
         });
         setStates(response?.data);
+        setStatesFatched(true)
       } catch (error) {
-        // setError(error.message);
+        // setStatesFatched(true)
       } finally {
         // setLoading(false);
       }
@@ -585,7 +586,9 @@ export default function Checkout({
                   <option defaultValue={customer?.state || ""}>
                     {customer?.state || "Select state"}
                   </option>
-                  {states?.map((state: any) => (
+                  {!statesFeteched? (<option className="text-sm text-red-400" disabled>
+                    states are loading ↻◌◌◌
+                  </option>):( states?.map((state: any) => (
                     <option
                       value={state?.name}
                       className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
@@ -593,7 +596,7 @@ export default function Checkout({
                     >
                       {state?.name}
                     </option>
-                  ))}
+                  )))}
                 </select>
                 <select
                   className="border p-2 rounded w-full border-gray-400"

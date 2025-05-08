@@ -21,6 +21,7 @@ export default function Category({ params }: any) {
   const [products, setProducts] = useState([] as any);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isProductFetched, setIsProductFetched] = useState(false);
   const [childCategory, setChildCategory] = useState([] as any);
   const [mainCategories, setMainCategories] = useState([] as any);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
@@ -45,9 +46,11 @@ export default function Category({ params }: any) {
         setMainCategories(response2?.data);
         setChildCategory(response.data?.category);
         setProducts(response.data?.products);
+        setIsProductFetched(true)
       } catch (error) {
         console.error("Error loading products:", error);
         setProducts([]);
+        setIsProductFetched(true)
       } finally {
         setLoading(false);
       }
@@ -56,7 +59,6 @@ export default function Category({ params }: any) {
       fetchProductsByCategory();
     }
   }, [slug]);
-
 
   useEffect(() => {}, [products, childCategory, mainCategories]);
 
@@ -132,7 +134,7 @@ export default function Category({ params }: any) {
             childCategory[0]?.parent_id
           }
         />
-        {loading ? (
+        {!isProductFetched ? (
           [1, 2].map((_i) => (
             <div
               key={_i}

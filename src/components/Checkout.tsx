@@ -54,7 +54,10 @@ export default function Checkout({
   const errorPopup = () => setOpen(!open);
   const [isOpen, setIsOpen] = React.useState(false);
   const thankYouPopup = () => setIsOpen(!isOpen);
-
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [states, setStates] = useState([] as any);
+  const [filteredCities, setFilteredCities] = useState([]);
+  const [showCityError, setShowCityError] = useState(false);
   const [formValues, setFormValues] = useState(formData);
 
   useEffect(() => {
@@ -65,6 +68,7 @@ export default function Checkout({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    handleOptionClick(value);
     setFormValues((prev: any) => ({ ...prev, [name]: value }));
   };
 
@@ -105,6 +109,50 @@ export default function Checkout({
   }, []);
 
   useEffect(() => {}, [session, cartItems, items_count]);
+
+  // Handle option click
+  useEffect(() => {
+    const fetchStatesAndCities = async () => {
+      try {
+        const response = await axios({
+          method: "get",
+          url: `${config.apiUrl}api/state-of-india`,
+          responseType: "json",
+        });
+        setStates(response?.data);
+      } catch (error) {
+        // setError(error.message);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchStatesAndCities();
+  }, []);
+
+  useEffect(() => {
+    let allCities = [];
+    // if (selectedValue === "Select state") {
+    //   states.forEach((pub: any) => {
+    //     allCities.push(...(pub.cities || []));
+    //   });
+    // }
+    //  else {
+    if (selectedState) {
+      const selectedStateValue = states.find(
+        (pub: any) => pub.name === selectedState
+      );
+      allCities = selectedStateValue?.cities || [];
+    }
+    // }
+
+    const results = allCities;
+    setFilteredCities(results);
+  }, [selectedState, states]);
+
+  const handleOptionClick = (value: string) => {
+    console.log(value)
+    setSelectedState(value);
+  };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -535,23 +583,43 @@ export default function Checkout({
                   onChange={handleInputChange}
                 >
                   <option defaultValue={customer?.state || ""}>
-                    {customer?.state || "State"}
+                    {customer?.state || "Select state"}
                   </option>
-                  <option value="Andaman & Nicobar">Andaman & Nicobar</option>
-                  <option value="Delhi">Delhi</option>
+                  {states?.map((state: any) => (
+                    <option
+                      value={state?.name}
+                      className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
+                      key={state?.id}
+                    >
+                      {state?.name}
+                    </option>
+                  ))}
                 </select>
                 <select
                   className="border p-2 rounded w-full border-gray-400"
                   name="city"
                   value={formValues.city}
                   onChange={handleInputChange}
+                  disabled={!selectedState}
                 >
                   <option defaultValue={customer?.city || ""}>
-                    {customer?.city || "City"}
+                    {customer?.city || "Select city"}
                   </option>
-                  <option value="Adilabad">Adilabad</option>
-                  <option value="Delhi">Delhi</option>
+                  {filteredCities?.map((city: any) => (
+                    <option
+                      value={city?.name}
+                      className="px-4 py-2 text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
+                      key={city?.id}
+                    >
+                      {city?.name}
+                    </option>
+                  ))}
                 </select>
+                {/* {!selectedState && (
+    <p className="text-red-500 text-sm mt-2 absolute top-full">
+      Please select the state first.
+    </p>
+  )} */}
                 <input
                   type="text"
                   placeholder="Postcode"

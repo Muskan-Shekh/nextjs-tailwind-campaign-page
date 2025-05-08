@@ -157,8 +157,12 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    refreshCaptcha();
-  }, []);
+    if (activeTab === "register" && canvasRef.current) {
+      const newCaptcha = generateCaptchaText();
+      setCaptcha(newCaptcha);
+      drawCaptcha(newCaptcha);
+    }
+  }, [activeTab]);
 
   async function handleSubmit1(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -490,31 +494,28 @@ export default function SignIn() {
                 >
                   CAPTCHA
                 </Typography>
-                <canvas
-                  ref={canvasRef}
-                  className="mb-2 border border-gray-300 w-40"
-                />
-
                 <div className="flex items-center gap-2">
-                  <Input
-                    type="text"
-                    placeholder="Enter the above CAPTCHA"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                    className="!border-t-blue-gray-200 focus:!border-t-gray-900"
-                    {...({} as React.ComponentProps<typeof Input>)}
+                  <canvas
+                    ref={canvasRef}
+                    className="mb-2 border border-gray-300 w-40"
                   />
                   <button
                     type="button"
                     onClick={refreshCaptcha}
-                    className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400"
+                    className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 border border-black"
                   >
                     Refresh
                   </button>
                 </div>
-                {/* <div className="mt-2 p-2 bg-gray-100 text-center rounded">
-                        {captcha}
-                      </div> */}
+
+                <Input
+                  type="text"
+                  placeholder="Enter the above CAPTCHA"
+                  value={captchaInput}
+                  onChange={(e) => setCaptchaInput(e.target.value)}
+                  className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+                  {...({} as React.ComponentProps<typeof Input>)}
+                />
               </div>
               <Checkbox
                 {...({} as React.ComponentProps<typeof Checkbox>)}
@@ -551,16 +552,6 @@ export default function SignIn() {
               >
                 sign up
               </Button>
-              {/* <Typography
-                color="gray"
-                className="mt-4 text-center font-normal"
-                {...({} as React.ComponentProps<typeof Typography>)}
-              >
-                Already have an account?{" "}
-                <a href="sign-in" className="font-medium text-gray-900">
-                  Sign In
-                </a>
-              </Typography> */}
             </form>
           </>
         )}

@@ -123,7 +123,7 @@ export function BookCard({
         />
       </CardHeader>
       <CardBody
-        className="p-0 px-4"
+        className="p-0 px-4 pb-2"
         {...({} as React.ComponentProps<typeof CardBody>)}
       >
         <Typography
@@ -135,9 +135,9 @@ export function BookCard({
         </Typography>
         <Link href={`/product-detail/${slug}`}>
           <Typography
-            variant="h2"
+            variant="h6"
             color="blue-gray"
-            className="font-bold normal-case text-[1rem]"
+            className="font-bold normal-case text-sm"
             {...({} as React.ComponentProps<typeof Typography>)}
           >
             {limitedTitle}
@@ -165,7 +165,7 @@ export function BookCard({
               <Typography
                 variant="h5"
                 color="red"
-                className={offPrice ? "line-through" : ""}
+                className={offPrice ? "line-through text-md" : ""}
                 {...({} as React.ComponentProps<typeof Typography>)}
               >
                 ₹{price}
@@ -174,6 +174,7 @@ export function BookCard({
             <Typography
               variant="h5"
               color="blue-gray"
+              className="text-lg"
               {...({} as React.ComponentProps<typeof Typography>)}
             >
               ₹{offPrice}

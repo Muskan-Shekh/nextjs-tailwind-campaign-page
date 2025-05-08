@@ -33,6 +33,7 @@ export default function RegistrationForm() {
   // Draw CAPTCHA on Canvas
   const drawCaptcha = (text: string) => {
     const canvas: any = canvasRef.current;
+    console.log(canvas)
     const ctx = canvas.getContext("2d");
   
     const letterSpacing = 20;

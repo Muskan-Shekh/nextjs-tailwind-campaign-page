@@ -69,9 +69,14 @@ export default function Checkout({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    handleOptionClick(value);
     setFormValues((prev: any) => ({ ...prev, [name]: value }));
   };
+
+  const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const { value } = e.target;
+  handleOptionClick(value);
+  setFormValues((prev: any) => ({ ...prev, state: value })); // Update form values
+};
 
   const checkSession = async () => {
     const res = await fetch("/api/debug", {
@@ -151,7 +156,6 @@ export default function Checkout({
   }, [selectedState, states]);
 
   const handleOptionClick = (value: string) => {
-    console.log(value)
     setSelectedState(value);
   };
 
@@ -581,7 +585,7 @@ export default function Checkout({
                   className="border p-2 rounded w-full border-gray-400"
                   name="state"
                   value={formValues.state}
-                  onChange={handleInputChange}
+                  onChange={handleStateChange}
                 >
                   <option defaultValue={customer?.state || ""}>
                     {customer?.state || "Select state"}
@@ -605,8 +609,8 @@ export default function Checkout({
                   onChange={handleInputChange}
                   disabled={!selectedState}
                 >
-                  <option defaultValue={customer?.city || ""}>
-                    {customer?.city || "Select city"}
+                  <option defaultValue={formData?.city || ""}>
+                    {selectedState ? "Select city" : formData?.city || ""}
                   </option>
                   {filteredCities?.map((city: any) => (
                     <option

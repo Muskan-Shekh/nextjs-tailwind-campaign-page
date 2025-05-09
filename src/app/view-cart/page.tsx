@@ -35,31 +35,8 @@ interface CartItem {
   category_id: number;
   sub_category_id: number;
 }
-
-// const initialCartItems: CartItem[] = [
-//   {
-//     product_id: 1,
-//     product_name: "Utkarsh - Current Affairs Monthly February 2024 By Kumar Gaurav Sir",
-//     product_price: 1499,
-//     quantity: 2,
-//     image: "https://bookwindow.in/assets/images/image/product/14.jpg",
-//   },
-//   {
-//     product_id: 2,
-//     product_name: "Dr. Bhalla - Contemporary Rajasthan by Kuldeep Publication",
-//     product_price: 598,
-//     quantity: 1,
-//     image: "https://bookwindow.in/assets/images/image/product/1.webp",
-//   },
-//   {
-//     product_id: 3,
-//     product_name: "Agriculture Supervisor Exam Guide by Dr. Rajeev & R K Gupta in Hindi Medium",
-//     product_price: 1799,
-//     quantity: 1,
-//     image: "https://bookwindow.in/assets/images/image/product/90.webp",
-//   },
-// ];
 const steps = ["cart", "shipping", "order"];
+
 export default function ShoppingCart() {
   const router = useRouter();
   const [cartFetched, setCartFetched] = useState(false);
@@ -74,7 +51,7 @@ export default function ShoppingCart() {
 
   //for placeorder
   const [deliveryType, setDeliveryType] = useState("free");
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [payment_method, setPaymentMethod] = useState("cod");
   const [orderNumber, setOrderNumber] = useState<number>(0);
   const [open, setOpen] = useState(false);
   const errorPopup = () => setOpen(!open);
@@ -92,7 +69,14 @@ export default function ShoppingCart() {
   const [mainCategories, setMainCategories] = useState([] as any);
   const [isCartEmpty, setIsCartEmpty] = useState(false);
   // console.log("viewcart customer",customerData);
-
+  const loadRazorpayScript = () =>
+    new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
   const getStepStatus = (step: string) => {
     const index = steps.indexOf(step);
     const activeIndex = steps.indexOf(activeTab);
@@ -267,19 +251,19 @@ export default function ShoppingCart() {
   const removeItem = (id: number) => {
     const itemToRemove = cartItems?.find((item) => item.product_id === id);
     if (!itemToRemove) return;
-  
+
     const quantity = itemToRemove.quantity || 1;
     const newItemsCount = items_count - quantity;
-  
+
     removeCartItem(id);
     setCartItems(cartItems?.filter((item) => item.product_id !== id));
     setItemsCount(newItemsCount);
-  
+
     if (newItemsCount <= 0) {
       setIsCartEmpty(true);
     }
   };
-  
+
   const calculateTotal = () => {
     const subtotal = cartItems?.reduce((acc, item) => {
       const itemTotal = item.product_price * item.quantity;
@@ -407,12 +391,9 @@ export default function ShoppingCart() {
     fetchProductsByCategory();
   }, []);
 
-  useEffect(() => {
-    // console.log("couponData", couponData);
-  }, [couponData, mainCategories]);
+  useEffect(() => {}, [couponData, mainCategories]);
 
   const handlePlaceOrder = async () => {
-    // console.log("shippingData", shippingData);
     try {
       const response = await fetch(`${config.apiUrl}api/cart/checkout`, {
         method: "POST",
@@ -422,6 +403,7 @@ export default function ShoppingCart() {
           ...shippingData,
           session_id: session,
           shipping_method: deliveryType,
+          payment_method: payment_method,
           coupon_code:
             isCouponApplied && couponData && couponSuccess
               ? couponData?.code
@@ -436,16 +418,80 @@ export default function ShoppingCart() {
         }),
       });
       const result = await response.json();
-      if (response.ok) {
-        // console.log("Place order", result);
-        setOrderNumber(result?.order_number);
-        thankYouPopup();
-        setTimeout(() => {
-          setCartItems([]); // Wait a short time to ensure popup renders
-        }, 600);
-      } else if (result.message === "Your cart is empty") {
-        setOpen(true);
-        errorPopup();
+      // if (response.ok) {
+      //   console.log("Place order", result);
+      //   setOrderNumber(result?.order_number);
+      //   thankYouPopup();
+      //   setTimeout(() => {
+      //     setCartItems([]); // Wait a short time to ensure popup renders
+      //   }, 600);
+      // } else if (result.message === "Your cart is empty") {
+      //   setOpen(true);
+      //   errorPopup();
+      // }
+      if (response.ok && result?.razorpay_order_id) {
+        // 1. Load Razorpay script
+        const isScriptLoaded = await loadRazorpayScript();
+        if (!isScriptLoaded) {
+          alert("Failed to load Razorpay SDK");
+          return;
+        }
+
+        // 2. Launch Razorpay checkout
+        const options = {
+          key: result.razorpay_key,
+          amount: result.amount, // in paise (e.g., 26050)
+          currency: "INR",
+          name: result.name,
+          description: "Order Payment",
+          order_id: result.razorpay_order_id,
+          handler: async function (response: any) {
+            // 3. Send the callback details to your server
+            const verifyRes = await fetch(
+              `${config.apiUrl}api/cart/razorpay/callback`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
+
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok) {
+              setOrderNumber(result?.order?.order_number);
+              thankYouPopup();
+              setTimeout(() => {
+                setCartItems([]);
+              }, 600);
+            } else {
+              errorPopup();
+            }
+          },
+          prefill: {
+            name: result.name,
+            email: result.email,
+            contact: result.contact,
+          },
+          notes: {
+            order_number: result?.order?.order_number,
+          },
+          theme: {
+            color: "#F37254",
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        if (result.message === "Your cart is empty") {
+          setOpen(true);
+          errorPopup();
+        }
       }
     } catch (error) {
       setOpen(true);
@@ -456,12 +502,16 @@ export default function ShoppingCart() {
 
   return (
     <>
-      <Navbar items_count={items_count} customerData={customerData || {}} isCartEmpty={isCartEmpty} />
+      <Navbar
+        items_count={items_count}
+        customerData={customerData || {}}
+        isCartEmpty={isCartEmpty}
+      />
       <MainNavbar />
       <section className="bg-white py-8 md:py-16 mb-4 min-h-screen">
-        {!cartFetched? (
+        {!cartFetched ? (
           <FadeLoaderOverlay />
-        ) : cartItems?.length > 0 && items_count > 0? (
+        ) : cartItems?.length > 0 && items_count > 0 ? (
           <div className="mx-auto container max-w-screen-xl p-4 2xl:px-0 bg-gray-100">
             <div className="flex items-center justify-center bg-white mx-4 mb-4 py-4">
               <div className="flex items-center w-full max-w-xl justify-between">
@@ -782,17 +832,17 @@ export default function ShoppingCart() {
                         </svg>
                       </div>
                       {showCoupon && (
-                        <> 
+                        <>
                           <div className="flex justify-between">
-                          <div className="max-w-[160px]">
-                            <Input
-                              label="Enter code"
-                              size="md"
-                              value={coupon_code}
-                              className="max-w-[160px]"
-                              onChange={handleCouponChange}
-                              {...({} as React.ComponentProps<typeof Input>)}
-                            />
+                            <div className="max-w-[160px]">
+                              <Input
+                                label="Enter code"
+                                size="md"
+                                value={coupon_code}
+                                className="max-w-[160px]"
+                                onChange={handleCouponChange}
+                                {...({} as React.ComponentProps<typeof Input>)}
+                              />
                             </div>
                             <button
                               onClick={() => {
@@ -1105,14 +1155,16 @@ export default function ShoppingCart() {
                         {showCoupon && (
                           <>
                             <div className="flex justify-between">
-                            <div className="max-w-[160px]">
-                              <Input
-                                label="Enter code"
-                                value={coupon_code}
-                                onChange={handleCouponChange}
-                                className="max-w-[160px]"
-                                {...({} as React.ComponentProps<typeof Input>)}
-                              />
+                              <div className="max-w-[160px]">
+                                <Input
+                                  label="Enter code"
+                                  value={coupon_code}
+                                  onChange={handleCouponChange}
+                                  className="max-w-[160px]"
+                                  {...({} as React.ComponentProps<
+                                    typeof Input
+                                  >)}
+                                />
                               </div>
                               <button
                                 onClick={() => {
@@ -1286,7 +1338,7 @@ export default function ShoppingCart() {
                               <input
                                 type="radio"
                                 name="payment"
-                                checked={paymentMethod === "cod"}
+                                checked={payment_method === "cod"}
                                 onChange={() => setPaymentMethod("cod")}
                               />{" "}
                               Cash On Delivery
@@ -1295,10 +1347,10 @@ export default function ShoppingCart() {
                               <input
                                 type="radio"
                                 name="payment"
-                                checked={paymentMethod === "online"}
-                                onChange={() => setPaymentMethod("online")}
+                                checked={payment_method === "razorpay"}
+                                onChange={() => setPaymentMethod("razorpay")}
                               />{" "}
-                              Pay using UPI/Card/Wallet/Netbanking
+                              Razorpay
                             </label>
                           </div>
                         </div>

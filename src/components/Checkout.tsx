@@ -609,8 +609,8 @@ export default function Checkout({
                   onChange={handleInputChange}
                   disabled={!selectedState}
                 >
-                  <option defaultValue={formData?.city || ""}>
-                    {selectedState ? "Select city" : formData?.city || ""}
+                  <option defaultValue={formValues.city || ""}>
+                    {selectedState ? "Select city" : formValues.city || "Select city"}
                   </option>
                   {filteredCities?.map((city: any) => (
                     <option

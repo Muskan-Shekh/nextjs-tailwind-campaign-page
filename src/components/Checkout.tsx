@@ -20,7 +20,7 @@ export default function Checkout({
   onCustomerData,
   shippingData,
 }: CheckoutProps) {
-  // console.log("shippingData",shippingData)
+  // console.log(formData)
   interface CartItem {
     product_id: number;
     product_name: string;
@@ -30,9 +30,18 @@ export default function Checkout({
     subtotal?: number;
     product_weight?: number | any;
   }
-
-  const [deliveryType, setDeliveryType] = useState("free");
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const initialFormValues = {
+  email: "",
+  first_name: "",
+  last_name: "",
+  phone: "",
+  address: "",
+  address_2: "",
+  state: "",
+  city: "",
+  zip_code: "",
+  country: "India",
+};
   const [session, setSession] = useState("");
   const [cartItems, setCartItems] = useState([] as CartItem[]);
   const [items_count, setItemsCount] = useState(0);
@@ -59,10 +68,97 @@ export default function Checkout({
   const [statesFeteched, setStatesFatched] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
   const [showCityError, setShowCityError] = useState(false);
-  const [formValues, setFormValues] = useState(formData);
+  const [formValues, setFormValues] = useState(formData?.first_name ? formData : initialFormValues);
+   const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load values from localStorage once on mount
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const savedForm = localStorage.getItem("checkoutForm");
+  //     if (savedForm) {
+  //       try {
+  //         setFormValues(JSON.parse(savedForm));
+  //       } catch (e) {
+  //         console.error("Failed to parse stored form data", e);
+  //       }
+  //     }
+  //     setIsLoaded(true);
+  //   }
+  // }, []);
+  useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  // If new customer data comes in, save it and use it
+  if (customerData?.access_token && customerData?.customer) {
+    localStorage.setItem("access_token", customerData.access_token);
+    localStorage.setItem("customer", JSON.stringify(customerData.customer));
+    setCustomer(customerData.customer);
+
+    // Pre-fill form with customer data
+    const customer = customerData.customer;
+    setFormValues((prev:any) => ({
+      ...prev,
+      first_name: customer.first_name || "",
+      last_name: customer.last_name || "",
+      email: customer.email || "",
+      phone: customer.phone || "",
+      address: customer.address || "",
+      address_2: customer.address_2 || "",
+      city: customer.city || "",
+      state: customer.state || "",
+      zip_code: customer.zip_code || "",
+      country: customer.country || "India",
+    }));
+  } else {
+    // Try loading customer from localStorage
+    const token = localStorage.getItem("access_token");
+    const storedCustomer = localStorage.getItem("customer");
+
+    if (token && storedCustomer) {
+      const parsedCustomer = JSON.parse(storedCustomer);
+      setCustomer(parsedCustomer);
+
+      setFormValues((prev:any) => ({
+        ...prev,
+        first_name: parsedCustomer.first_name || "",
+        last_name: parsedCustomer.last_name || "",
+        email: parsedCustomer.email || "",
+        phone: parsedCustomer.phone || "",
+        address: parsedCustomer.address || "",
+        address_2: parsedCustomer.address_2 || "",
+        city: parsedCustomer.city || "",
+        state: parsedCustomer.state || "",
+        zip_code: parsedCustomer.zip_code || "",
+        country: parsedCustomer.country || "India",
+      }));
+    } else {
+      // Fallback to previously saved form data
+      const savedForm = localStorage.getItem("checkoutForm");
+      if (savedForm) {
+        try {
+          setFormValues(JSON.parse(savedForm));
+        } catch (e) {
+          console.error("Failed to parse stored form data", e);
+        }
+      }
+    }
+  }
+
+  setIsLoaded(true);
+}, [customerData]);
+
+
+  // Update localStorage whenever formValues changes
+  useEffect(() => {
+    if (isLoaded && !customer) {
+      localStorage.setItem("checkoutForm", JSON.stringify(formValues));
+    }
+  }, [customer, formValues, isLoaded]);
 
   useEffect(() => {
+    if(formData?.first_name){
     setFormValues(formData);
+    }
   }, [formData]);
 
   const handleInputChange = (
@@ -161,6 +257,10 @@ export default function Checkout({
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+     setFormValues((prev:any) => ({
+    ...prev,
+    email: value, // ✅ update formValues
+  }));
     setEmail(value);
     setUserFound(null);
     setErrorMessage("");
@@ -225,43 +325,21 @@ export default function Checkout({
   }
 
   // useEffect(() => {
-  //   if (
-  //     typeof window !== "undefined" &&
-  //     customerData?.access_token &&
-  //     customerData?.customer
-  //   ) {
+  //   if (typeof window === "undefined") return;
+
+  //   if (customerData?.access_token && customerData?.customer) {
   //     localStorage.setItem("access_token", customerData.access_token);
   //     localStorage.setItem("customer", JSON.stringify(customerData.customer));
-  //   }
-  // }, [customerData]);
-
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
+  //     setCustomer(customerData.customer); // Optionally update state immediately
+  //   } else {
   //     const token = localStorage.getItem("access_token");
-  //     const customerData = localStorage.getItem("customer");
-  //     if (customerData && token) {
-  //       // setAccessToken(token);
-  //       setCustomer(customerData ? JSON.parse(customerData) : null);
+  //     const storedCustomer = localStorage.getItem("customer");
+
+  //     if (token && storedCustomer) {
+  //       setCustomer(JSON.parse(storedCustomer));
   //     }
   //   }
-  // }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    if (customerData?.access_token && customerData?.customer) {
-      localStorage.setItem("access_token", customerData.access_token);
-      localStorage.setItem("customer", JSON.stringify(customerData.customer));
-      setCustomer(customerData.customer); // Optionally update state immediately
-    } else {
-      const token = localStorage.getItem("access_token");
-      const storedCustomer = localStorage.getItem("customer");
-
-      if (token && storedCustomer) {
-        setCustomer(JSON.parse(storedCustomer));
-      }
-    }
-  }, [customerData]);
+  // }, [customerData]);
 
   useEffect(() => {
     const source =
@@ -390,13 +468,17 @@ export default function Checkout({
 
     const data = {
       ...source,
-      email: email || formData?.email || customer?.email || "",
+      email: email || formValues?.email || customer?.email || "",
       password: password || "",
       is_guest: !password,
     };
 
     onNext(data);
   };
+
+  if (!isLoaded) {
+    return <div>Loading checkout form...</div>;
+  }
 
   return (
     <>
@@ -452,7 +534,7 @@ export default function Checkout({
                   placeholder="Email Address"
                   className="w-full border p-2 rounded border-gray-400 mb-2"
                   required
-                  value={email || formData?.email}
+                  value={email || formValues.email}
                   onChange={handleEmailChange}
                 />
               )}

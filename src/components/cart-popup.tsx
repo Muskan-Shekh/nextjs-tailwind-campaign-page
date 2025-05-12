@@ -53,7 +53,7 @@ export function CartPopup({
           <button
             className="mt-2 bg-green-600 text-white text-sm px-4 py-2 rounded-md hover:bg-green-700"
             onClick={() => {
-              router.push("/view-cart");
+              router.push("/checkout");
               setShowPopup(false);
             }}
           >

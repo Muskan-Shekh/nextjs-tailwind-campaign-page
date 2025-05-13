@@ -23,7 +23,9 @@ export default function ShoppingCart() {
   const [orderItems, setOrderItems] = useState([] as CartItem[]);
   const orderNumber = searchParams.get("order_number");
   const [orderData, setOrderData] = useState({} as any);
-
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   // const checkSession = async () => {
   //   const res = await fetch("/api/debug", {
   //     method: "GET",

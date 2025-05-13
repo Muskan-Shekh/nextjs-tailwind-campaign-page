@@ -65,6 +65,9 @@ export default function ShoppingCart() {
   const [mainCategories, setMainCategories] = useState([] as any);
   const [isCartEmpty, setIsCartEmpty] = useState(false);
   // console.log("viewcart customer",customerData);
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   const loadRazorpayScript = () =>
     new Promise((resolve) => {
       const script = document.createElement("script");

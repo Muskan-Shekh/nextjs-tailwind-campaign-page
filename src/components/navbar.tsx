@@ -349,7 +349,7 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
           </div>
         </div>
         <div className="hidden items-center gap-2 lg:flex">
-          <Link href={"/checkout"} className="relative">
+          <Link href={"/checkout?step=cart"} className="relative">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -365,7 +365,7 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              {items_count || isCartEmpty ? items_count: itemsCount}
+              {items_count || isCartEmpty ? items_count: itemsCount || 0}
             </div>
           </Link>
           {access_token && customer ? (
@@ -451,7 +451,7 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
       <Collapse open={open}>
         <div className="container mx-auto mt-3 border-t border-gray-200 px-2 pt-4">
           <div className="mt-6 mb-4 flex items-center gap-2">
-            <Link href={"/checkout"} className="relative">
+            <Link href={"/checkout?step=cart"} className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

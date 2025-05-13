@@ -125,6 +125,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
           {category_tabs?.cat_tab_description || " "}
         </Typography>
         <div className="mt-20 flex items-center justify-center">
+          {activeTab && (
           <Tabs value={activeTab} className="w-full">
             {/* {Array.isArray(category?.child) && category.child.length > 0 && (
             <TabsHeader
@@ -181,6 +182,7 @@ export function BackToSchoolBooks({ onItemsCountUpdate, category_tabs }: any) {
               </TabsHeader>
             )}
           </Tabs>
+          )}
         </div>
       </div>
       <div className="container mx-auto grid grid-cols-1 items-start gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-4">

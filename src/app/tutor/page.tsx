@@ -142,7 +142,6 @@ export default function Tutor() {
                 className: "before:content-none after:content-none",
               }}
               {...({} as React.ComponentProps<typeof Input>)}
-              required
             />
             <Typography
               variant="h6"

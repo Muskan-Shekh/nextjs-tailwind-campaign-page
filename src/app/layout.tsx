@@ -1,8 +1,11 @@
+"use client";
 import "./globals.css";
 import type { Metadata } from "next";
+
 import { Roboto } from "next/font/google";
 import { Layout, FixedPlugin } from "@/components";
 import Script from "next/script";
+import { useEffect } from "react";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -20,6 +23,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   return (
     <html lang="en">
       <head>

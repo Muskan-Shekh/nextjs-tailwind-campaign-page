@@ -45,7 +45,7 @@ export default function ShoppingCart() {
         const data = response?.data?.data;
         // console.log("data?.order", data?.order);
         setOrderItems(data?.items);
-        setOrderData(data?.order)
+        setOrderData(data?.order);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -143,33 +143,39 @@ export default function ShoppingCart() {
                       Order Number
                     </dt>
                     <dd className="text-base font-medium text-gray-500">
-                     {orderData?.order_number}
+                      {orderData?.order_number}
                     </dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-gray-900">
                       Subtotal
                     </dt>
-                    <dd className="text-base font-bold text-gray-500">₹{orderData?.subtotal}</dd>
+                    <dd className="text-base font-bold text-gray-500">
+                      ₹{orderData?.subtotal}
+                    </dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-green-400">
                       Discount
                     </dt>
-                    <dd className="text-base font-bold text-green-400">-₹{orderData?.discount_amount}</dd>
+                    <dd className="text-base font-bold text-green-400">
+                      -₹{orderData?.discount_amount}
+                    </dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-gray-900">
                       Total
                     </dt>
-                    <dd className="text-base font-bold text-gray-500">₹{orderData?.total_amount}</dd>
+                    <dd className="text-base font-bold text-gray-500">
+                      ₹{orderData?.total_amount}
+                    </dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">
                     <dt className="text-base font-normal text-gray-900">
                       Order Status
                     </dt>
                     <dd className="text-base font-bold text-gray-500">
-                    {orderData?.status}
+                      {orderData?.status}
                     </dd>
                   </dl>
                   <dl className="flex justify-between gap-4 border-t border-gray-200 pt-2">

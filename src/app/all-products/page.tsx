@@ -22,7 +22,13 @@ export default function Category() {
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
-  const [selectedPublicationIds, setSelectedPublicationIds] = useState<number[]>([]);
+  const [selectedPublicationIds, setSelectedPublicationIds] = useState<
+    number[]
+  >([]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,8 +47,8 @@ export default function Category() {
         setLoading(false);
       }
     };
-    
-      fetchProducts();
+
+    fetchProducts();
   }, []);
 
   useEffect(() => {}, [products]);
@@ -87,8 +93,8 @@ export default function Category() {
       );
     }
   };
-  const displayedProducts = filteredProducts
-    // filteredProducts.length > 0 ? filteredProducts : products;
+  const displayedProducts = filteredProducts;
+  // filteredProducts.length > 0 ? filteredProducts : products;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = displayedProducts.slice(

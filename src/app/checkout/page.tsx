@@ -634,10 +634,12 @@ export default function ShoppingCart() {
                             <div className="flex flex-wrap items-center justify-between p-4 gap-2">
                               <div>
                                 {" "}
-                                <img
+                                <Image
                                   className="h-40 w-40 object-contain rounded-lg"
                                   src={`${config.apiUrl}storage/${item.image}`}
                                   alt={item.product_name}
+                                  width={150}
+                                  height={200}
                                 />
                                 <div className="border border-1 px-4 mt-2 text-center">
                                   <p className="text-sm text-gray-900">
@@ -1065,10 +1067,12 @@ export default function ShoppingCart() {
                               <div className="flex flex-wrap items-center justify-between p-4 gap-2">
                                 <div>
                                   {" "}
-                                  <img
+                                  <Image
                                     className="h-40 w-40 object-contain rounded-lg"
                                     src={`${config.apiUrl}storage/${item.image}`}
                                     alt={item.product_name}
+                                    width={150}
+                                    height={200}
                                   />
                                   <div className="border border-1 px-4 mt-2 text-center">
                                     <p className="text-sm text-gray-900">
@@ -1503,8 +1507,8 @@ export default function ShoppingCart() {
               <Image
                 src="/image/bag.png"
                 alt="Empty Cart"
-                width={150}
-                height={150}
+                width={768}
+                height={768}
                 className="h-80 w-80"
               />
             </div>

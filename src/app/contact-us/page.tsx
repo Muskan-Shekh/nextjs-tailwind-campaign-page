@@ -21,6 +21,10 @@ export default function ContactSection() {
   const [contactPageData, setContactPageData] = React.useState([] as any);
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  React.useEffect(() => {
     const fetchContactData = async () => {
       try {
         const response = await axios({

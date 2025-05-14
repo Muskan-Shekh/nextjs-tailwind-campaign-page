@@ -10,16 +10,21 @@ interface CategoryCardProps {
   cat_title: string;
   cat_content: string;
   // cat_icon: React.ElementType;
-  cat_icon:any
+  cat_icon: any;
 }
 
-function CategoryCard({ cat_image, cat_title, cat_content, cat_icon }: CategoryCardProps) {
+function CategoryCard({
+  cat_image,
+  cat_title,
+  cat_content,
+  cat_icon,
+}: CategoryCardProps) {
   return (
     <Card
       className="relative grid min-h-[12rem] w-full overflow-hidden cursor-pointer"
       {...({} as React.ComponentProps<typeof Card>)}
     >
-      <img
+      <Image
         width={768}
         height={768}
         src={`${config.apiUrl}storage/${cat_image}`}
@@ -31,7 +36,13 @@ function CategoryCard({ cat_image, cat_title, cat_content, cat_icon }: CategoryC
         className="relative flex flex-col justify-between"
         {...({} as React.ComponentProps<typeof CardBody>)}
       >
-        <img className="h-8 w-8 text-white"  src={`${config.apiUrl}storage/${cat_icon}`}/>
+        <Image
+          className="h-8 w-8 text-white"
+          width={768}
+          height={768}
+          alt={cat_icon}
+          src={`${config.apiUrl}storage/${cat_icon}`}
+        />
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -51,7 +62,7 @@ function CategoryCard({ cat_image, cat_title, cat_content, cat_icon }: CategoryC
           <Typography
             color="white"
             className="text-xs font-bold opacity-50"
-            dangerouslySetInnerHTML={{__html: cat_content}}
+            dangerouslySetInnerHTML={{ __html: cat_content }}
             {...({} as React.ComponentProps<typeof Typography>)}
           >
             {/* {cat_content} */}

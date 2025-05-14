@@ -114,6 +114,10 @@ export default function CurrentAffairsPage() {
   const [currentAffairsData, setCurrentAffairsData] = React.useState([] as any);
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  React.useEffect(() => {
     const fetchCurrentAffairsData = async () => {
       try {
         const response = await axios({
@@ -263,7 +267,7 @@ export default function CurrentAffairsPage() {
               className="items-center mx-auto py-2"
               {...({} as React.ComponentProps<typeof CardBody>)}
             >
-              {/* <img
+              {/* <Image
                 src="/image/spotify.svg"
                 className="max-w-[8rem] mx-auto grayscale"
                 alt="spotify"

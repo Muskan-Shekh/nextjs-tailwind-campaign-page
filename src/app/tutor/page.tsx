@@ -74,7 +74,9 @@ export default function Tutor() {
 
       if (response.ok) {
         setAlertType("success");
-        setAlertMessage("Thank you 😊!, We'll connect you in 2 to 3 working days.");
+        setAlertMessage(
+          "Thank you 😊!, We'll connect you in 2 to 3 working days."
+        );
         form.reset();
       } else {
         if (data?.error) {
@@ -91,6 +93,10 @@ export default function Tutor() {
       // alert("Something went wrong. Please try again later.");
     }
   }
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   React.useEffect(() => {
     if (alertMessage) {

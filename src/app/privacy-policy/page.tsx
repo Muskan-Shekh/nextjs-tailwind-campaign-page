@@ -10,6 +10,10 @@ export default function PrivacyPolicy() {
   const [privacyPolicyData, setPrivacyPolicyData] = React.useState([] as any);
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  React.useEffect(() => {
     const fetchPrivacyPolicy = async () => {
       try {
         const response = await axios({

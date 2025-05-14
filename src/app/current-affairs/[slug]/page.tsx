@@ -11,6 +11,11 @@ import React from "react";
 export default function Detail({ params }: any) {
   const [currentAffairsData, setCurrentAffairsData] = React.useState({} as any);
   const [currentAffairsList, setCurrentAffairsList] = React.useState([] as any);
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   React.useEffect(() => {
     const fetchCurrentAffairsData = async () => {
       try {
@@ -57,7 +62,7 @@ export default function Detail({ params }: any) {
     <>
       <Navbar />
       <MainNavbar />
-      <section className="container mx-auto mb-10 mt-10 md:flex">
+      <section className="container mx-auto mb-10 mt-10 md:flex min-h-screen">
         {currentAffairsData && currentAffairsList?.length ? (
           <>
             <div className="grid grid-cols-1 gap-x-6 gap-y-20 col-8 p-4 shadow-lg">

@@ -21,6 +21,10 @@ import config from "./config";
 export default function Campaign() {
   const [itemsCount, setItemsCount] = useState<number>(0);
   const [homePageData, setHomePageData] = React.useState([] as any);
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   React.useEffect(() => {
     const fetchAboutUsData = async () => {

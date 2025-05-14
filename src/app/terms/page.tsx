@@ -11,6 +11,10 @@ export default function Terms() {
   const [termsContent, setTermsContent] = React.useState([] as any);
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  React.useEffect(() => {
     const fetchAboutUsData = async () => {
       try {
         const response = await axios({

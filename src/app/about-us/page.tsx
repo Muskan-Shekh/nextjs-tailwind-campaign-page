@@ -10,6 +10,10 @@ export default function AboutUs() {
   const [aboutUsData, setAboutUsData] = React.useState([] as any);
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  React.useEffect(() => {
     const fetchAboutUsData = async () => {
       try {
         const response = await axios({

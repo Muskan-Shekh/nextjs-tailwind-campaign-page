@@ -7,6 +7,7 @@ import MainNavbar from "@/components/main-navbar";
 import config from "@/app/config";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 interface CartItem {
   id: number;
@@ -94,12 +95,12 @@ export default function ShoppingCart() {
                     >
                       <div className="grid grid-cols-5 gap-6 items-center">
                         {/* Image */}
-                        <img
-                          className="h-20 w-20 object-contain"
+                        <Image
+                          className="object-contain"
                           src={`${config.apiUrl}storage/${item.product_image}`}
                           alt={`item.product_name`}
-                          width={80}
-                          height={80}
+                          width={150}
+                          height={200}
                         />
 
                         {/* Product Name */}

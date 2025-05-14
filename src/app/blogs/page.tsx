@@ -5,9 +5,13 @@ import MainNavbar from "@/components/main-navbar";
 import React from "react";
 import config from "../config";
 import axios from "axios";
+import Image from "next/image";
 
 export default function Blogs() {
   const [blogData, setBlogData] = React.useState([] as any);
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   React.useEffect(() => {
     const fetchBlogData = async () => {
@@ -91,10 +95,12 @@ export default function Blogs() {
                 >
                   {blog?.title}
                 </Typography>
-                <img
+                <Image
                   src={`${config.apiUrl}storage/${blog?.image}`}
                   alt={blog?.title}
-                  className="w-full h-80 object-contain mb-4"
+                  className="object-contain mb-4 ml-8"
+                  width={150}
+                  height={200}
                 />
                 <Typography
                   className="w-full text-gray-600"

@@ -38,6 +38,10 @@ export default function SignIn() {
   const [activeTab, setActiveTab] = useState("");
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (register) {
       setActiveTab("register");
     } else {

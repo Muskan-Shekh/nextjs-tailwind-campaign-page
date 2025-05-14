@@ -7,6 +7,8 @@ import {
   DialogFooter,
   Typography,
 } from "@material-tailwind/react";
+import Image from "next/image";
+import logo from "../../public/logos/logo.png";
 
 export function NotificationDialog({ open, handleOpen }: any) {
   // const [open, setOpen] = React.useState(false);
@@ -51,11 +53,13 @@ export function NotificationDialog({ open, handleOpen }: any) {
           className="grid place-items-center gap-4"
           {...({} as React.ComponentProps<typeof DialogBody>)}
         >
-          <img
-            src="https://bookwindow.in/assets/images/logo.png"
-            alt="logo"
-            className="h-16 w-40"
-          ></img>
+          <Image
+            src={logo}
+            alt={"book window logo"}
+            className="h-[55px] w-[215px]"
+            width={768}
+            height={768}
+          />
 
           <Typography
             className="text-center font-normal text-gray-600"

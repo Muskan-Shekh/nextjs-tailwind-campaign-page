@@ -40,6 +40,9 @@ export default function AccountPage() {
   const [userOrders, setUserOrders] = useState([] as any);
   const router = useRouter();
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("access_token");
       const customerData = localStorage.getItem("customer");
@@ -177,7 +180,7 @@ function OrdersTab({ userOrders }: any) {
     setSelectedOrder(order);
     setIsOrderShow(true);
   };
-  
+
   return (
     <div>
       {!isOrderShow && (
@@ -207,7 +210,7 @@ function OrdersTab({ userOrders }: any) {
                   </td>
                   <td className="p-2 border">{order?.order_details?.status}</td>
                   <td className="p-2 border">
-                  ₹{order?.order_details?.total_amount} for{" "}
+                    ₹{order?.order_details?.total_amount} for{" "}
                     {order?.items.length} items
                   </td>
                   <td className="p-2 border hidden md:block">
@@ -248,9 +251,19 @@ function OrdersTab({ userOrders }: any) {
             <h1 className="text-2xl font-bold mb-4">Order Details</h1>
           </div>
           <div className="bg-gray-100 border border-gray-300 p-4 mb-8 text-sm">
-            Order <span className="bg-yellow-300 font-medium"># {selectedOrder?.order_details?.order_number}</span> was
-            placed on <span className="bg-yellow-300 font-medium">{selectedOrder?.order_details?.created_at}</span> and
-            is currently <span className="bg-yellow-300 font-medium">{selectedOrder?.order_details?.status}</span>.
+            Order{" "}
+            <span className="bg-yellow-300 font-medium">
+              # {selectedOrder?.order_details?.order_number}
+            </span>{" "}
+            was placed on{" "}
+            <span className="bg-yellow-300 font-medium">
+              {selectedOrder?.order_details?.created_at}
+            </span>{" "}
+            and is currently{" "}
+            <span className="bg-yellow-300 font-medium">
+              {selectedOrder?.order_details?.status}
+            </span>
+            .
           </div>
 
           {/* Order Details Section */}
@@ -266,7 +279,9 @@ function OrdersTab({ userOrders }: any) {
                 <div className="flex justify-between">
                   <div>
                     {item.product_name} × <strong>{item.quantity || 1}</strong>
-                    {item.size && <div className="text-sm mt-1">Size: {item.size}</div>}
+                    {item.size && (
+                      <div className="text-sm mt-1">Size: {item.size}</div>
+                    )}
                   </div>
                   <div className="text-right font-medium">₹{item.price}</div>
                 </div>
@@ -280,7 +295,9 @@ function OrdersTab({ userOrders }: any) {
             </div>
             <div className="p-4 border-b border-gray-200 flex justify-between">
               <span>Discount:</span>
-              <span className="text-red-500">-₹{selectedOrder?.order_details?.discount_amount}</span>
+              <span className="text-red-500">
+                -₹{selectedOrder?.order_details?.discount_amount}
+              </span>
             </div>
             <div className="p-4 border-b border-gray-200 flex justify-between">
               <span>Payment method:</span>
@@ -288,7 +305,11 @@ function OrdersTab({ userOrders }: any) {
             </div>
             <div className="p-4 border-b border-gray-200 flex justify-between">
               <span>Shipping:</span>
-              <span>{selectedOrder?.order_details?.shipping_method? selectedOrder?.order_details?.shipping_method :`₹${selectedOrder?.order_details?.shipping_amount}`}</span>
+              <span>
+                {selectedOrder?.order_details?.shipping_method
+                  ? selectedOrder?.order_details?.shipping_method
+                  : `₹${selectedOrder?.order_details?.shipping_amount}`}
+              </span>
             </div>
             <div className="p-4 font-bold text-lg flex justify-between">
               <span>Total:</span>

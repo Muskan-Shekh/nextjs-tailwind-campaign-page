@@ -3,7 +3,7 @@ const nextConfig = {
   distDir: 'build',
   reactStrictMode: true,
   images: {
-    domains: ['admin.bookwindow.in'],
+    domains: ['admin.bookwindow.in','bookwindow.in'],
     remotePatterns: [
       {
         protocol: "https",

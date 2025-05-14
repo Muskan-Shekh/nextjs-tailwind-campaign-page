@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Card, CardBody } from "@material-tailwind/react";
 import config from '@/app/config';
+import Image from 'next/image';
 
 interface FeatureCardProps {
   title: string;
@@ -16,7 +17,7 @@ export function FeatureCard({ icon, title, children }: FeatureCardProps) {
         <CardBody className="grid justify-center text-center" {...({} as React.ComponentProps<typeof CardBody>)}>
           <div className="mx-auto mb-6 grid h-12 w-12 place-items-center rounded-lg bg-gray-300 p-2.5 text-white shadow">
             {/* <Icon className="h-5 w-5" /> */}
-            <img className="h-5 w-5" src={`${config.apiUrl}storage/${icon}`}/>
+            <Image className="h-5 w-5" src={`${config.apiUrl}storage/${icon}`} alt='icon' width={120} height={120}/>
           </div>
           <Typography variant="h5" color="blue-gray" className="mb-2" {...({} as React.ComponentProps<typeof Typography>)}>
             {title}

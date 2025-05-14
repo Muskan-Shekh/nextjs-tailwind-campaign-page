@@ -28,6 +28,10 @@ export default function Category({ params }: any) {
   const [selectedPublicationIds, setSelectedPublicationIds] = useState<
     number[]
   >([]);
+  
+ useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchProductsByCategory = async () => {

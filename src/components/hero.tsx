@@ -12,10 +12,12 @@ function Hero({ onButtonClick, bannerData }: any) {
         <div className="container mx-auto grid h-full min-h-[65vh] w-full grid-cols-1 place-items-center gap-y-10 lg:grid-cols-2">
           <div className="row-start-2 lg:row-auto lg:-mt-6">
             <a href="/">
-              <img
+              <Image
                 src={`${config.apiUrl}storage/${bannerData?.logo_img}`}
                 alt={"book window logo"}
                 className="w-[55%]"
+                width={768}
+                height={768}
               />
             </a>
             <Typography
@@ -58,9 +60,11 @@ function Hero({ onButtonClick, bannerData }: any) {
             </Button>
           </div>
           <div className="mt-20 grid gap-6">
-            <img
+            <Image
               src={`${config.apiUrl}storage/${bannerData?.images}`}
               alt="hero image"
+              width={768}
+              height={768}
             />
             {/* <div className="grid grid-cols-4 gap-6">
             <Image

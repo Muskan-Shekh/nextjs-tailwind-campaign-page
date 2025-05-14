@@ -111,6 +111,10 @@ export default function RequestProduct() {
   }
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  React.useEffect(() => {
     if (alertMessage) {
       const timer = setTimeout(() => {
         setAlertMessage("");
@@ -119,6 +123,8 @@ export default function RequestProduct() {
       return () => clearTimeout(timer);
     }
   }, [alertMessage]);
+
+  const placeholderImage = "https://bookwindow.in/assets/images/im-def.png";
 
   return (
     <>
@@ -249,16 +255,20 @@ export default function RequestProduct() {
 
               <div className="mt-4">
                 {preview ? (
-                  <img
+                  <Image
                     src={preview}
                     alt="Preview"
-                    className="w-64 h-64 object-cover rounded-md shadow-md"
+                    className="w-64 h-64 object-contain rounded-md shadow-md"
+                    width={150}
+                    height={200}
                   />
                 ) : (
-                  <img
-                    src="https://bookwindow.in/assets/images/im-def.png"
+                   <Image
+                    src={placeholderImage}
                     alt="placeholder-image"
-                    className="w-64 h-64 object-cover rounded-md shadow-md"
+                    className="w-64 h-64 object-contain rounded-md shadow-md"
+                    width={150}
+                    height={200}
                   />
                 )}
               </div>

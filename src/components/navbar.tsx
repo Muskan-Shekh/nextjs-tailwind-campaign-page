@@ -32,7 +32,7 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
       setAccessToken(customerData.access_token);
     }
   }, [customerData]);
-  
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("access_token");
@@ -55,23 +55,24 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
     // console.log("Session info:", data);
   };
   useEffect(() => {
-    if(session){
-    const viewCart = async () => {
-      try {
-        const response = await axios({
-          method: "get",
-          url: `${config.apiUrl}api/cart/viewcart?session_id=${session}`,
-          responseType: "json",
-        });
-        const data = response?.data;
-        setItemsCount(data?.items_count);
-      } catch (error) {
-        console.log("error", error);
-      } finally {
-        // console.log("An error occured");
-      }
-    };
-    viewCart();}
+    if (session) {
+      const viewCart = async () => {
+        try {
+          const response = await axios({
+            method: "get",
+            url: `${config.apiUrl}api/cart/viewcart?session_id=${session}`,
+            responseType: "json",
+          });
+          const data = response?.data;
+          setItemsCount(data?.items_count);
+        } catch (error) {
+          console.log("error", error);
+        } finally {
+          // console.log("An error occured");
+        }
+      };
+      viewCart();
+    }
   }, [session]);
 
   useEffect(() => {
@@ -233,6 +234,8 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
             src={logo}
             alt={"book window logo"}
             className="h-[55px] w-[215px]"
+            width={768}
+            height={768}
           />
         </a>
         <div className="hidden w-full max-w-xl min-w-[200px] lg:block">
@@ -310,10 +313,12 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
                     href={`/product-detail/${product?.slug}`} // your route
                     className="flex gap-3 items-start px-4 py-3 hover:bg-gray-100 border-b"
                   >
-                    <img
+                    <Image
                       src={`${config.apiUrl}storage/${product?.image}`} // adjust path if needed
                       alt={product?.name}
                       className="w-12 h-16 object-cover rounded-sm"
+                      width={768}
+                      height={768}
                     />
                     <div className="flex-1">
                       <h4 className="font-medium text-sm text-gray-900">
@@ -365,7 +370,7 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
               />
             </svg>
             <div className="absolute top-[-8px] right-[-8px] bg-red-400 text-white size-4 rounded-full flex justify-center items-center text-[10px]">
-              {items_count || isCartEmpty ? items_count: itemsCount || 0}
+              {items_count || isCartEmpty ? items_count : itemsCount || 0}
             </div>
           </Link>
           {access_token && customer ? (
@@ -387,7 +392,7 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
                 </Typography>
               </MenuHandler>
               <MenuList {...({} as React.ComponentProps<typeof MenuList>)}>
-              <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
+                <MenuItem {...({} as React.ComponentProps<typeof MenuItem>)}>
                   <Typography
                     as="a"
                     href="/my-account"

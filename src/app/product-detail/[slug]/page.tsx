@@ -33,6 +33,10 @@ export default function ProductDetail({ params }: any) {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const fetchProductBySlug = async () => {
       setLoading(true);
       try {
@@ -123,7 +127,9 @@ export default function ProductDetail({ params }: any) {
       <Navbar items_count={items_count} />
       <MainNavbar />
       <div className="container mx-auto px-4 py-8 md:flex md:col-12">
-        {loading ? (<FadeLoaderOverlay/>
+        {loading ? (
+          <FadeLoaderOverlay />
+        ) : (
           // <div
           //   role="status"
           //   className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center w-full"
@@ -157,26 +163,29 @@ export default function ProductDetail({ params }: any) {
 
           //   <span className="sr-only">Loading...</span>
           // </div>
-        ) : (
           <div className="flex flex-wrap">
             {/* Product Images */}
             <div className="w-full md:w-1/2 px-10 mb-8">
-              <img
+              <Image
                 src={mainImage}
                 alt="Product"
                 className="w-[40rem] h-80 rounded-lg shadow-md mb-4 object-contain"
+                width={768}
+                height={768}
               />
               {/* gallary image */}
               <div className="flex gap-4 py-4 justify-center overflow-x-auto">
                 {productData.gallery?.map((img: string, index: number) => {
                   const imgSrc = `${config.apiUrl}storage/${img}`;
                   return (
-                    <img
+                    <Image
                       key={index}
                       src={imgSrc}
                       alt={`Thumbnail ${index + 1}`}
-                      className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
+                      className="size-16 sm:size-20 object-contain rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
                       onClick={() => handleImageChange(imgSrc)}
+                      width={150}
+                      height={200}
                     />
                   );
                 })}
@@ -286,8 +295,8 @@ export default function ProductDetail({ params }: any) {
                     popupRef={popupRef}
                     setShowPopup={setShowPopup}
                     showPopup={showPopup}
-                    productName ={productData?.name}
-                    productImage ={mainImage}
+                    productName={productData?.name}
+                    productImage={mainImage}
                   ></CartPopup>
                 )}
 

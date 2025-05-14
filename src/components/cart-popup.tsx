@@ -39,10 +39,12 @@ export function CartPopup({
       className="fixed bottom-28 right-4 bg-white shadow-2xl border rounded-lg p-4 w-80 border-green-400 z-40"
     >
       <div className="flex gap-3">
-        <img
+        <Image
           src={productImage}
           alt="Book"
           className="object-contain rounded-md h-20 w-30"
+          width={120}
+          height={150}
         />
         <div>
           <h2 className="font-semibold text-sm">

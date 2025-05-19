@@ -106,7 +106,7 @@ export default function ShoppingCart() {
                         {/* Product Name */}
                         <div className="space-y-1">
                           <a
-                            href="#"
+                            href={"#"}
                             className="text-base font-medium text-gray-900 hover:underline"
                           >
                             {item.product_name}

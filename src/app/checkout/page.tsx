@@ -449,13 +449,14 @@ export default function ShoppingCart() {
 
       if (result?.order_number && !result?.razorpay_order_id) {
         setOrderNumber(result?.order_number);
-        thankYouPopup();
+        router.push(`/view-orders?order_number=${result?.order_number}`);
+        // thankYouPopup();
         setTimeout(() => {
           // setCartItems([]);
           setItemsCount(0);
           setIsCartEmpty(true);
           localStorage.removeItem("checkoutForm");
-        }, 8000);
+        }, 2000);
       }
       if (response.ok && result?.razorpay_order_id) {
         // 1. Load Razorpay script
@@ -493,11 +494,12 @@ export default function ShoppingCart() {
             console.log("RAzorpay data", verifyData);
             if (verifyRes.ok) {
               setOrderNumber(result?.order?.order_number);
+              router.push(`/view-orders?order_number=${result?.order?.order_number}`);
               // thankYouPopup();
               setTimeout(() => {
                 setCartItems([]);
                 setItemsCount(0);
-              }, 600);
+              }, 2000);
             } else {
               errorPopup();
             }

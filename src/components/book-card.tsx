@@ -114,13 +114,15 @@ export function BookCard({
         className="mx-0 mt-0 mb-6"
         {...({} as React.ComponentProps<typeof CardHeader>)}
       >
-        <Image
-          width={768}
-          height={768}
-          src={img}
-          alt={title}
-          className="h-80 w-full scale-[1.1] object-contain object-center"
-        />
+        <Link href={`/product-detail/${slug}`}>
+          <Image
+            width={768}
+            height={768}
+            src={img}
+            alt={title}
+            className="h-80 w-full scale-[1.1] object-contain object-center"
+          />
+        </Link>
       </CardHeader>
       <CardBody
         className="p-0 px-4 pb-2"

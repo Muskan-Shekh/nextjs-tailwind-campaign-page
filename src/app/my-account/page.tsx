@@ -175,11 +175,31 @@ function DashboardTab({ customer, logout }: any) {
 function OrdersTab({ userOrders }: any) {
   const [isOrderShow, setIsOrderShow] = useState<boolean>(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null); // New state
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   const handleViewOrder = (order: any) => {
     setSelectedOrder(order);
     setIsOrderShow(true);
   };
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const sortedItems = Array.isArray(userOrders?.orders)
+    ? [...userOrders?.orders].sort((a, b) => {
+        const dateA = new Date(
+          a.order_details.created_at.replace(" ", "T")
+        ).getTime();
+        const dateB = new Date(
+          b.order_details.created_at.replace(" ", "T")
+        ).getTime();
+        return dateB - dateA; // ✅ Newest (latest date) first
+      })
+    : [];
+  const currentItems = sortedItems?.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(userOrders?.orders?.length / itemsPerPage);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [userOrders?.orders]);
 
   return (
     <div>
@@ -197,7 +217,7 @@ function OrdersTab({ userOrders }: any) {
               </tr>
             </thead>
             <tbody>
-              {userOrders?.orders?.map((order: any) => (
+              {currentItems.map((order: any) => (
                 <tr key={order?.id}>
                   <td
                     className="p-2 border cursor-pointer hover:underline"
@@ -216,7 +236,6 @@ function OrdersTab({ userOrders }: any) {
                   <td className="p-2 border hidden md:block">
                     <p
                       onClick={() => handleViewOrder(order)}
-                      // href={`/view-orders?order_number=${order?.order_details?.order_number}`}
                       className="bg-black text-white px-3 py-1 rounded cursor-pointer text-center"
                     >
                       View
@@ -226,6 +245,39 @@ function OrdersTab({ userOrders }: any) {
               ))}
             </tbody>
           </table>
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8 items-center space-x-4 shadow-lg pb-8">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 border rounded ${
+                  currentPage === 1
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-white text-black"
+                }`}
+              >
+                Previous
+              </button>
+
+              <span className="text-lg font-semibold">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 border rounded ${
+                  currentPage === totalPages
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-white text-black"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
 

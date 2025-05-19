@@ -729,7 +729,7 @@ export default function Checkout({
               </select>
             </div>
           )}
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-4">
             <button
               onClick={onBack}
               className="w-60 bg-gray-800 text-white p-3 rounded hover:bg-gray-900 mt-4"

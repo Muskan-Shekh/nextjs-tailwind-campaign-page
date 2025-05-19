@@ -238,6 +238,10 @@ export function Navbar({ items_count, customerData, isCartEmpty }: any) {
             height={768}
           />
         </a>
+        {/* items_count= {items_count} <br />
+    itemsCount={itemsCount} <br /> isCartEmpty ={
+      isCartEmpty
+    } */}
         <div className="hidden w-full max-w-xl min-w-[200px] lg:block">
           <div className="relative mt-2">
             <div className="absolute top-1 left-1 flex items-center">

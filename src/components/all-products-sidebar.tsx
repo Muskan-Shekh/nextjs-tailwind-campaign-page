@@ -152,7 +152,7 @@ export default function AllProductSidebar({
                           checked={isChecked}
                           onChange={() => onCategorySelect(childCategory.id)}
                         />{" "}
-                        {childCategory.name}
+                        <p className="md:w-[80px]">{childCategory.name}</p>
                         <ListItemSuffix
                           {...({} as React.ComponentProps<
                             typeof ListItemSuffix
@@ -232,12 +232,12 @@ export default function AllProductSidebar({
                     checked={isChecked}
                     onChange={() => onPublicationSelect(publication?.id)}
                   />{" "}
-                  {publication?.name}
+                  <p className="md:w-[80px]">{publication?.name}</p>
                   <ListItemSuffix
                     {...({} as React.ComponentProps<typeof ListItemSuffix>)}
                   >
                     <Chip
-                      //   value={filteredCount || 0}
+                      //value={filteredCount || 0}
                       value={publication?.products?.length}
                       variant="ghost"
                       size="sm"

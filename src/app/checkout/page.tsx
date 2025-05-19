@@ -65,9 +65,12 @@ export default function ShoppingCart() {
   const [mainCategories, setMainCategories] = useState([] as any);
   const [isCartEmpty, setIsCartEmpty] = useState(false);
   // console.log("viewcart customer",customerData);
+
   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+    window.scrollTo(0, 0);
+    setActiveTab("cart");
+  }, []);
+
   const loadRazorpayScript = () =>
     new Promise((resolve) => {
       const script = document.createElement("script");
@@ -76,6 +79,7 @@ export default function ShoppingCart() {
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
     });
+
   const getStepStatus = (step: string) => {
     const index = steps.indexOf(step);
     const activeIndex = steps.indexOf(activeTab);
@@ -200,6 +204,9 @@ export default function ShoppingCart() {
       const result = await response.json();
       // setCartData(result);
       // console.log("updated:", result);
+      if (result?.message == "Quantity cannot be less than 1") {
+        removeItem(productId);
+      }
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
@@ -440,18 +447,16 @@ export default function ShoppingCart() {
       const result = await response.json();
       // console.log("Place order", result);
 
-      if (result?.order_number) {
+      if (result?.order_number && !result?.razorpay_order_id) {
         setOrderNumber(result?.order_number);
         thankYouPopup();
         setTimeout(() => {
-          setCartItems([]); // Wait a short time to ensure popup renders
-        }, 800);
-        localStorage.removeItem("checkoutForm");
+          // setCartItems([]);
+          setItemsCount(0);
+          setIsCartEmpty(true);
+          localStorage.removeItem("checkoutForm");
+        }, 8000);
       }
-      // else if (result.message === "Your cart is empty") {
-      //   setOpen(true);
-      //   errorPopup();
-      // }
       if (response.ok && result?.razorpay_order_id) {
         // 1. Load Razorpay script
         const isScriptLoaded = await loadRazorpayScript();
@@ -485,11 +490,13 @@ export default function ShoppingCart() {
             );
 
             const verifyData = await verifyRes.json();
+            console.log("RAzorpay data", verifyData);
             if (verifyRes.ok) {
               setOrderNumber(result?.order?.order_number);
-              thankYouPopup();
+              // thankYouPopup();
               setTimeout(() => {
                 setCartItems([]);
+                setItemsCount(0);
               }, 600);
             } else {
               errorPopup();
@@ -506,6 +513,31 @@ export default function ShoppingCart() {
           theme: {
             color: "#F37254",
           },
+          modal: {
+            ondismiss: async function () {
+              alert("Payment Cancelled");
+              // console.log("checkout data",result)
+              // Call your server's cancel API explicitly
+              try {
+                await fetch(`${config.apiUrl}api/cart/razorpay/cancel`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  credentials: "include",
+                  body: JSON.stringify({
+                    order_id: result?.order?.id,
+                    order_number: result?.order?.order_number,
+                    razorpay_order_id: result?.order?.razorpay_order_id,
+                  }),
+                });
+                errorPopup(); // Show cancellation feedback to user
+              } catch (error) {
+                console.error("Failed to call cancel API:", error);
+              }
+            },
+          },
+
+          // Optional: Handle payment failure (e.g., invalid card, insufficient funds)
+          // callback_url: "",
         };
 
         const rzp = new window.Razorpay(options);
@@ -1483,7 +1515,7 @@ export default function ShoppingCart() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-between p-4">
+                  <div className="flex justify-between p-4 gap-4">
                     <button
                       onClick={handleBack}
                       className="w-80 bg-gray-800 text-white p-3 rounded hover:bg-gray-900"
@@ -1522,10 +1554,11 @@ export default function ShoppingCart() {
               Must add items on the cart before you proceed to check out.
             </p>
 
-            <Button
+            <Link
               className="mt-6 px-6 py-3 rounded-full shadow-lg flex bg-red-800"
-              onClick={() => router.push("/all-products")}
-              {...({} as React.ComponentProps<typeof Button>)}
+              href={"/all-products"}
+              // onClick={() => router.push("/all-products")}
+              // {...({} as React.ComponentProps<typeof Button>)}
             >
               <svg
                 className="w-6 h-6 text-white "
@@ -1544,8 +1577,8 @@ export default function ShoppingCart() {
                   d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
                 />
               </svg>
-              <p className="mt-1"> Return to Shop</p>
-            </Button>
+              <p className="mt-1 text-white"> Return to Shop</p>
+            </Link>
           </div>
         )}
       </section>
